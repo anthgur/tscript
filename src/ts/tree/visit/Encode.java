@@ -213,8 +213,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     code += indent() + "TSValue " + result +
             " = TSValue." + methodName + "(" + exprReturnValue.result + ");\n";
 
-    System.out.print(code);
-
     return new Encode.ReturnValue(result, code);
   }
 

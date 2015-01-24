@@ -41,6 +41,7 @@ public abstract class TSValue
   }
 
   abstract public TSNumber toNumber();
+  abstract public TSBoolean toBoolean();
 
   /** Convert to String. Override for all primitive types and TSReference.
    *  It can't be called toString because of Object.toString.

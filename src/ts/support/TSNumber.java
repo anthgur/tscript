@@ -44,9 +44,20 @@ public final class TSNumber extends TSPrimitive
   }
 
   /** Convert to a Number, so nothing to do. */
+  @Override
   public TSNumber toNumber()
   {
     return this;
+  }
+
+  @Override
+  public TSBoolean toBoolean() {
+    // +0, -0, NaN => false
+    // else => true
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-9.2
+    return value == zeroValue.getInternal()
+            ? TSBoolean.falseValue
+            : TSBoolean.trueValue;
   }
 
   /** Convert Number to String

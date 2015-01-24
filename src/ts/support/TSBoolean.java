@@ -18,4 +18,9 @@ public class TSBoolean extends TSPrimitive {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-9.3
         return value ? TSNumber.oneValue : TSNumber.zeroValue;
     }
+
+    @Override
+    public TSBoolean toBoolean() {
+        return this;
+    }
 }

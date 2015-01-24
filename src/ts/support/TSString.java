@@ -56,6 +56,14 @@ public final class TSString extends TSPrimitive
     return null;
   }
 
+  @Override
+  public TSBoolean toBoolean() {
+    // empty string => false
+    // else => true
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-9.2
+    return value.isEmpty() ? TSBoolean.falseValue : TSBoolean.trueValue;
+  }
+
   /** Override in TSValue */
   public TSString toStr()
   {

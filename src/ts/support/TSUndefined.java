@@ -22,6 +22,12 @@ public final class TSUndefined extends TSPrimitive
     return TSNumber.create(Double.NaN);
   }
 
+  @Override
+  public TSBoolean toBoolean() {
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-9.2
+    return TSBoolean.falseValue;
+  }
+
   /** Convert to String ("undefined"). */
   public TSString toStr()
   {

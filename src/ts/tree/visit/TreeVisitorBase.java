@@ -56,6 +56,11 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
+  @Override
+  public T visit(final BooleanLiteral booleanLiteral) {
+    return null;
+  }
+
   public T visit(final PrintStatement printStatement)
   {
     visitNode(printStatement.getExp());

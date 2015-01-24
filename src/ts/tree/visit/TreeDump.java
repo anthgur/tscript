@@ -95,6 +95,13 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
+  @Override
+  public Object visit(BooleanLiteral booleanLiteral) {
+    indent();
+    writer.println("BooleanLiteral " + booleanLiteral.getValue());
+    return null;
+  }
+
   public Object visit(final PrintStatement printStatement)
   {
     indent();

@@ -1,11 +1,19 @@
 package ts.support;
 
-public class TSBoolean extends TSPrimitive {
+public final class TSBoolean extends TSPrimitive {
     // Built in values for absolute truth
     public static final TSBoolean trueValue = new TSBoolean(true);
     public static final TSBoolean falseValue = new TSBoolean(false);
 
     private final boolean value;
+
+    public static TSBoolean create(boolean value) {
+        if(value) {
+            return trueValue;
+        } else {
+            return falseValue;
+        }
+    }
 
     private TSBoolean(boolean value) {
         this.value = value;
@@ -22,5 +30,10 @@ public class TSBoolean extends TSPrimitive {
     @Override
     public TSBoolean toBoolean() {
         return this;
+    }
+
+    @Override
+    public TSString toStr() {
+        return value ? TSString.create("true") : TSString.create("false");
     }
 }

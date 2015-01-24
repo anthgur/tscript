@@ -18,6 +18,8 @@ public interface TreeVisitor<T>
 
   T visit(NumericLiteral numericLiteral);
 
+  T visit(BooleanLiteral booleanLiteral);
+
   T visit(PrintStatement printStatement);
 
   T visit(VarStatement varStatement);

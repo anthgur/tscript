@@ -53,6 +53,11 @@ abstract class TSReference extends TSValue
     return this.getValue().toNumber();
   }
 
+  @Override
+  public final TSBoolean toBoolean() {
+    return this.getValue().toBoolean();
+  }
+
   /** Get value from reference and convert it to string type. */
   public final TSString toStr()
   {

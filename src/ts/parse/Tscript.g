@@ -122,6 +122,8 @@ primaryExpression
     { $lval = buildIdentifier(loc($start), $IDENTIFIER.text); }
   | NUMERIC_LITERAL
     { $lval = buildNumericLiteral(loc($start), $NUMERIC_LITERAL.text); }
+  | BOOLEAN_LITERAL
+    { $lval = buildBooleanLiteral(loc($start), $BOOLEAN_LITERAL.text); }
   | LPAREN e=expression RPAREN
     { $lval = $e.lval; }
   ;
@@ -145,6 +147,7 @@ fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 
 // cannot have a leading 0 unless the literal is just 0
 NUMERIC_LITERAL : ([1-9] DIGIT*) | [0];
+BOOLEAN_LITERAL : 'true' | 'false';
 
 LPAREN : [(];
 RPAREN : [)];

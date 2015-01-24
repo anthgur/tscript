@@ -233,6 +233,14 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(result, code);
   }
 
+  public Encode.ReturnValue visit(final BooleanLiteral booleanLiteral)
+  {
+    String result = getTemp();
+    String code = indent() + "TSValue " + result + " = " + "TSBoolean.create" +
+            "(" + booleanLiteral.getValue() + ");\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
   public Encode.ReturnValue visit(final PrintStatement printStatement)
   {
     Encode.ReturnValue exp = visitNode(printStatement.getExp());

@@ -86,6 +86,22 @@ public class TreeBuilder
     return new NumericLiteral(loc, d);
   }
 
+  public static Expression buildBooleanLiteral
+          (final Location loc, final String value)
+  {
+    boolean b;
+
+    if(value.equals("true")) {
+      b = true;
+    } else if(value.equals("false")) {
+      b = false;
+    } else {
+      Message.bug(loc, "boolean literal not parsable");
+      b = false;
+    }
+    return new BooleanLiteral(loc, b);
+  }
+
   /** Build a print statement.
    *
    *  @param  loc  location in source code (file, line, column)

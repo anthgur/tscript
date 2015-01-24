@@ -196,7 +196,37 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
       case MULTIPLY:
         return "multiply";
       default:
-        assert false: "unexpected operator: " + opNode.getOpString();
+        assert false: "unexpected binary operator: " + opNode.getOpString();
+    }
+    // cannot reach
+    return null;
+  }
+
+  @Override
+  public ReturnValue visit(UnaryOperator unaryOperator) {
+    String result = getTemp();
+    String methodName = getMethodNameForUnaryOperator(unaryOperator);
+
+    Encode.ReturnValue exprReturnValue = visitNode(unaryOperator.getExpr());
+    String code = exprReturnValue.code;
+
+    code += indent() + "TSValue " + result +
+            " = TSValue." + methodName + "(" + exprReturnValue.result + ");\n";
+
+    System.out.print(code);
+
+    return new Encode.ReturnValue(result, code);
+  }
+
+  private static String getMethodNameForUnaryOperator
+          (final UnaryOperator opNode) {
+    final Unop op = opNode.getOp();
+
+    switch (op) {
+      case NOT:
+        return "not";
+      default:
+        assert false: "unexpected unary operator: " +opNode.getOpString();
     }
     // cannot reach
     return null;

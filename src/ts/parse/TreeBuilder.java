@@ -3,6 +3,7 @@ package ts.parse;
 import ts.Location;
 import ts.Message;
 import ts.tree.*;
+import ts.tree.visit.Encode;
 
 /**
  * Provides static methods for building AST nodes
@@ -49,6 +50,12 @@ public class TreeBuilder
     Message.log("TreeBuilder: Binop " + op.toString());
 
     return new BinaryOperator(loc, op, left, right);
+  }
+
+  public static Expression buildUnaryOperator
+          (final Location loc, final Unop op, final Expression expr) {
+    Message.log("TreeBuilder: Unop " + op.toString());
+    return new UnaryOperator(loc, op, expr);
   }
 
   /** Build a identifier expression.

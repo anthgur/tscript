@@ -80,6 +80,10 @@ public abstract class TSValue
     return TSNumber.create(leftValue.toNumber().getInternal() +
       rightValue.toNumber().getInternal());
   }
+
+  public static TSBoolean not(final TSValue val) {
+    return val.toBoolean().negate();
+  }
   
   /** Perform an assignment. "this" is the left operand and the right
    *  operand is given by the parameter.

@@ -98,6 +98,21 @@ leftHandSideExpression
     { $lval = $p.lval; }
   ;
 
+postfixExpression
+  returns [ Expression lval ]
+  : l=leftHandSideExpression
+    { $lval = $l.lval; }
+  ;
+
+unaryExpression
+  returns [ Expression lval ]
+  : l=postfixExpression
+    { $lval = $l.lval; }
+  | EXCLAMATION r=unaryExpression
+    { $lval = buildUnaryOperator(loc($start), Unop.NOT,
+        $r.lval); }
+  ;
+
 additiveExpression
   returns [ Expression lval ]
   : m=multiplicativeExpression
@@ -109,9 +124,9 @@ additiveExpression
 
 multiplicativeExpression
   returns [ Expression lval ]
-  : p=primaryExpression
+  : p=unaryExpression
     { $lval = $p.lval; }
-  | l=multiplicativeExpression ASTERISK r=primaryExpression
+  | l=multiplicativeExpression ASTERISK r=unaryExpression
     { $lval = buildBinaryOperator(loc($start), Binop.MULTIPLY,
       $l.lval, $r.lval); }
   ;
@@ -155,6 +170,7 @@ SEMICOLON : [;];
 EQUAL : [=];
 PLUS : [+];
 ASTERISK : [*];
+EXCLAMATION : [!];
 
 // keywords start here
 PRINT : 'print';

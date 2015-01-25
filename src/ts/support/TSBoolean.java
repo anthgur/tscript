@@ -8,15 +8,15 @@ public final class TSBoolean extends TSPrimitive {
     private final boolean value;
 
     public static TSBoolean create(boolean value) {
-        if(value) {
-            return trueValue;
-        } else {
-            return falseValue;
-        }
+        return value ? trueValue : falseValue;
     }
 
     private TSBoolean(boolean value) {
         this.value = value;
+    }
+
+    public TSBoolean negate() {
+        return value ? falseValue : trueValue;
     }
 
     @Override

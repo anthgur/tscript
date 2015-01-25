@@ -22,7 +22,7 @@ do
 done
 
 # test programs that should execute
-for prog in assign exp first undeclaredLval undeclaredRval bool
+for prog in assign exp first undeclaredLval undeclaredRval bool negation
 do
   ../build/bin/ts $prog.ts >&$prog.out
   cmp $prog.out results/$prog.out

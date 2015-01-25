@@ -40,6 +40,11 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
+  @Override
+  public T visit(UnaryOperator unaryOperator) {
+    return null;
+  }
+
   public T visit(final ExpressionStatement expressionStatement)
   {
     visitNode(expressionStatement.getExp());
@@ -61,8 +66,7 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
-  public T visit(final PrintStatement printStatement)
-  {
+  public T visit(final PrintStatement printStatement) {
     visitNode(printStatement.getExp());
     return null;
   }

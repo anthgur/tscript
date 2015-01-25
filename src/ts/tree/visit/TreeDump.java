@@ -71,6 +71,16 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
+  @Override
+  public Object visit(UnaryOperator unaryOperator) {
+    indent();
+    writer.println(unaryOperator.getOpString());
+    indentation += increment;
+    visitNode(unaryOperator.getExpr());
+    indentation -= increment;
+    return null;
+  }
+
   public Object visit(final ExpressionStatement expressionStatement)
   {
     indent();

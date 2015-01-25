@@ -5,9 +5,8 @@
 
 package ts.tree.visit;
 
-import ts.Message;
-import ts.Main;
 import ts.tree.*;
+import ts.tree.visit.encode.BinaryOps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,31 +174,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     Encode.ReturnValue rightReturnValue = visitNode(binaryOperator.getRight());
     code += rightReturnValue.code;
 
-    String methodName = getMethodNameForBinaryOperator(binaryOperator);
-    code += indent() + "TSValue " + result + " = " + leftReturnValue.result +
-      "." + methodName + "(" + rightReturnValue.result + ");\n";
-
+    code += indent() + "TSValue " + result + " = " +
+            BinaryOps.encode(binaryOperator, leftReturnValue, rightReturnValue);
     return new Encode.ReturnValue(result, code);
-  }
-
-  // support routine for handling binary operators
-  private static String getMethodNameForBinaryOperator(
-    final BinaryOperator opNode)
-  {
-    final Binop op = opNode.getOp();
-
-    switch (op) {
-      case ADD:
-        return "add";
-      case ASSIGN:
-        return "simpleAssignment";
-      case MULTIPLY:
-        return "multiply";
-      default:
-        assert false: "unexpected binary operator: " + opNode.getOpString();
-    }
-    // cannot reach
-    return null;
   }
 
   @Override
@@ -218,7 +195,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
 
   private static String getMethodNameForUnaryOperator
           (final UnaryOperator opNode) {
-    final Unop op = opNode.getOp();
+    final UnOpcode op = opNode.getOp();
 
     switch (op) {
       case NOT:
@@ -280,7 +257,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
       printStatement.getLineNumber() + ");\n";
     code += exp.code;
     code += indent() + "System.out.println(" + exp.result +
-      ".toStr().getInternal());\n";
+      ".toStr().unbox());\n";
     return new Encode.ReturnValue(code);
   }
 

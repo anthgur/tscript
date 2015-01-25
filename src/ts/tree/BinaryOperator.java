@@ -10,11 +10,14 @@ import ts.tree.visit.TreeVisitor;
  */
 public class BinaryOperator extends Expression
 {
-  private Binop op;
+  public enum Op {
+    ADD, ASSIGN, MULTIPLY
+  }
+  private BinOpcode op;
   private Expression left;
   private Expression right;
 
-  public BinaryOperator(final Location loc, final Binop op,
+  public BinaryOperator(final Location loc, final BinOpcode op,
      final Expression left, final Expression right)
   {
     super(loc);
@@ -23,7 +26,7 @@ public class BinaryOperator extends Expression
     this.right = right;
   }
 
-  public Binop getOp()
+  public BinOpcode getOp()
   {
     return op;
   }

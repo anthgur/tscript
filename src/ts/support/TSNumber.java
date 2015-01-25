@@ -1,6 +1,8 @@
 
 package ts.support;
 
+import ts.tree.BooleanLiteral;
+
 /**
  * Represent Number values
  * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-8.5">ELS
@@ -50,7 +52,7 @@ public final class TSNumber extends TSPrimitive
   }
 
   /** Get the value. */
-  public double getInternal()
+  public double unbox()
   {
     return value;
   }

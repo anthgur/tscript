@@ -8,6 +8,7 @@ package ts.support;
  */
 public final class TSNumber extends TSPrimitive
 {
+  // TODO implement NaN
   /** pre-built value for 0 */
   public static final TSNumber zeroValue = new TSNumber(0.0);
   /** pre-built value for 1 */
@@ -35,6 +36,11 @@ public final class TSNumber extends TSPrimitive
       return oneValue;
     }
     return new TSNumber(value);
+  }
+
+  // TODO NaN checking
+  public TSNumber negate() {
+    return TSNumber.create(-value);
   }
 
   /** Get the value. */

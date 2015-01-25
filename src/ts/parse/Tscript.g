@@ -109,8 +109,11 @@ unaryExpression
   : l=postfixExpression
     { $lval = $l.lval; }
   | EXCLAMATION r=unaryExpression
-    { $lval = buildUnaryOperator(loc($start), Unop.NOT,
-        $r.lval); }
+    { $lval = buildUnaryOperator(loc($start), Unop.NOT, $r.lval); }
+  | PLUS r=unaryExpression
+    { $lval = buildUnaryOperator(loc($start), Unop.PLUS, $r.lval); }
+  | MINUS r=unaryExpression
+      { $lval = buildUnaryOperator(loc($start), Unop.MINUS, $r.lval); }
   ;
 
 additiveExpression
@@ -169,6 +172,7 @@ RPAREN : [)];
 SEMICOLON : [;];
 EQUAL : [=];
 PLUS : [+];
+MINUS : [-];
 ASTERISK : [*];
 EXCLAMATION : [!];
 

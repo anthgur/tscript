@@ -223,6 +223,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     switch (op) {
       case NOT:
         return "not";
+      case PLUS:
+        return "unaryPlus";
+      case MINUS:
+        return "unaryMinus";
       default:
         assert false: "unexpected unary operator: " +opNode.getOpString();
     }

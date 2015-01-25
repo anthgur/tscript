@@ -24,7 +24,7 @@ public final class TSBoolean extends TSPrimitive {
         // true  => 1
         // false => 0
         // http://www.ecma-international.org/ecma-262/5.1/#sec-9.3
-        return value ? TSNumber.oneValue : TSNumber.zeroValue;
+        return value ? TSNumber.oneValue : TSNumber.plusZeroValue;
     }
 
     @Override

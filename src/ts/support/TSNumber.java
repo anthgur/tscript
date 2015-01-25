@@ -8,9 +8,10 @@ package ts.support;
  */
 public final class TSNumber extends TSPrimitive
 {
-  // TODO implement NaN
-  /** pre-built value for 0 */
-  public static final TSNumber zeroValue = new TSNumber(0.0);
+  /** pre-built value for +0 */
+  public static final TSNumber plusZeroValue = new TSNumber(0.0);
+  /** pre-built value for -0 */
+  public static final TSNumber minusZeroValue = new TSNumber(0.0);
   /** pre-built value for 1 */
   public static final TSNumber oneValue = new TSNumber(1.0);
 
@@ -29,7 +30,7 @@ public final class TSNumber extends TSPrimitive
     // even use a hashmap?
     if (value == 0.0)
     {
-      return zeroValue;
+      return plusZeroValue;
     }
     else if (value == 1.0)
     {
@@ -38,9 +39,14 @@ public final class TSNumber extends TSPrimitive
     return new TSNumber(value);
   }
 
-  // TODO NaN checking
   public TSNumber negate() {
-    return TSNumber.create(-value);
+    if(Double.isNaN(value)) {
+      return this;
+    } else if(value == 0.0) {
+      return minusZeroValue;
+    } else {
+      return TSNumber.create(-value);
+    }
   }
 
   /** Get the value. */
@@ -61,7 +67,7 @@ public final class TSNumber extends TSPrimitive
     // +0, -0, NaN => false
     // else => true
     // http://www.ecma-international.org/ecma-262/5.1/#sec-9.2
-    return value == zeroValue.getInternal()
+    return this == plusZeroValue || this == minusZeroValue || Double.isNaN(value)
             ? TSBoolean.falseValue
             : TSBoolean.trueValue;
   }

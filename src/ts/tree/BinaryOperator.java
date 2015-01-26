@@ -10,9 +10,6 @@ import ts.tree.visit.TreeVisitor;
  */
 public class BinaryOperator extends Expression
 {
-  public enum Op {
-    ADD, ASSIGN, MULTIPLY
-  }
   private BinOpcode op;
   private Expression left;
   private Expression right;

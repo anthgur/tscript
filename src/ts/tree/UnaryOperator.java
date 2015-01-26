@@ -4,11 +4,11 @@ import ts.Location;
 import ts.tree.visit.TreeVisitor;
 
 public class UnaryOperator extends Expression {
-    private UnOpcode op;
+    private UnaryOpcode op;
     private Expression expr;
 
     public UnaryOperator(final Location loc,
-                         final UnOpcode op, final Expression expr) {
+                         final UnaryOpcode op, final Expression expr) {
         super(loc);
         this.op = op;
         this.expr = expr;
@@ -18,7 +18,7 @@ public class UnaryOperator extends Expression {
         return op.toString();
     }
 
-    public UnOpcode getOp() {
+    public UnaryOpcode getOp() {
         return op;
     }
 

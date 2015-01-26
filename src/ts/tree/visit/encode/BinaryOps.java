@@ -7,7 +7,7 @@ public class BinaryOps {
     public static String encode(final BinaryOperator opNode,
                                 final Encode.ReturnValue lhs,
                                 final Encode.ReturnValue rhs) {
-        final BinOpcode opCode = opNode.getOp();
+        final BinaryOpcode opCode = opNode.getOp();
         String operator = null;
         switch (opCode) {
             // Handle assignment specially because it's baked into TSValue

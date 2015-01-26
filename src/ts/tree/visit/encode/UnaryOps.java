@@ -1,12 +1,12 @@
 package ts.tree.visit.encode;
 
-import ts.tree.UnOpcode;
+import ts.tree.UnaryOpcode;
 import ts.tree.UnaryOperator;
 import ts.tree.visit.Encode;
 
 public class UnaryOps {
     public static String encode(UnaryOperator opNode, Encode.ReturnValue rhs) {
-        final UnOpcode opcode = opNode.getOp();
+        final UnaryOpcode opcode = opNode.getOp();
         String operator = null;
         switch (opcode) {
             case NOT:

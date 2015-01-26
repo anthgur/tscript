@@ -14,14 +14,14 @@ public class BinaryOps {
             case ASSIGN:
                 return lhs.result + ".simpleAssignment(" + rhs.result + ");\n";
             case ADD:
-                operator = "AddOps.add";
+                operator = "add";
                 break;
             case MULTIPLY:
-                operator = "MultOps.multiply";
+                operator = "multiply";
                 break;
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();
         }
-        return operator + "(" + lhs.result + "," + rhs.result + ");\n";
+        return "BinaryOpsSupport." + operator + "(" + lhs.result + "," + rhs.result + ");\n";
     }
 }

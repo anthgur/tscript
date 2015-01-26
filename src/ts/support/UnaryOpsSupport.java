@@ -2,7 +2,6 @@ package ts.support;
 
 public class UnaryOpsSupport {
     public static TSBoolean logicalNot(TSValue val) {
-        // TODO pull negation up here
         return val.toBoolean().negate();
     }
 

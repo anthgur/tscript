@@ -52,23 +52,6 @@ public abstract class TSValue
     return prim.toStr();
   }
 
-
-  //
-  // binary operators (sections 11.5-11.11)
-  //
-
-  public static TSBoolean not(final TSValue val) {
-    return val.toBoolean().negate();
-  }
-
-  public static TSNumber unaryPlus(final TSValue val) {
-    return val.toNumber();
-  }
-
-  public static TSNumber unaryMinus(final TSValue val) {
-    return val.toNumber().negate();
-  }
-
   /** Perform an assignment. "this" is the left operand and the right
    *  operand is given by the parameter.
    */

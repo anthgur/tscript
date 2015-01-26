@@ -7,6 +7,7 @@ package ts.tree.visit;
 
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
+import ts.tree.visit.encode.UnaryOps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,51 +165,31 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   }
   
   // gen and return code for a binary operator
-  public Encode.ReturnValue visit(final BinaryOperator binaryOperator)
+  public Encode.ReturnValue visit(final BinaryOperator opNode)
   {
     String result = getTemp();
 
-    Encode.ReturnValue leftReturnValue = visitNode(binaryOperator.getLeft());
+    Encode.ReturnValue leftReturnValue = visitNode(opNode.getLeft());
     String code = leftReturnValue.code;
 
-    Encode.ReturnValue rightReturnValue = visitNode(binaryOperator.getRight());
+    Encode.ReturnValue rightReturnValue = visitNode(opNode.getRight());
     code += rightReturnValue.code;
 
     code += indent() + "TSValue " + result + " = " +
-            BinaryOps.encode(binaryOperator, leftReturnValue, rightReturnValue);
+            BinaryOps.encode(opNode, leftReturnValue, rightReturnValue);
     return new Encode.ReturnValue(result, code);
   }
 
   @Override
-  public ReturnValue visit(UnaryOperator unaryOperator) {
+  public ReturnValue visit(UnaryOperator opNode) {
     String result = getTemp();
-    String methodName = getMethodNameForUnaryOperator(unaryOperator);
 
-    Encode.ReturnValue exprReturnValue = visitNode(unaryOperator.getExpr());
-    String code = exprReturnValue.code;
+    Encode.ReturnValue exprReturn = visitNode(opNode.getExpr());
+    String code = exprReturn.code;
 
-    code += indent() + "TSValue " + result +
-            " = TSValue." + methodName + "(" + exprReturnValue.result + ");\n";
-
+    code += indent() + "TSValue " + result + " = "
+            + UnaryOps.encode(opNode, exprReturn);
     return new Encode.ReturnValue(result, code);
-  }
-
-  private static String getMethodNameForUnaryOperator
-          (final UnaryOperator opNode) {
-    final UnOpcode op = opNode.getOp();
-
-    switch (op) {
-      case NOT:
-        return "not";
-      case PLUS:
-        return "unaryPlus";
-      case MINUS:
-        return "unaryMinus";
-      default:
-        assert false: "unexpected unary operator: " +opNode.getOpString();
-    }
-    // cannot reach
-    return null;
   }
 
   // process an expression statement

@@ -42,7 +42,7 @@ abstract class TSReference extends TSValue
    * (not public as not used outside of package)<br>
    * (type hint not supported)
    */
-  final TSPrimitive toPrimitive()
+  public final TSPrimitive toPrimitive()
   {
     return this.getValue().toPrimitive();
   }

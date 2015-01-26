@@ -88,7 +88,7 @@ assignmentExpression
     { $lval = $a.lval; }
   | l=leftHandSideExpression EQUAL r=assignmentExpression
     { checkAssignmentDestination(loc($start), $l.lval);
-      $lval = buildBinaryOperator(loc($start), Binop.ASSIGN,
+      $lval = buildBinaryOperator(loc($start), BinaryOpcode.ASSIGN,
         $l.lval, $r.lval); }
   ;
 
@@ -109,11 +109,11 @@ unaryExpression
   : l=postfixExpression
     { $lval = $l.lval; }
   | EXCLAMATION r=unaryExpression
-    { $lval = buildUnaryOperator(loc($start), Unop.NOT, $r.lval); }
+    { $lval = buildUnaryOperator(loc($start), UnaryOpcode.NOT, $r.lval); }
   | PLUS r=unaryExpression
-    { $lval = buildUnaryOperator(loc($start), Unop.PLUS, $r.lval); }
+    { $lval = buildUnaryOperator(loc($start), UnaryOpcode.PLUS, $r.lval); }
   | MINUS r=unaryExpression
-      { $lval = buildUnaryOperator(loc($start), Unop.MINUS, $r.lval); }
+      { $lval = buildUnaryOperator(loc($start), UnaryOpcode.MINUS, $r.lval); }
   ;
 
 additiveExpression
@@ -121,7 +121,7 @@ additiveExpression
   : m=multiplicativeExpression
     { $lval = $m.lval; }
   | l=additiveExpression PLUS r=multiplicativeExpression
-    { $lval = buildBinaryOperator(loc($start), Binop.ADD,
+    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.ADD,
         $l.lval, $r.lval); }
   ;
 
@@ -130,7 +130,7 @@ multiplicativeExpression
   : p=unaryExpression
     { $lval = $p.lval; }
   | l=multiplicativeExpression ASTERISK r=unaryExpression
-    { $lval = buildBinaryOperator(loc($start), Binop.MULTIPLY,
+    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.MULTIPLY,
       $l.lval, $r.lval); }
   ;
 

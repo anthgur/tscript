@@ -1,5 +1,5 @@
 package ts.tree;
 
-public enum Unop {
+public enum UnaryOpcode {
     NOT, PLUS, MINUS
 }

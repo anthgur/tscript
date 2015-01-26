@@ -35,7 +35,7 @@ public abstract class TSValue
   /** Convert to Primitive. Override only in TSObject and TSReference.
    *  Otherwise just return "this". Note: type hint is not implemented.
    */
-  TSPrimitive toPrimitive()
+  public TSPrimitive toPrimitive()
   {
     return (TSPrimitive) this;
   }
@@ -50,47 +50,6 @@ public abstract class TSValue
   {
     TSPrimitive prim = this.toPrimitive();
     return prim.toStr();
-  }
-
-
-  //
-  // binary operators (sections 11.5-11.11)
-  //
-
-  /** Perform a multiply. "this" is the left operand and the right
-   *  operand is given by the parameter. Both operands are converted
-   *  to Number before the multiply.
-   */
-  public final TSNumber multiply(final TSValue right)
-  {
-    TSNumber leftValue = this.toNumber();
-    TSNumber rightValue = right.toNumber();
-    return TSNumber.create(leftValue.getInternal() * rightValue.getInternal());
-  }
-  
-  /** Perform an addition. "this" is the left operand and the right
-   *  operand is given by the parameter. Both operands are converted
-   *  to Number before the addition.
-   */
-  public final TSPrimitive add(final TSValue right)
-  {
-    TSPrimitive leftValue = this.toPrimitive();
-    TSPrimitive rightValue = right.toPrimitive();
-
-    return TSNumber.create(leftValue.toNumber().getInternal() +
-      rightValue.toNumber().getInternal());
-  }
-
-  public static TSBoolean not(final TSValue val) {
-    return val.toBoolean().negate();
-  }
-
-  public static TSNumber unaryPlus(final TSValue val) {
-    return val.toNumber();
-  }
-
-  public static TSNumber unaryMinus(final TSValue val) {
-    return val.toNumber().negate();
   }
 
   /** Perform an assignment. "this" is the left operand and the right

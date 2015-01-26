@@ -3,4 +3,5 @@ x = +1;
 print x;
 print +false;
 print +true;
-print -10;
+x = 10;
+print -x;

@@ -21,7 +21,7 @@ public final class TSString extends TSPrimitive
   }
 
   /** Get the value of the String. */
-  public String getInternal()
+  public String unbox()
   {
     return value;
   }
@@ -31,7 +31,7 @@ public final class TSString extends TSPrimitive
   {
     if (anObject instanceof TSString)
     {
-      return value.equals(((TSString) anObject).getInternal());
+      return value.equals(((TSString) anObject).unbox());
     }
     return false;
   }

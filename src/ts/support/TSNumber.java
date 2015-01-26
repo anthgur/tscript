@@ -3,6 +3,8 @@ package ts.support;
 
 import ts.tree.BooleanLiteral;
 
+import java.util.HashMap;
+
 /**
  * Represent Number values
  * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-8.5">ELS
@@ -11,9 +13,11 @@ import ts.tree.BooleanLiteral;
 public final class TSNumber extends TSPrimitive
 {
   /** pre-built value for +0 */
-  public static final TSNumber plusZeroValue = new TSNumber(0.0);
+  public static final TSNumber plusZeroValue = new TSNumber(+0.0);
   /** pre-built value for -0 */
-  public static final TSNumber minusZeroValue = new TSNumber(0.0);
+  public static final TSNumber minusZeroValue = new TSNumber(-0.0);
+  /** pre-built value for -0 */
+  public static final TSNumber zeroValue = new TSNumber(0.0);
   /** pre-built value for 1 */
   public static final TSNumber oneValue = new TSNumber(1.0);
 
@@ -30,12 +34,13 @@ public final class TSNumber extends TSPrimitive
   {
     // could screen for more common values?
     // even use a hashmap?
-    if (value == 0.0)
-    {
+    if (value == +0.0) {
       return plusZeroValue;
-    }
-    else if (value == 1.0)
-    {
+    } else if (value == 0.0) {
+      return zeroValue;
+    } else if (value == -0.0) {
+      return minusZeroValue;
+    } else if (value == 1.0) {
       return oneValue;
     }
     return new TSNumber(value);

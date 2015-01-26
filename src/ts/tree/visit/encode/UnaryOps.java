@@ -10,7 +10,7 @@ public class UnaryOps {
         String operator = null;
         switch (opcode) {
             case NOT:
-                operator = "negation";
+                operator = "logicalNot";
                 break;
             case PLUS:
                 operator = "plus";

@@ -19,6 +19,10 @@ public final class TSBoolean extends TSPrimitive {
         return value ? falseValue : trueValue;
     }
 
+    public boolean unbox() {
+        return value;
+    }
+
     @Override
     public TSNumber toNumber() {
         // true  => 1

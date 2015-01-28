@@ -22,6 +22,8 @@ public class BinaryOps {
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();
         }
-        return "BinaryOpsSupport." + operator + "(" + lhs.result + "," + rhs.result + ");\n";
+        return "BinaryOpsSupport." + operator + "("
+                + lhs.result + ".getValue(),"
+                + rhs.result + ".getValue());\n";
     }
 }

@@ -21,6 +21,6 @@ public class UnaryOps {
             default:
                 assert false: "unexpected unary operator: " + opNode.getOpString();
         }
-        return "UnaryOpsSupport." + operator + "(" + rhs.result + ");\n";
+        return "UnaryOpsSupport." + operator + "(" + rhs.result + ".getValue());\n";
     }
 }

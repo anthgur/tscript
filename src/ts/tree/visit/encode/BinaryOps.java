@@ -12,7 +12,7 @@ public class BinaryOps {
         switch (opCode) {
             // Handle assignment specially because it's baked into TSValue
             case ASSIGN:
-                return lhs.result + ".simpleAssignment(" + rhs.result + ");\n";
+                return lhs.result + ".simpleAssignment(" + rhs.result + ".getValue());\n";
             case ADD:
                 operator = "add";
                 break;

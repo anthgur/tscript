@@ -47,7 +47,7 @@ public final class BinaryOpsSupport {
     }
 
     public static TSBoolean greaterThan(final TSValue lhs, final TSValue rhs) {
-        return ltgt(lhs, rhs, BinaryOpcode.GREATER_THAN);
+        return ltgt(rhs, lhs, BinaryOpcode.GREATER_THAN);
     }
 
     // abstract equality comparison algorithm

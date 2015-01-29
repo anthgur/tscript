@@ -140,6 +140,8 @@ primaryExpression
     { $lval = buildIdentifier(loc($start), $IDENTIFIER.text); }
   | NUMERIC_LITERAL
     { $lval = buildNumericLiteral(loc($start), $NUMERIC_LITERAL.text); }
+  | HEX_INTEGER_LITERAL
+    { $lval = buildHexIntegerLiteral(loc($start), $HEX_INTEGER_LITERAL.text); }
   | BOOLEAN_LITERAL
     { $lval = buildBooleanLiteral(loc($start), $BOOLEAN_LITERAL.text); }
   | LPAREN e=expression RPAREN
@@ -149,6 +151,10 @@ primaryExpression
 // fragments to support the lexer rules
 
 fragment DIGIT : [0-9];
+
+fragment HEX_DIGIT : [0-9a-fA-F];
+
+fragment HEX_INDICATOR : [0] ( [x] | [X] );
 
 fragment IdentifierCharacters : [a-zA-Z_$] [a-zA-Z0-9_$]*;
 
@@ -165,6 +171,7 @@ fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 
 // cannot have a leading 0 unless the literal is just 0
 NUMERIC_LITERAL : ([1-9] DIGIT*) | [0];
+HEX_INTEGER_LITERAL : HEX_INDICATOR HEX_DIGIT+;
 BOOLEAN_LITERAL : 'true' | 'false';
 
 LPAREN : [(];

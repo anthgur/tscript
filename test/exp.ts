@@ -16,3 +16,9 @@ print abc + def;
 
 print abc = 1 + 2 * 3;
 
+// sanity check for hex literals blowing up
+
+0xabcdef;
+0xABCEDF;
+0x01234;
+0x56789;

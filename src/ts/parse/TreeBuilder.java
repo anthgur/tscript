@@ -92,6 +92,20 @@ public class TreeBuilder
     return new NumericLiteral(loc, d);
   }
 
+  public static Expression buildHexIntegerLiteral
+          (final Location loc, final String value) {
+    double d = 0.0;
+
+    try
+    {
+      d = Integer.parseInt(value.substring(2), 16);
+    } catch (NumberFormatException e) {
+      Message.bug(loc, "hex literal not parsable " + value);
+    }
+    Message.log("TreeBuilder: HexIntegerLiteral " + d);
+    return new NumericLiteral(loc, d);
+  }
+
   public static Expression buildBooleanLiteral
           (final Location loc, final String value)
   {

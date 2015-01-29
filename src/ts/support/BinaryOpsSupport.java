@@ -109,4 +109,72 @@ public final class BinaryOpsSupport {
         // clause 10
         return TSBoolean.falseValue;
     }
+
+    // abstract relational comparison algorithm
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+    private static TSValue abstractCompare(final TSValue lhs,
+                                           final TSValue rhs,
+                                           final TSBoolean leftFirst) {
+        final TSPrimitive lhsPrim, rhsPrim;
+
+        if(leftFirst.unbox()) {
+            lhsPrim = lhs.toPrimitive();
+            rhsPrim = rhs.toPrimitive();
+        } else {
+            rhsPrim = rhs.toPrimitive();
+            lhsPrim = lhs.toPrimitive();
+        }
+
+        Class<? extends TSValue> lhsPrimType = lhs.getClass();
+        Class<? extends TSValue> rhsPrimType = rhs.getClass();
+
+        // clause 3
+        if(lhsPrimType == TSString.class && rhsPrimType == TSString.class) {
+            double lhsDdl = lhsPrim.toNumber().unbox();
+            double rhsDbl = rhsPrim.toNumber().unbox();
+
+            // 3.c, 3.d
+            if(Double.isNaN(lhsDdl) || Double.isNaN(rhsDbl)) {
+                return TSUndefined.value;
+            } else if((lhsDdl == rhsDbl) ||
+                    (lhs == TSNumber.minusZeroValue && rhs == TSNumber.plusZeroValue) ||
+                    (lhs == TSNumber.plusZeroValue && rhs == TSNumber.minusZeroValue)) {
+                return TSBoolean.falseValue;
+            } else if(lhsDdl == Double.POSITIVE_INFINITY) {
+                return TSBoolean.falseValue;
+            } else if(rhsDbl == Double.POSITIVE_INFINITY) {
+                return TSBoolean.trueValue;
+            } else if(rhsDbl == Double.NEGATIVE_INFINITY) {
+                return TSBoolean.falseValue;
+            } else if(lhsDdl == Double.NEGATIVE_INFINITY) {
+                return TSBoolean.trueValue;
+            } else {
+                return lhsDdl < rhsDbl
+                        ? TSBoolean.trueValue
+                        : TSBoolean.falseValue;
+            }
+        // clause 4
+        }
+        if(lhsPrimType == TSString.class && rhsPrimType == TSString.class) {
+            final String lhsString, rhsString;
+            lhsString = ((TSString) lhsPrim).unbox();
+            rhsString = ((TSString) rhsPrim).unbox();
+
+            // 4.a
+            if(lhsString.startsWith(rhsString)) {
+                return TSBoolean.falseValue;
+            // 4.b
+            } else if(rhsString.startsWith(lhsString)) {
+                return TSBoolean.trueValue;
+            // 4.c
+            } else {
+                return lhsString.compareTo(rhsString) < 0
+                        ? TSBoolean.trueValue
+                        : TSBoolean.falseValue;
+            }
+        }
+        assert false : "Abstract relational comparison unreachable";
+        // unreachable
+        return null;
+    }
 }

@@ -138,8 +138,8 @@ primaryExpression
   returns [ Expression lval ]
   : IDENTIFIER
     { $lval = buildIdentifier(loc($start), $IDENTIFIER.text); }
-  | NUMERIC_LITERAL
-    { $lval = buildNumericLiteral(loc($start), $NUMERIC_LITERAL.text); }
+  | DECIMAL_LITERAL
+    { $lval = buildNumericLiteral(loc($start), $DECIMAL_LITERAL.text); }
   | HEX_INTEGER_LITERAL
     { $lval = buildHexIntegerLiteral(loc($start), $HEX_INTEGER_LITERAL.text); }
   | BOOLEAN_LITERAL
@@ -156,6 +156,15 @@ fragment HEX_DIGIT : [0-9a-fA-F];
 
 fragment HEX_INDICATOR : [0] ( [x] | [X] );
 
+fragment EXPONENT_INDICATOR : [e] | [E];
+
+// cannot have a leading 0 unless the literal is just 0
+fragment INTEGER_LITERAL : ([1-9] DIGIT*) | [0];
+
+fragment SIGNED_INTEGER : ( [-] | [+] )? INTEGER_LITERAL;
+
+fragment EXPONENT_PART : EXPONENT_INDICATOR SIGNED_INTEGER;
+
 fragment IdentifierCharacters : [a-zA-Z_$] [a-zA-Z0-9_$]*;
 
 fragment SpaceTokens : SpaceChars | LineTerminator | EndOfLineComment;
@@ -169,9 +178,19 @@ fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 // lexer rules
 //   keywords must appear before IDENTIFIER
 
-// cannot have a leading 0 unless the literal is just 0
-NUMERIC_LITERAL : ([1-9] DIGIT*) | [0];
+// The following two rules support NumericLiteral as defined by
+// http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.3
+
+// DecimalLiteral
+DECIMAL_LITERAL
+  : INTEGER_LITERAL [.] DIGIT* EXPONENT_PART?
+  | [.] DIGIT* EXPONENT_PART?
+  | INTEGER_LITERAL EXPONENT_PART?
+  ;
+
+// HexIntegerLiteral
 HEX_INTEGER_LITERAL : HEX_INDICATOR HEX_DIGIT+;
+
 BOOLEAN_LITERAL : 'true' | 'false';
 
 LPAREN : [(];

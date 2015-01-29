@@ -16,7 +16,13 @@ print abc + def;
 
 print abc = 1 + 2 * 3;
 
-// sanity check for hex literals blowing up
+// sanity check for literals blowing up
+
+0;
+0.0;
+.0;
+0.5e+10;
+123E-14;
 
 0xabcdef;
 0xABCEDF;

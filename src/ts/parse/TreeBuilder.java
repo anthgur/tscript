@@ -75,7 +75,7 @@ public class TreeBuilder
    *  @param  loc   location in source code (file, line, column)
    *  @param  value value of the literal as a String
    */
-  public static Expression buildNumericLiteral(final Location loc,
+  public static Expression buildDecimalLiteral(final Location loc,
     final String value)
   {
     double d = 0.0;
@@ -86,7 +86,7 @@ public class TreeBuilder
     }
     catch(NumberFormatException nfe)
     {
-      Message.bug(loc, "numeric literal not parsable");
+      Message.bug(loc, "decimal literal not parsable");
     }
     Message.log("TreeBuilder: NumericLiteral " + d);
     return new NumericLiteral(loc, d);
@@ -102,7 +102,7 @@ public class TreeBuilder
     } catch (NumberFormatException e) {
       Message.bug(loc, "hex literal not parsable " + value);
     }
-    Message.log("TreeBuilder: HexIntegerLiteral " + d);
+    Message.log("TreeBuilder: NumericLiteral " + d);
     return new NumericLiteral(loc, d);
   }
 

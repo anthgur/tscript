@@ -139,7 +139,7 @@ primaryExpression
   : IDENTIFIER
     { $lval = buildIdentifier(loc($start), $IDENTIFIER.text); }
   | DECIMAL_LITERAL
-    { $lval = buildNumericLiteral(loc($start), $DECIMAL_LITERAL.text); }
+    { $lval = buildDecimalLiteral(loc($start), $DECIMAL_LITERAL.text); }
   | HEX_INTEGER_LITERAL
     { $lval = buildHexIntegerLiteral(loc($start), $HEX_INTEGER_LITERAL.text); }
   | BOOLEAN_LITERAL

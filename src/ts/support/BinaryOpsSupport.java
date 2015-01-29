@@ -129,7 +129,7 @@ public final class BinaryOpsSupport {
         Class<? extends TSValue> rhsPrimType = rhs.getClass();
 
         // clause 3
-        if(lhsPrimType == TSString.class && rhsPrimType == TSString.class) {
+        if(!(lhsPrimType == TSString.class && rhsPrimType == TSString.class)) {
             double lhsDdl = lhsPrim.toNumber().unbox();
             double rhsDbl = rhsPrim.toNumber().unbox();
 

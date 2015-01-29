@@ -131,6 +131,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     increaseIndentation();
     ret += indent() + "TSLexicalEnvironment " + "lexEnviron" + " = " +
       "TSLexicalEnvironment.newDeclarativeEnvironment(null);\n";
+    ret += "lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n";
     return ret;
   }
 

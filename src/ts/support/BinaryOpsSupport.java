@@ -1,5 +1,7 @@
 package ts.support;
 
+import ts.Message;
+
 /**
  * Support for multiplicative operators
  * http://www.ecma-international.org/ecma-262/5.1/#sec-11.5
@@ -36,12 +38,17 @@ public final class BinaryOpsSupport {
         return null;
     }
 
+    private static final String eqLogFmt =
+            "Equality comparision:\n\tlhs: %s rhs: %s\n\tlhsType: %s rhsType: %s";
+
     // abstract equality comparison algorithm
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.9.3
-    public static TSBoolean equals(final TSValue lhs, final TSValue rhs) {
+    public static TSBoolean abstractEquals(final TSValue lhs, final TSValue rhs) {
         // let's blow apart Java's pathetic type system shall we?
-        Class<? extends TSValue> lhsType = lhs.getType();
-        Class<? extends TSValue> rhsType = rhs.getType();
+        Class<? extends TSValue> lhsType = lhs.getClass();
+        Class<? extends TSValue> rhsType = rhs.getClass();
+
+        Message.log(String.format(eqLogFmt, lhs, rhs, lhsType, rhsType));
 
         // clause 1
         if(lhsType == rhsType) {
@@ -85,16 +92,16 @@ public final class BinaryOpsSupport {
             return TSBoolean.trueValue;
         // clause 4
         } else if(lhsType == TSNumber.class && rhsType == TSString.class) {
-            return equals(lhs, rhs.toNumber());
+            return abstractEquals(lhs, rhs.toNumber());
         // clause 5
         } else if(lhsType == TSString.class && rhsType == TSNumber.class) {
-            return equals(lhs.toNumber(), rhs);
+            return abstractEquals(lhs.toNumber(), rhs);
         // clause 6
         } else if(lhsType == TSBoolean.class) {
-            return equals(lhs, rhs.toNumber());
+            return abstractEquals(lhs, rhs.toNumber());
         // clause 7
         } else if(rhsType == TSBoolean.class) {
-            return equals(lhs.toNumber(), rhs);
+            return abstractEquals(lhs.toNumber(), rhs);
         }
         // clause 8, 9
         // TODO for objects

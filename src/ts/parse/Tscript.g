@@ -203,7 +203,7 @@ equalityExpression
   returns [ Expression lval ]
   : r=relationalExpression
     { $lval = $r.lval; }
-  | l=equalityExpression EQUAL EQUAL r=relationalExpression
+  | l=equalityExpression DOUBLE_EQUAL r=relationalExpression
     { $lval = buildBinaryOperator(loc($start), BinaryOpcode.EQUALITY,
       $l.lval, $r.lval); }
   ;
@@ -269,6 +269,7 @@ LPAREN : [(];
 RPAREN : [)];
 SEMICOLON : [;];
 EQUAL : [=];
+DOUBLE_EQUAL: EQUAL EQUAL;
 PLUS : [+];
 MINUS : [-];
 ASTERISK : [*];

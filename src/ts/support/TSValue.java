@@ -40,6 +40,10 @@ public abstract class TSValue
     return (TSPrimitive) this;
   }
 
+  public Class<? extends TSValue> getType() {
+    return this.getClass();
+  }
+
   abstract public TSNumber toNumber();
   abstract public TSBoolean toBoolean();
 

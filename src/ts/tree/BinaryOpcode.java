@@ -6,5 +6,5 @@ package ts.tree;
  *
  */
 public enum BinaryOpcode {
-    ADD, ASSIGN, MULTIPLY
+    ADD, ASSIGN, MULTIPLY, SUBTRACT
 }

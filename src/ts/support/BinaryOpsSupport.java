@@ -20,6 +20,12 @@ public final class BinaryOpsSupport {
         return TSNumber.create(leftNum.unbox() * rightNum.unbox());
     }
 
+    public static TSNumber subtract(final TSValue lhs, final TSValue rhs) {
+        TSNumber leftNum = lhs.toNumber();
+        TSNumber rightNum = rhs.toNumber();
+        return TSNumber.create(leftNum.unbox() - rightNum.unbox());
+    }
+
     public static TSNumber divide(final TSValue lhs, final TSValue rhs) {
         assert false : "divide not implemented";
         return null;

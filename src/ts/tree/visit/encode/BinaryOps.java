@@ -19,6 +19,9 @@ public class BinaryOps {
             case MULTIPLY:
                 operator = "multiply";
                 break;
+            case SUBTRACT:
+                operator = "subtract";
+                break;
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();
         }

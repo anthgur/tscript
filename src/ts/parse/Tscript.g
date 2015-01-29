@@ -123,6 +123,9 @@ additiveExpression
   | l=additiveExpression PLUS r=multiplicativeExpression
     { $lval = buildBinaryOperator(loc($start), BinaryOpcode.ADD,
         $l.lval, $r.lval); }
+  | l=additiveExpression MINUS r=multiplicativeExpression
+      { $lval = buildBinaryOperator(loc($start), BinaryOpcode.SUBTRACT,
+          $l.lval, $r.lval); }
   ;
 
 multiplicativeExpression

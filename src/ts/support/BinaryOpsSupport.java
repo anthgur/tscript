@@ -83,28 +83,20 @@ public final class BinaryOpsSupport {
         } else if((lhsType == TSNull.class && rhsType == TSUndefined.class) ||
                 (lhsType == TSUndefined.class && rhsType == TSNull.class)) {
             return TSBoolean.trueValue;
-        // clause 5
+        // clause 4
         } else if(lhsType == TSNumber.class && rhsType == TSString.class) {
-            return lhs.toNumber().equals(rhs)
-                    ? TSBoolean.trueValue
-                    : TSBoolean.falseValue;
-        // clause 6
+            return equals(lhs, rhs.toNumber());
+        // clause 5
         } else if(lhsType == TSString.class && rhsType == TSNumber.class) {
-            return lhs.equals(rhs.toNumber())
-                    ? TSBoolean.trueValue
-                    : TSBoolean.falseValue;
-        // clause 7
+            return equals(lhs.toNumber(), rhs);
+        // clause 6
         } else if(lhsType == TSBoolean.class) {
-            return lhs.toNumber().equals(rhs)
-                    ? TSBoolean.trueValue
-                    : TSBoolean.falseValue;
-        // clause 8
+            return equals(lhs, rhs.toNumber());
+        // clause 7
         } else if(rhsType == TSBoolean.class) {
-            return lhs.equals(rhs.toNumber())
-                    ? TSBoolean.trueValue
-                    : TSBoolean.falseValue;
+            return equals(lhs.toNumber(), rhs);
         }
-        // clause 9
+        // clause 8, 9
         // TODO for objects
 
         // clause 10

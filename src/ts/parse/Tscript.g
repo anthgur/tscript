@@ -82,9 +82,21 @@ expression
     { $lval = $a.lval; }
   ;
 
+newExpression
+  returns [ Expression lval ]
+  : a=memberExpression
+    { $lval = $a.lval; }
+  ;
+
+memberExpression
+  returns [ Expression lval ]
+  : a=primaryExpression
+    { $lval = $a.lval; }
+  ;
+
 assignmentExpression
   returns [ Expression lval ]
-  : a=additiveExpression
+  : a=conditionalExpression
     { $lval = $a.lval; }
   | l=leftHandSideExpression EQUAL r=assignmentExpression
     { checkAssignmentDestination(loc($start), $l.lval);
@@ -92,9 +104,45 @@ assignmentExpression
         $l.lval, $r.lval); }
   ;
 
+conditionalExpression
+  returns [ Expression lval ]
+  : a=logicalOrExpression
+    { $lval = $a.lval; }
+  ;
+
+logicalOrExpression
+  returns [ Expression lval ]
+  : a=logicalAndExpression
+    { $lval = $a.lval; }
+  ;
+
+logicalAndExpression
+  returns [ Expression lval ]
+  : a=bitwiseOrExpression
+    { $lval = $a.lval; }
+  ;
+
+bitwiseOrExpression
+  returns [ Expression lval ]
+  : a=bitwiseXorExpression
+    { $lval = $a.lval; }
+  ;
+
+bitwiseXorExpression
+  returns [ Expression lval ]
+  : a=bitwiseAndExpression
+    { $lval = $a.lval; }
+  ;
+
+bitwiseAndExpression
+  returns [ Expression lval ]
+  : a=equalityExpression
+    { $lval = $a.lval; }
+  ;
+
 leftHandSideExpression
   returns [ Expression lval ]
-  : p=primaryExpression
+  : p=newExpression
     { $lval = $p.lval; }
   ;
 
@@ -149,6 +197,27 @@ primaryExpression
     { $lval = buildBooleanLiteral(loc($start), $BOOLEAN_LITERAL.text); }
   | LPAREN e=expression RPAREN
     { $lval = $e.lval; }
+  ;
+
+equalityExpression
+  returns [ Expression lval ]
+  : r=relationalExpression
+    { $lval = $r.lval; }
+  | l=equalityExpression EQUAL EQUAL r=relationalExpression
+    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.EQUALITY,
+      $l.lval, $r.lval); }
+  ;
+
+relationalExpression
+  returns [ Expression lval ]
+  : s=shiftExpression
+    { $lval = $s.lval; }
+  ;
+
+shiftExpression
+  returns [ Expression lval ]
+  : a=additiveExpression
+    { $lval = $a.lval; }
   ;
 
 // fragments to support the lexer rules

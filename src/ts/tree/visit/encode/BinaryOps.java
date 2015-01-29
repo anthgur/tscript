@@ -22,6 +22,9 @@ public class BinaryOps {
             case SUBTRACT:
                 operator = "subtract";
                 break;
+            case EQUALITY:
+                operator = "equals";
+                break;
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();
         }

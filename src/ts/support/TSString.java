@@ -26,7 +26,7 @@ public final class TSString extends TSPrimitive
     return value;
   }
 
-  /** Overrides Object.equals because TSString used as key for Map */
+  /** Overrides Object.abstractEquals because TSString used as key for Map */
   public boolean equals(Object anObject)
   {
     if (anObject instanceof TSString)
@@ -36,7 +36,7 @@ public final class TSString extends TSPrimitive
     return false;
   }
 
-  /** Need to override Object.hashcode() when overriding Object.equals() */
+  /** Need to override Object.hashcode() when overriding Object.abstractEquals() */
   public int hashCode()
   {
     return value.hashCode();

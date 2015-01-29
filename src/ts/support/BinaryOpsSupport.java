@@ -125,8 +125,8 @@ public final class BinaryOpsSupport {
             lhsPrim = lhs.toPrimitive();
         }
 
-        Class<? extends TSValue> lhsPrimType = lhs.getClass();
-        Class<? extends TSValue> rhsPrimType = rhs.getClass();
+        final Class<? extends TSValue> lhsPrimType = lhs.getClass();
+        final Class<? extends TSValue> rhsPrimType = rhs.getClass();
 
         // clause 3
         if(!(lhsPrimType == TSString.class && rhsPrimType == TSString.class)) {
@@ -153,28 +153,24 @@ public final class BinaryOpsSupport {
                         ? TSBoolean.trueValue
                         : TSBoolean.falseValue;
             }
-        // clause 4
         }
-        if(lhsPrimType == TSString.class && rhsPrimType == TSString.class) {
-            final String lhsString, rhsString;
-            lhsString = ((TSString) lhsPrim).unbox();
-            rhsString = ((TSString) rhsPrim).unbox();
 
-            // 4.a
-            if(lhsString.startsWith(rhsString)) {
-                return TSBoolean.falseValue;
-            // 4.b
-            } else if(rhsString.startsWith(lhsString)) {
-                return TSBoolean.trueValue;
-            // 4.c
-            } else {
-                return lhsString.compareTo(rhsString) < 0
-                        ? TSBoolean.trueValue
-                        : TSBoolean.falseValue;
-            }
+        // clause 4
+        final String lhsString, rhsString;
+        lhsString = ((TSString) lhsPrim).unbox();
+        rhsString = ((TSString) rhsPrim).unbox();
+
+        // 4.a
+        if(lhsString.startsWith(rhsString)) {
+            return TSBoolean.falseValue;
+        // 4.b
+        } else if(rhsString.startsWith(lhsString)) {
+            return TSBoolean.trueValue;
+        // 4.c
+        } else {
+            return lhsString.compareTo(rhsString) < 0
+                    ? TSBoolean.trueValue
+                    : TSBoolean.falseValue;
         }
-        assert false : "Abstract relational comparison unreachable";
-        // unreachable
-        return null;
     }
 }

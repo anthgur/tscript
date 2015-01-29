@@ -52,6 +52,11 @@ public abstract class TSValue
     return prim.toStr();
   }
 
+  @Override
+  public String toString() {
+    return this.toStr().unbox();
+  }
+
   /** Perform an assignment. "this" is the left operand and the right
    *  operand is given by the parameter.
    */

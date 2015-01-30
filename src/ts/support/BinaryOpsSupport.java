@@ -53,7 +53,7 @@ public final class BinaryOpsSupport {
     // abstract equality comparison algorithm
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.9.3
     public static TSBoolean abstractEquals(final TSValue lhs, final TSValue rhs) {
-        // let's blow apart Java's pathetic type system shall we?
+        // let's blow apart Java's type system shall we?
         final Class<? extends TSValue> lhsType, rhsType;
         lhsType = lhs.getClass();
         rhsType = rhs.getClass();
@@ -67,9 +67,9 @@ public final class BinaryOpsSupport {
                 return TSBoolean.trueValue;
             // 1.c
             } else if(lhsType == TSNumber.class) {
-                // static types are so good!
-                double lhsDbl = ((TSNumber) lhs).unbox();
-                double rhsDbl = ((TSNumber) lhs).unbox();
+                final double lhsDbl, rhsDbl;
+                lhsDbl = lhs.toNumber().unbox();
+                rhsDbl = rhs.toNumber().unbox();
 
                 if (Double.isNaN(lhsDbl) || Double.isNaN(rhsDbl)){
                     return TSBoolean.falseValue;
@@ -82,13 +82,12 @@ public final class BinaryOpsSupport {
                 }
             // 1.d
             } else if(lhsType == TSString.class) {
-                // LISP has so many parens am I right?
-                return ((TSString) lhs).unbox().equals(((TSString) rhs).unbox())
+                return lhs.toString().equals(rhs.toString())
                         ? TSBoolean.trueValue
                         : TSBoolean.falseValue;
             // 1.e
             } else if(lhsType == TSBoolean.class) {
-                return ((TSBoolean) lhs).unbox() == ((TSBoolean) rhs).unbox()
+                return lhs.toBoolean().unbox() == rhs.toBoolean().unbox()
                         ? TSBoolean.trueValue
                         : TSBoolean.falseValue;
             // 1.f
@@ -155,6 +154,8 @@ public final class BinaryOpsSupport {
                                            final boolean leftFirst) {
         final TSPrimitive lhsPrim, rhsPrim;
 
+        // preserve evaluation order according to clauses 1, 2 of
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
         if(leftFirst) {
             lhsPrim = lhs.toPrimitive();
             rhsPrim = rhs.toPrimitive();
@@ -163,13 +164,15 @@ public final class BinaryOpsSupport {
             lhsPrim = lhs.toPrimitive();
         }
 
-        final Class<? extends TSValue> lhsPrimType = lhs.getClass();
-        final Class<? extends TSValue> rhsPrimType = rhs.getClass();
+        final Class<? extends TSValue> lhsPrimType, rhsPrimType;
+        lhsPrimType = lhs.getClass();
+        rhsPrimType = rhs.getClass();
 
         // clause 3
         if(!(lhsPrimType == TSString.class && rhsPrimType == TSString.class)) {
-            double lhsDdl = lhsPrim.toNumber().unbox();
-            double rhsDbl = rhsPrim.toNumber().unbox();
+            final double lhsDdl, rhsDbl;
+            lhsDdl = lhsPrim.toNumber().unbox();
+            rhsDbl = rhsPrim.toNumber().unbox();
 
             // 3.c, 3.d
             if(Double.isNaN(lhsDdl) || Double.isNaN(rhsDbl)) {
@@ -195,8 +198,8 @@ public final class BinaryOpsSupport {
 
         // clause 4
         final String lhsString, rhsString;
-        lhsString = ((TSString) lhsPrim).unbox();
-        rhsString = ((TSString) rhsPrim).unbox();
+        lhsString = lhsPrim.toString();
+        rhsString = rhsPrim.toString();
 
         // 4.a
         if(lhsString.startsWith(rhsString)) {

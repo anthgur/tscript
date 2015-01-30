@@ -212,6 +212,12 @@ relationalExpression
   returns [ Expression lval ]
   : s=shiftExpression
     { $lval = $s.lval; }
+  | l=relationalExpression LESS r=shiftExpression
+    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.LESS_THAN,
+      $l.lval, $r.lval); }
+  | l=relationalExpression GREATER r=shiftExpression
+    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.GREATER_THAN,
+      $l.lval, $r.lval); }
   ;
 
 shiftExpression
@@ -274,6 +280,8 @@ PLUS : [+];
 MINUS : [-];
 ASTERISK : [*];
 EXCLAMATION : [!];
+LESS : [<];
+GREATER : [>];
 
 // keywords start here
 PRINT : 'print';

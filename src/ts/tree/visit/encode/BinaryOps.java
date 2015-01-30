@@ -7,9 +7,9 @@ public class BinaryOps {
     public static String encode(final BinaryOperator opNode,
                                 final Encode.ReturnValue lhs,
                                 final Encode.ReturnValue rhs) {
-        final BinaryOpcode opCode = opNode.getOp();
+        final BinaryOpcode opcode = opNode.getOp();
         String operator = null;
-        switch (opCode) {
+        switch (opcode) {
             // Handle assignment specially because it's baked into TSValue
             case ASSIGN:
                 return lhs.result + ".simpleAssignment(" + rhs.result + ".getValue());\n";
@@ -24,6 +24,12 @@ public class BinaryOps {
                 break;
             case EQUALITY:
                 operator = "abstractEquals";
+                break;
+            case GREATER_THAN:
+                operator = "greaterThan";
+                break;
+            case LESS_THAN:
+                operator = "lessThan";
                 break;
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();

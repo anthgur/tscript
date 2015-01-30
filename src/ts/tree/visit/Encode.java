@@ -232,6 +232,12 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(result, code);
   }
 
+  public Encode.ReturnValue visit(final NullLiteral nullLiteral) {
+    String result = getTemp();
+    String code = indent() + "TSValue " + result + " = " + "TSNull.nullValue\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
   public Encode.ReturnValue visit(final PrintStatement printStatement)
   {
     Encode.ReturnValue exp = visitNode(printStatement.getExp());

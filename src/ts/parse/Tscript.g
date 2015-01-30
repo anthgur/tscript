@@ -195,6 +195,8 @@ primaryExpression
     { $lval = buildHexIntegerLiteral(loc($start), $HEX_INTEGER_LITERAL.text); }
   | BOOLEAN_LITERAL
     { $lval = buildBooleanLiteral(loc($start), $BOOLEAN_LITERAL.text); }
+  | NULL_LITERAL
+    { $lval = new NullLiteral(loc($start)); }
   | LPAREN e=expression RPAREN
     { $lval = $e.lval; }
   ;
@@ -270,6 +272,8 @@ DECIMAL_LITERAL
 HEX_INTEGER_LITERAL : HEX_INDICATOR HEX_DIGIT+;
 
 BOOLEAN_LITERAL : 'true' | 'false';
+
+NULL_LITERAL : 'null';
 
 LPAREN : [(];
 RPAREN : [)];

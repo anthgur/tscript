@@ -66,6 +66,11 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
+  @Override
+  public T visit(final NullLiteral nullLiteral) {
+    return null;
+  }
+
   public T visit(final PrintStatement printStatement) {
     visitNode(printStatement.getExp());
     return null;

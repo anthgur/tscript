@@ -1,31 +1,26 @@
-
 package ts.tree;
 
 import ts.Location;
 import ts.tree.visit.TreeVisitor;
 
-/**
- * AST var statement node
- *
- */
-public final class VarStatement extends Statement
-{
-  private String name;
+import java.util.List;
 
-  public VarStatement(final Location loc, final String name)
-  {
-    super(loc);
-    this.name = name;
-  }
+public class VarStatement extends Statement {
+    List<Statement> varDeclList;
 
-  public String getName()
-  {
-    return name;
-  }
+    public VarStatement(final Location loc, final List<Statement> varDeclList)
+    {
+        super(loc);
+        this.varDeclList = varDeclList;
+    }
 
-  public <T> T apply(TreeVisitor<T> visitor)
-  {
-    return visitor.visit(this);
-  }
+    public List<Statement> getVarDeclList() {
+        return varDeclList;
+    }
+
+    public <T> T apply(TreeVisitor<T> visitor)
+    {
+        return visitor.visit(this);
+    }
+
 }
-

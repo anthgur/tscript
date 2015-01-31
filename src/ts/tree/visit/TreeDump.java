@@ -129,10 +129,10 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
-  public Object visit(final VarStatement varStatement)
+  public Object visit(final VarDeclaration varDeclaration)
   {
     indent();
-    writer.println("Var " + varStatement.getName());
+    writer.println("Var " + varDeclaration.getName());
     return null;
   }
 

@@ -112,6 +112,13 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
+  @Override
+  public Object visit(NullLiteral nullLiteral) {
+    indent();
+    writer.println("NullLiteral null");
+    return null;
+  }
+
   public Object visit(final PrintStatement printStatement)
   {
     indent();

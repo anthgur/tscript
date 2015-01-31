@@ -2,18 +2,20 @@ package ts.support;
 
 // TODO implement, this is a husk
 public class TSNull extends TSPrimitive {
+    public static final TSNull nullValue = new TSNull();
+
     @Override
     public TSNumber toNumber() {
-        return null;
+        return TSNumber.plusZeroValue;
     }
 
     @Override
     public TSBoolean toBoolean() {
-        return null;
+        return TSBoolean.falseValue;
     }
 
     @Override
     public TSString toStr() {
-        return super.toStr();
+        return TSString.create("null");
     }
 }

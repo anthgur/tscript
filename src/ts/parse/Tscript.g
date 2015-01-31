@@ -214,9 +214,6 @@ multiplicativeExpression
   | l=multiplicativeExpression ASTERISK r=unaryExpression
     { $lval = buildBinaryOperator(loc($start), BinaryOpcode.MULTIPLY,
       $l.lval, $r.lval); }
-  | l=multiplicativeExpression FORWARD_SLASH r=unaryExpression
-      { $lval = buildBinaryOperator(loc($start), BinaryOpcode.DIVIDE,
-        $l.lval, $r.lval); }
   ;
 
 primaryExpression
@@ -231,6 +228,8 @@ primaryExpression
     { $lval = buildBooleanLiteral(loc($start), $BOOLEAN_LITERAL.text); }
   | NULL_LITERAL
     { $lval = new NullLiteral(loc($start)); }
+  | STRING_LITERAL
+    { $lval = buildStringLiteral(loc($start), $STRING_LITERAL.text); }
   | LPAREN e=expression RPAREN
     { $lval = $e.lval; }
   ;
@@ -289,6 +288,16 @@ fragment EndOfLineComment : '//' ( ~[\n\r] )* (LineTerminator | EOF);
 
 fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 
+fragment ESCAPE_CHAR
+  : '\\'
+  ( '\'' | '\"'
+  | '\\' | 'b'
+  | 'f'  | 'n'
+  | 'r'  | 't' | 'v' );
+
+fragment DOUBLE_STRING_CHARS : ( ~[\\\"] | ESCAPE_CHAR )*;
+fragment SINGLE_STRING_CHARS : ( ~[\\\'] | ESCAPE_CHAR )*;
+
 // lexer rules
 //   keywords must appear before IDENTIFIER
 
@@ -309,6 +318,11 @@ BOOLEAN_LITERAL : 'true' | 'false';
 
 NULL_LITERAL : 'null';
 
+STRING_LITERAL
+  : '\"' DOUBLE_STRING_CHARS '\"'
+  | '\'' SINGLE_STRING_CHARS '\''
+  ;
+
 LPAREN : [(];
 RPAREN : [)];
 SEMICOLON : [;];
@@ -321,7 +335,6 @@ EXCLAMATION : [!];
 LESS : [<];
 GREATER : [>];
 COMMA : [,];
-FORWARD_SLASH : [/];
 
 // keywords start here
 PRINT : 'print';

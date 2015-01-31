@@ -19,6 +19,9 @@ public class BinaryOps {
             case MULTIPLY:
                 operator = "multiply";
                 break;
+            case DIVIDE:
+                operator = "divide";
+                break;
             case SUBTRACT:
                 operator = "subtract";
                 break;

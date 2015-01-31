@@ -33,8 +33,16 @@ public final class BinaryOpsSupport {
     }
 
     public static TSNumber divide(final TSValue lhs, final TSValue rhs) {
-        assert false : "divide not implemented";
-        return null;
+        final double lhsDbl, rhsDbl;
+        lhsDbl = lhs.toNumber().unbox();
+        rhsDbl = rhs.toNumber().unbox();
+
+        /*
+        if(Double.isNaN(lhsDbl) || Double.isNaN(rhsDbl)) {
+            return TSNumber.create(Double.NaN);
+        }
+        */
+        return TSNumber.create(lhsDbl / rhsDbl);
     }
 
     public static TSNumber modulo(final TSValue lhs, final TSValue rhs) {

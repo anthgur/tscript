@@ -214,6 +214,9 @@ multiplicativeExpression
   | l=multiplicativeExpression ASTERISK r=unaryExpression
     { $lval = buildBinaryOperator(loc($start), BinaryOpcode.MULTIPLY,
       $l.lval, $r.lval); }
+  | l=multiplicativeExpression FORWARD_SLASH r=unaryExpression
+      { $lval = buildBinaryOperator(loc($start), BinaryOpcode.DIVIDE,
+        $l.lval, $r.lval); }
   ;
 
 primaryExpression
@@ -318,6 +321,7 @@ EXCLAMATION : [!];
 LESS : [<];
 GREATER : [>];
 COMMA : [,];
+FORWARD_SLASH : [/];
 
 // keywords start here
 PRINT : 'print';

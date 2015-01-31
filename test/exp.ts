@@ -8,8 +8,10 @@ print (1+2)*3;
 print 1+2+3;
 print 2*3*4;
 
-var abc;
-var def;
+// yay var decl list!
+var abc = 5, def = abc;
+print abc;
+print def;
 
 print abc = def = 42;
 print abc + def;

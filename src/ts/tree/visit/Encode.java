@@ -256,21 +256,23 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     final Expression assignExpr = varDeclaration.getExpression();
 
     if(assignExpr != null) {
-      code += "lexEnviron.getIdentifierReference(" +
+      Encode.ReturnValue rhs = visitNode(assignExpr);
+      code += rhs.code + indent() +
+              "lexEnviron.getIdentifierReference(" +
               varName + ").simpleAssignment(" +
-              visitNode(assignExpr).result + ");\n";
+              rhs.result + ");\n";
     }
 
     return new Encode.ReturnValue(code);
   }
 
   public Encode.ReturnValue visit(final VarStatement varStatement) {
-    StringBuilder acc = new StringBuilder();
+    StringBuilder codeAcc = new StringBuilder();
     for (Encode.ReturnValue r :
             visitEach(varStatement.getVarDeclList())) {
-      acc.append(r.code);
+      codeAcc.append(r.code);
     }
-    return new Encode.ReturnValue(acc.toString());
+    return new Encode.ReturnValue(codeAcc.toString());
   }
 }
 

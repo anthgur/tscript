@@ -131,7 +131,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     increaseIndentation();
     ret += indent() + "TSLexicalEnvironment " + "lexEnviron" + " = " +
       "TSLexicalEnvironment.newDeclarativeEnvironment(null);\n";
-    ret += "lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n";
+    ret += indent() + "lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n";
     return ret;
   }
 
@@ -245,14 +245,32 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
 
   public Encode.ReturnValue visit(final VarDeclaration varDeclaration)
   {
+    String varName = "TSString.create(\"" + varDeclaration.getName() + "\")";
+
     String code = indent() + "Message.setLineNumber(" +
       varDeclaration.getLineNumber() + ");\n";
 
-    code += indent() + "lexEnviron.declareVariable(TSString.create" +
-      "(\"" + varDeclaration.getName() + "\"), false);\n";
+    code += indent() + "lexEnviron.declareVariable(" +
+            varName + ", false);\n";
+
+    final Expression assignExpr = varDeclaration.getExpression();
+
+    if(assignExpr != null) {
+      code += "lexEnviron.getIdentifierReference(" +
+              varName + ").simpleAssignment(" +
+              visitNode(assignExpr).result + ");\n";
+    }
 
     return new Encode.ReturnValue(code);
   }
 
+  public Encode.ReturnValue visit(final VarStatement varStatement) {
+    StringBuilder acc = new StringBuilder();
+    for (Encode.ReturnValue r :
+            visitEach(varStatement.getVarDeclList())) {
+      acc.append(r.code);
+    }
+    return new Encode.ReturnValue(acc.toString());
+  }
 }
 

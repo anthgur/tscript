@@ -74,10 +74,19 @@ variableDeclarationList
       $lval = $vl.lval; }
   ;
 
+// there's probably a better way than try/catch but this works
 variableDeclaration
   returns [ Statement lval ]
   : IDENTIFIER i=initializer?
-    { $lval = buildVarDeclaration(loc($start), $IDENTIFIER.text, $i.lval); }
+    {
+      try {
+        $lval = buildVarDeclaration(loc($start),
+          $IDENTIFIER.text, $i.lval);
+      } catch(NullPointerException e) {
+        $lval = buildVarDeclaration(loc($start),
+          $IDENTIFIER.text);
+      }
+    }
   ;
 
 initializer

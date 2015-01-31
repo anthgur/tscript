@@ -25,6 +25,13 @@ public class TreeBuilder
     return new VarDeclaration(loc, name, expression);
   }
 
+  public static Statement buildVarDeclaration(final Location loc,
+                                              final String name)
+  {
+    Message.log("TreeBuilder: VarDeclaration (" + name + ")");
+    return new VarDeclaration(loc, name, null);
+  }
+
   public static Statement buildVarStatement(final Location loc,
                                             final List<Statement> varDeclList) {
     Message.log("TreeBuilder: VarStatement");

@@ -71,10 +71,13 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
-  public T visit(final VarStatement varStatement)
+  public T visit(final VarDeclaration varDeclaration)
   {
     return null;
   }
 
+  public T visit(final VarStatement varStatement) {
+    return null;
+  }
 }
 

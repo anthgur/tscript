@@ -4,6 +4,8 @@ import ts.Location;
 import ts.Message;
 import ts.tree.*;
 
+import java.util.List;
+
 /**
  * Provides static methods for building AST nodes
  */
@@ -15,11 +17,18 @@ public class TreeBuilder
    *  @param  loc  location in source code (file, line, column)
    *  @param  name name of variable being declared.
    */
-  public static Statement buildVarStatement(final Location loc,
-    final String name)
+  public static Statement buildVarDeclaration(final Location loc,
+                                              final String name,
+                                              final Expression expression)
   {
-    Message.log("TreeBuilder: VarStatement (" + name + ")");
-    return new VarStatement(loc, name);
+    Message.log("TreeBuilder: VarDeclaration (" + name + ")");
+    return new VarDeclaration(loc, name, expression);
+  }
+
+  public static Statement buildVarStatement(final Location loc,
+                                            final List<Statement> varDeclList) {
+    Message.log("TreeBuilder: VarStatement");
+    return new VarStatement(loc, varDeclList);
   }
 
   /** Build a expression statement.

@@ -243,13 +243,13 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(code);
   }
 
-  public Encode.ReturnValue visit(final VarStatement varStatement)
+  public Encode.ReturnValue visit(final VarDeclaration varDeclaration)
   {
     String code = indent() + "Message.setLineNumber(" +
-      varStatement.getLineNumber() + ");\n";
+      varDeclaration.getLineNumber() + ");\n";
 
     code += indent() + "lexEnviron.declareVariable(TSString.create" +
-      "(\"" + varStatement.getName() + "\"), false);\n";
+      "(\"" + varDeclaration.getName() + "\"), false);\n";
 
     return new Encode.ReturnValue(code);
   }

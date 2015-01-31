@@ -60,8 +60,30 @@ statement
 
 varStatement
   returns [ Statement lval ]
-  : VAR IDENTIFIER SEMICOLON
-    { $lval = buildVarStatement(loc($start), $IDENTIFIER.text); }
+  : VAR vl=variableDeclarationList SEMICOLON
+    { $lval = buildVarStatement(loc($start), $vl.lval); }
+  ;
+
+variableDeclarationList
+  returns [ List<Statement> lval ]
+  : v=variableDeclaration
+    { $lval = new ArrayList<Statement>();
+      $lval.add($v.lval); }
+  | vl=variableDeclarationList COMMA v=variableDeclaration
+    { $vl.lval.add($v.lval);
+      $lval = $vl.lval; }
+  ;
+
+variableDeclaration
+  returns [ Statement lval ]
+  : IDENTIFIER i=initializer?
+    { $lval = buildVarDeclaration(loc($start), $IDENTIFIER.text, $i.lval); }
+  ;
+
+initializer
+  returns [ Expression lval ]
+  : EQUAL a=assignmentExpression
+    { $lval = $a.lval; }
   ;
 
 expressionStatement
@@ -282,6 +304,7 @@ ASTERISK : [*];
 EXCLAMATION : [!];
 LESS : [<];
 GREATER : [>];
+COMMA : [,];
 
 // keywords start here
 PRINT : 'print';

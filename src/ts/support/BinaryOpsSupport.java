@@ -23,8 +23,8 @@ public final class BinaryOpsSupport {
         final TSValue result;
 
         if (lhsType == TSString.class || rhsType == TSString.class) {
-            result = TSString.create(leftValue.toStr().unbox()
-                    + rightValue .toStr().unbox());
+            result = TSString.create(leftValue.toString()
+                    + rightValue.toString());
         } else {
             result = TSNumber.create(leftValue.toNumber().unbox()
                     + rightValue.toNumber().unbox());

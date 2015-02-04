@@ -219,7 +219,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   public Encode.ReturnValue visit(final StringLiteral stringLiteral) {
     String result = getTemp();
     String code = indent() + "TSValue " + result + " = " + "TSString.create" +
-            "(" + stringLiteral.getValue() + ");\n";
+            "(\"" + stringLiteral.getValue() + "\");\n";
     return new Encode.ReturnValue(result, code);
   }
 

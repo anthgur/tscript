@@ -288,15 +288,8 @@ fragment EndOfLineComment : '//' ( ~[\n\r] )* (LineTerminator | EOF);
 
 fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 
-fragment ESCAPE_CHAR
-  : '\\'
-  ( '\'' | '\"'
-  | '\\' | 'b'
-  | 'f'  | 'n'
-  | 'r'  | 't' | 'v' );
-
-fragment DOUBLE_STRING_CHARS : ( ~[\\\"] | ESCAPE_CHAR )*;
-fragment SINGLE_STRING_CHARS : ( ~[\\\'] | ESCAPE_CHAR )*;
+fragment DOUBLE_STRING_CHARS : ( ~[\\\"] | [\\n] )*;
+fragment SINGLE_STRING_CHARS : ( ~[\\\'] | [\\n] )*;
 
 // lexer rules
 //   keywords must appear before IDENTIFIER

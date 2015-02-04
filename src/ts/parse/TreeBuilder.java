@@ -140,8 +140,10 @@ public class TreeBuilder
 
   public static Expression buildStringLiteral(final Location loc,
                                               final String text) {
-    final String processed =
-            text.substring(1,text.length()-1).replace("\"", "\\\"");
+    String processed = text.substring(1, text.length() - 1);
+    if (!processed.isEmpty()) {
+      processed = processed.replace("\"", "\\\"");
+    }
     return new StringLiteral(loc, processed);
   }
 

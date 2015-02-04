@@ -11,13 +11,26 @@ public final class BinaryOpsSupport {
     private static final String eqLogFmt =
             "Equality comparision:\n\tlhs: %s rhs: %s\n\tlhsType: %s rhsType: %s";
 
-    public static TSNumber add(TSValue lhs, TSValue rhs) {
-        TSPrimitive leftValue = lhs.toPrimitive();
-        TSPrimitive rightValue = rhs.toPrimitive();
+    public static TSValue add(TSValue lhs, TSValue rhs) {
+        final TSPrimitive leftValue, rightValue;
+        leftValue = lhs.toPrimitive();
+        rightValue = rhs.toPrimitive();
 
-        return TSNumber.create(
-                leftValue.toNumber().unbox()
-                        + rightValue.toNumber().unbox());
+        final Class<? extends TSValue> lhsType, rhsType;
+        lhsType = leftValue.getClass();
+        rhsType = rightValue.getClass();
+
+        final TSValue result;
+
+        if (lhsType == TSString.class || rhsType == TSString.class) {
+            result = TSString.create(leftValue.toStr().unbox()
+                    + rightValue .toStr().unbox());
+        } else {
+            result = TSNumber.create(leftValue.toNumber().unbox()
+                    + rightValue.toNumber().unbox());
+        }
+
+        return result;
     }
 
     public static TSNumber multiply(final TSValue lhs, final TSValue rhs) {

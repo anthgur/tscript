@@ -22,7 +22,7 @@ do
 done
 
 # test programs that should execute
-for prog in assign exp first undeclaredLval undeclaredRval bool negation undefined relationals
+for prog in assign exp first undeclaredLval undeclaredRval bool negation undefined relationals strings
 do
   ../build/bin/ts $prog.ts >&$prog.out
   cmp $prog.out results/$prog.out

@@ -61,6 +61,11 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
+  public T visit(final StringLiteral stringLiteral)
+  {
+    return null;
+  }
+
   @Override
   public T visit(final BooleanLiteral booleanLiteral) {
     return null;

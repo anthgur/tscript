@@ -5,6 +5,7 @@
 
 package ts.tree.visit;
 
+import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
 import ts.tree.visit.encode.UnaryOps;
@@ -212,6 +213,13 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
       ".getIdentifierReference(TSString.create(\"" +
       identifier.getName() + "\"));\n";
 
+    return new Encode.ReturnValue(result, code);
+  }
+
+  public Encode.ReturnValue visit(final StringLiteral stringLiteral) {
+    String result = getTemp();
+    String code = indent() + "TSValue " + result + " = " + "TSString.create" +
+            "(\"" + stringLiteral.getValue() + "\");\n";
     return new Encode.ReturnValue(result, code);
   }
 

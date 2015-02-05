@@ -138,6 +138,15 @@ public class TreeBuilder
     return new BooleanLiteral(loc, b);
   }
 
+  public static Expression buildStringLiteral(final Location loc,
+                                              final String text) {
+    String processed = text.substring(1, text.length() - 1);
+    if (!processed.isEmpty()) {
+      processed = processed.replace("\"", "\\\"");
+    }
+    return new StringLiteral(loc, processed);
+  }
+
   /** Build a print statement.
    *
    *  @param  loc  location in source code (file, line, column)

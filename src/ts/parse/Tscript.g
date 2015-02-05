@@ -212,8 +212,11 @@ multiplicativeExpression
   : p=unaryExpression
     { $lval = $p.lval; }
   | l=multiplicativeExpression ASTERISK r=unaryExpression
-    { $lval = buildBinaryOperator(loc($start), BinaryOpcode.MULTIPLY,
-      $l.lval, $r.lval); }
+      { $lval = buildBinaryOperator(loc($start), BinaryOpcode.MULTIPLY,
+        $l.lval, $r.lval); }
+  | l=multiplicativeExpression FSLASH r=unaryExpression
+      { $lval = buildBinaryOperator(loc($start), BinaryOpcode.DIVIDE,
+        $l.lval, $r.lval); }
   ;
 
 primaryExpression
@@ -328,6 +331,7 @@ EXCLAMATION : [!];
 LESS : [<];
 GREATER : [>];
 COMMA : [,];
+FSLASH : [//];
 
 // keywords start here
 PRINT : 'print';

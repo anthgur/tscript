@@ -6,8 +6,7 @@ import ts.tree.visit.TreeVisitor;
 
 public class NullLiteral extends Expression {
 
-    public NullLiteral(final Location loc)
-    {
+    public NullLiteral(final Location loc) {
         super(loc);
     }
 

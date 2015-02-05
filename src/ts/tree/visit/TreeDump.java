@@ -13,8 +13,7 @@ import java.util.List;
  * <p>
  * The "visit" method is overloaded for each tree node type.
  */
-public final class TreeDump extends TreeVisitorBase<Object>
-{
+public final class TreeDump extends TreeVisitorBase<Object> {
   // where to write the dump to
   private PrintWriter writer;
 
@@ -32,36 +31,31 @@ public final class TreeDump extends TreeVisitorBase<Object>
     this(writer, 0, 2);
   }
 
-  public TreeDump(final PrintWriter writer, final int indentation,
-    final int increment)
-  {
+  public TreeDump(final PrintWriter writer,
+                  final int indentation,
+                  final int increment) {
     this.writer = writer;
     this.indentation = indentation;
     this.increment = increment;
   }
 
   // generate a string of spaces for current indentation level
-  private void indent()
-  {
-    for (int i = 0; i < indentation; i++)
-    {
+  private void indent() {
+    for (int i = 0; i < indentation; i++) {
       writer.print(" ");
     }
   }
 
   // visit a list of ASTs and dump them in order
   // use wildcard for generality: list of Statements, list of Expressions, etc
-  public List<Object> visitEach(final Iterable<?> nodes)
-  {
-    for (final Object node : nodes)
-    {
+  public List<Object> visitEach(final Iterable<?> nodes) {
+    for (final Object node : nodes) {
       visitNode((Tree) node);
     }
     return null;
   }
   
-  public Object visit(final BinaryOperator binaryOperator)
-  {
+  public Object visit(final BinaryOperator binaryOperator) {
     indent();
     writer.println(binaryOperator.getOpString());
     indentation += increment;
@@ -81,8 +75,7 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
-  public Object visit(final ExpressionStatement expressionStatement)
-  {
+  public Object visit(final ExpressionStatement expressionStatement) {
     indent();
     writer.println("ExpressionStatement");
     indentation += increment;
@@ -91,15 +84,13 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
-  public Object visit(final Identifier identifier)
-  {
+  public Object visit(final Identifier identifier) {
     indent();
     writer.println("Identifier " + identifier.getName());
     return null;
   }
 
-  public Object visit(final NumericLiteral numericLiteral)
-  {
+  public Object visit(final NumericLiteral numericLiteral) {
     indent();
     writer.println("NumericLiteral " + numericLiteral.getValue());
     return null;
@@ -119,8 +110,7 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
-  public Object visit(final PrintStatement printStatement)
-  {
+  public Object visit(final PrintStatement printStatement) {
     indent();
     writer.println("PrintStatement");
     indentation += increment;
@@ -129,12 +119,9 @@ public final class TreeDump extends TreeVisitorBase<Object>
     return null;
   }
 
-  public Object visit(final VarDeclaration varDeclaration)
-  {
+  public Object visit(final VarDeclaration varDeclaration) {
     indent();
     writer.println("Var " + varDeclaration.getName());
     return null;
   }
-
 }
-

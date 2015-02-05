@@ -13,8 +13,7 @@ package ts.support;
  * </ul>
  *
  */
-public abstract class TSEnvironmentRecord
-{
+public abstract class TSEnvironmentRecord {
   /** Does the environment have a binding for this name? */
   abstract boolean hasBinding(TSString name);
 
@@ -37,4 +36,3 @@ public abstract class TSEnvironmentRecord
   /** Return the implicit "this" value for this environment. */
   abstract TSValue implicitThisValue();
 }
-

@@ -1,4 +1,3 @@
-
 package ts.support;
 
 import ts.Message;
@@ -6,8 +5,7 @@ import ts.Message;
 /**
  * The super class for all Tscript values.
  */
-public abstract class TSValue
-{
+public abstract class TSValue {
   //
   // References: i.e. getValue and putValue (section 8.7)
   //
@@ -15,16 +13,14 @@ public abstract class TSValue
   /** Get the value. This method is only overridden in TSReference.
    *  Otherwise just return "this".
    */
-  public TSValue getValue()
-  {
+  public TSValue getValue() {
     return this;
   }
 
   /** Assign to the value. This method is only overridden in TSReference.
    *  Otherwise just report an error.
    */
-  public void putValue(TSValue value)
-  {
+  public void putValue(TSValue value) {
     Message.bug("putValue called for non-Reference type");
   }
 
@@ -35,8 +31,7 @@ public abstract class TSValue
   /** Convert to Primitive. Override only in TSObject and TSReference.
    *  Otherwise just return "this". Note: type hint is not implemented.
    */
-  public TSPrimitive toPrimitive()
-  {
+  public TSPrimitive toPrimitive() {
     return (TSPrimitive) this;
   }
 
@@ -46,8 +41,7 @@ public abstract class TSValue
   /** Convert to String. Override for all primitive types and TSReference.
    *  It can't be called toString because of Object.toString.
    */
-  public TSString toStr()
-  {
+  public TSString toStr() {
     TSPrimitive prim = this.toPrimitive();
     return prim.toStr();
   }
@@ -60,8 +54,7 @@ public abstract class TSValue
   /** Perform an assignment. "this" is the left operand and the right
    *  operand is given by the parameter.
    */
-  public final TSValue simpleAssignment(final TSValue right)
-  {
+  public final TSValue simpleAssignment(final TSValue right) {
     TSValue rightValue = right.getValue();
     this.putValue(rightValue);
     return rightValue;
@@ -74,10 +67,8 @@ public abstract class TSValue
   /** Is this value Undefined? Override only in TSUndefined and
    *  TSReference.
    */
-  public boolean isUndefined()
-  {
+  public boolean isUndefined() {
     return false;
   }
-
 }
 

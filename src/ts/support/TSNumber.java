@@ -1,4 +1,3 @@
-
 package ts.support;
 
 import ts.tree.BooleanLiteral;
@@ -10,8 +9,7 @@ import java.util.HashMap;
  * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-8.5">ELS
  * 5.1</a>).
  */
-public final class TSNumber extends TSPrimitive
-{
+public final class TSNumber extends TSPrimitive {
   /** pre-built value for +0 */
   public static final TSNumber plusZeroValue = new TSNumber(+0.0);
   /** pre-built value for -0 */
@@ -22,16 +20,14 @@ public final class TSNumber extends TSPrimitive
   public static final TSNumber oneValue = new TSNumber(1.0);
 
   // use the "create" method instead
-  private TSNumber(final double value)
-  {
+  private TSNumber(final double value) {
     this.value = value;
   }
 
   private final double value;
 
   /** Create a Number with the given value. */
-  public static TSNumber create(final double value)
-  {
+  public static TSNumber create(final double value) {
     // could screen for more common values?
     // even use a hashmap?
     if (value == +0.0) {
@@ -57,15 +53,13 @@ public final class TSNumber extends TSPrimitive
   }
 
   /** Get the value. */
-  public double unbox()
-  {
+  public double unbox() {
     return value;
   }
 
   /** Convert to a Number, so nothing to do. */
   @Override
-  public TSNumber toNumber()
-  {
+  public TSNumber toNumber() {
     return this;
   }
 
@@ -83,8 +77,7 @@ public final class TSNumber extends TSPrimitive
    * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-9.8.1">ELS
    * 9.8.1</a>)
    */
-  public TSString toStr()
-  {
+  public TSString toStr() {
     if (Double.isNaN(value))
     {
       return TSString.create("NaN");

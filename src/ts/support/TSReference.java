@@ -13,17 +13,14 @@ package ts.support;
  * </ul>
  *
  */
-abstract class TSReference extends TSValue
-{
+abstract class TSReference extends TSValue {
   private final TSString name;
 
-  TSReference(final TSString name)
-  {
+  TSReference(final TSString name) {
     this.name = name;
   }
 
-  TSString getReferencedName()
-  {
+  TSString getReferencedName() {
     return name;
   }
 
@@ -42,14 +39,12 @@ abstract class TSReference extends TSValue
    * (not public as not used outside of package)<br>
    * (type hint not supported)
    */
-  public final TSPrimitive toPrimitive()
-  {
+  public final TSPrimitive toPrimitive() {
     return this.getValue().toPrimitive();
   }
 
   /** Get value from reference and convert it to number type. */
-  public final TSNumber toNumber()
-  {
+  public final TSNumber toNumber() {
     return this.getValue().toNumber();
   }
 
@@ -59,14 +54,12 @@ abstract class TSReference extends TSValue
   }
 
   /** Get value from reference and convert it to string type. */
-  public final TSString toStr()
-  {
+  public final TSString toStr() {
     return this.getValue().toStr();
   }
 
   /** Get value from reference and see if it is undefined. */
-  public final boolean isUndefined()
-  {
+  public final boolean isUndefined() {
     return this.getValue().isUndefined();
   }
 }

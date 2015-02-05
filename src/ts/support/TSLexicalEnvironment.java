@@ -7,14 +7,12 @@ package ts.support;
  * 10.2</a>).
  *
  */
-public final class TSLexicalEnvironment
-{
+public final class TSLexicalEnvironment {
   private final TSEnvironmentRecord environmentRecord;
   private final TSLexicalEnvironment outerEnvironment;
 
   private TSLexicalEnvironment(final TSEnvironmentRecord environmentRecord,
-    final TSLexicalEnvironment outerEnvironment)
-  {
+                               final TSLexicalEnvironment outerEnvironment) {
     this.environmentRecord = environmentRecord;
     this.outerEnvironment = outerEnvironment;
   }
@@ -24,16 +22,11 @@ public final class TSLexicalEnvironment
    *  8.7</a>)
    *  for a reference to the given name in this environment.
    */
-  public TSReference getIdentifierReference(final TSString name)
-  {
-    if (environmentRecord.hasBinding(name))
-    {
+  public TSReference getIdentifierReference(final TSString name) {
+    if (environmentRecord.hasBinding(name)) {
       return new TSEnvironmentReference(name, environmentRecord);
-    }
-    else
-    {
-      if (outerEnvironment == null)
-      {
+    } else {
+      if (outerEnvironment == null) {
         // this is not correct
         // it should create a property reference with an undefined base
         // but we don't have properties yet
@@ -48,8 +41,7 @@ public final class TSLexicalEnvironment
 
   /** Declare the name in this lexical environment. */
   public void declareVariable(final TSString name,
-    final boolean configurableBinding)
-  {
+                              final boolean configurableBinding) {
     // this method is not distinctly mentioned in the spec
     // but is part of the discussion in 10.5
 
@@ -57,8 +49,7 @@ public final class TSLexicalEnvironment
 
     // if name already declared as parameter, for example, don't try to
     // create a binding for it again.
-    if (!varAlreadyDeclared)
-    {
+    if (!varAlreadyDeclared) {
       environmentRecord.createMutableBinding(name, configurableBinding);
       environmentRecord.setMutableBinding(name, TSUndefined.value);
     }
@@ -70,8 +61,7 @@ public final class TSLexicalEnvironment
    *  @param rawName parameter name as a Java string.
    *  @param value to bind the name to.
    */
-  public void declareParameter(final String rawName, TSValue value)
-  {
+  public void declareParameter(final String rawName, TSValue value) {
     final TSString name = TSString.create(rawName);
     final boolean varAlreadyDeclared = environmentRecord.hasBinding(name);
 
@@ -79,14 +69,11 @@ public final class TSLexicalEnvironment
     // but the spec says to do this so I will do the check.
     // Perhaps I am confused about something  here?
     // I will put in an assert for now.
-    if (!varAlreadyDeclared)
-    {
+    if (!varAlreadyDeclared) {
       // note: second parameter is always false meaning the binding
       // cannot be deleted
       environmentRecord.createMutableBinding(name, false);
-    }
-    else
-    {
+    } else {
       assert false : "binding already exists for parameter";
     }
     environmentRecord.setMutableBinding(name, value);
@@ -99,8 +86,7 @@ public final class TSLexicalEnvironment
    *  @param rawName function name as a Java string.
    *  @param value to bind the name to.
    */
-  public void declareFunctionName(final String rawName, TSValue value)
-  {
+  public void declareFunctionName(final String rawName, TSValue value) {
     final TSString name = TSString.create(rawName);
 
     // it must be a declarative environment
@@ -116,12 +102,7 @@ public final class TSLexicalEnvironment
    *
    *  @param outer the enclosing lexical environment
    */
-  public static TSLexicalEnvironment newDeclarativeEnvironment(
-    final TSLexicalEnvironment outer)
-  {
-    return new TSLexicalEnvironment(new TSDeclarativeEnvironmentRecord(),
-      outer);
+  public static TSLexicalEnvironment newDeclarativeEnvironment(final TSLexicalEnvironment outer) {
+    return new TSLexicalEnvironment(new TSDeclarativeEnvironmentRecord(), outer);
   }
-
 }
-

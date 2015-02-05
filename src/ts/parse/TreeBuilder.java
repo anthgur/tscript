@@ -9,8 +9,7 @@ import java.util.List;
 /**
  * Provides static methods for building AST nodes
  */
-public class TreeBuilder
-{
+public class TreeBuilder {
 
   /** Build a "var" statement.
    *
@@ -19,15 +18,13 @@ public class TreeBuilder
    */
   public static Statement buildVarDeclaration(final Location loc,
                                               final String name,
-                                              final Expression expression)
-  {
+                                              final Expression expression) {
     Message.log("TreeBuilder: VarDeclaration (" + name + ")");
     return new VarDeclaration(loc, name, expression);
   }
 
   public static Statement buildVarDeclaration(final Location loc,
-                                              final String name)
-  {
+                                              final String name) {
     Message.log("TreeBuilder: VarDeclaration (" + name + ")");
     return new VarDeclaration(loc, name, null);
   }
@@ -44,8 +41,7 @@ public class TreeBuilder
    *  @param  exp  expression subtree
    */
   public static Statement buildExpressionStatement(final Location loc,
-    final Expression exp)
-  {
+                                                   final Expression exp) {
     Message.log("TreeBuilder: ExpressionStatement");
     return new ExpressionStatement(loc, exp);
   }
@@ -59,16 +55,17 @@ public class TreeBuilder
       @see ts.tree.BinaryOpcode
    */
   public static Expression buildBinaryOperator(final Location loc,
-    final BinaryOpcode op,
-    final Expression left, final Expression right)
-  {
+                                               final BinaryOpcode op,
+                                               final Expression left,
+                                               final Expression right) {
     Message.log("TreeBuilder: Binop " + op.toString());
 
     return new BinaryOperator(loc, op, left, right);
   }
 
-  public static Expression buildUnaryOperator
-          (final Location loc, final UnaryOpcode op, final Expression expr) {
+  public static Expression buildUnaryOperator(final Location loc,
+                                              final UnaryOpcode op,
+                                              final Expression expr) {
     Message.log("TreeBuilder: Unop " + op.toString());
     return new UnaryOperator(loc, op, expr);
   }
@@ -79,8 +76,7 @@ public class TreeBuilder
    *  @param  name name of the identifier.
    */
   public static Expression buildIdentifier(final Location loc,
-    final String name)
-  {
+                                           final String name) {
     Message.log("TreeBuilder: Identifier (" + name + ")");
     return new Identifier(loc, name);
   }
@@ -92,39 +88,35 @@ public class TreeBuilder
    *  @param  value value of the literal as a String
    */
   public static Expression buildDecimalLiteral(final Location loc,
-    final String value)
-  {
+                                               final String value) {
     double d = 0.0;
 
-    try
-    {
+    try {
       d = Double.parseDouble(value);
-    }
-    catch(NumberFormatException nfe)
-    {
+    } catch(NumberFormatException nfe) {
       Message.bug(loc, "decimal literal not parsable");
     }
+
     Message.log("TreeBuilder: NumericLiteral " + d);
     return new NumericLiteral(loc, d);
   }
 
-  public static Expression buildHexIntegerLiteral
-          (final Location loc, final String value) {
+  public static Expression buildHexIntegerLiteral(final Location loc,
+                                                  final String value) {
     double d = 0.0;
 
-    try
-    {
+    try {
       d = Integer.parseInt(value.substring(2), 16);
     } catch (NumberFormatException e) {
       Message.bug(loc, "hex literal not parsable " + value);
     }
+
     Message.log("TreeBuilder: NumericLiteral " + d);
     return new NumericLiteral(loc, d);
   }
 
-  public static Expression buildBooleanLiteral
-          (final Location loc, final String value)
-  {
+  public static Expression buildBooleanLiteral(final Location loc,
+                                               final String value) {
     boolean b;
 
     if(value.equals("true")) {
@@ -135,15 +127,18 @@ public class TreeBuilder
       Message.bug(loc, "boolean literal not parsable");
       b = false;
     }
+
     return new BooleanLiteral(loc, b);
   }
 
   public static Expression buildStringLiteral(final Location loc,
                                               final String text) {
     String processed = text.substring(1, text.length() - 1);
+
     if (!processed.isEmpty()) {
       processed = processed.replace("\"", "\\\"");
     }
+
     return new StringLiteral(loc, processed);
   }
 
@@ -153,8 +148,7 @@ public class TreeBuilder
    *  @param  exp  expression subtree.
    */
   public static Statement buildPrintStatement(final Location loc,
-    final Expression exp)
-  {
+                                              final Expression exp) {
     Message.log("TreeBuilder: PrintStatement");
     return new PrintStatement(loc, exp);
   }
@@ -164,10 +158,8 @@ public class TreeBuilder
   //
 
   // helper function to detect "reference expected" errors
-  private static boolean producesReference(Node node)
-  {
-    if (node instanceof Identifier)
-    {
+  private static boolean producesReference(Node node) {
+    if (node instanceof Identifier) {
       return true;
     }
     return false;
@@ -178,12 +170,9 @@ public class TreeBuilder
    *  @param  loc  location in source code (file, line, column)
    *  @param  node tree to be checked
    */
-  public static void checkAssignmentDestination(Location loc, Node node)
-  {
-    if (!producesReference(node))
-    {
+  public static void checkAssignmentDestination(Location loc, Node node) {
+    if (!producesReference(node)) {
       Message.error(loc, "assignment destination must be a Reference");
     }
   }
-
 }

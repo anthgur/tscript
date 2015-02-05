@@ -12,38 +12,30 @@ package ts.support;
 final class TSBinding
 {
   private TSValue value;
-
   private final boolean isDeletable;
-
   private final boolean isImmutable;
 
-  TSBinding(final TSValue value, final boolean isDeletable,
-    final boolean isImmutable)
-  {
+  TSBinding(final TSValue value,
+            final boolean isDeletable,
+            final boolean isImmutable) {
     this.value = value;
     this.isDeletable = isDeletable;
     this.isImmutable = isImmutable;
   }
 
-  TSValue getValue()
-  {
+  TSValue getValue() {
     return value;
   }
 
-  void setValue(final TSValue value)
-  {
+  void setValue(final TSValue value) {
     this.value = value;
   }
 
-  boolean isDeletable()
-  {
+  boolean isDeletable() {
     return isDeletable;
   }
 
-  boolean isImmutable()
-  {
+  boolean isImmutable() {
     return isImmutable;
   }
 }
-
-

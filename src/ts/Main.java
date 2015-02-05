@@ -57,13 +57,11 @@ import java.util.*;
  *  The filename for the program to be translated should be given last
  *  on the command line, and should have a ".ts" extension.
  */
-public class Main
-{
+public class Main {
   /** Tracks compiler version. */
   public static final String version = "2.0";
 
-  private static String determineBaseFileName(String sourceFile)
-  {
+  private static String determineBaseFileName(String sourceFile) {
     // the following require Java 1.7
     Path path = Paths.get(sourceFile);
     String fileName = path.getFileName().toString();
@@ -73,15 +71,12 @@ public class Main
   // open an output file, when the output file name is based
   // upon the source file name
   private static PrintWriter openOutputFile(String outputClassName,
-    String fileExtension)
-  {
+                                            String fileExtension) {
     String outFile = outputClassName + fileExtension;
     Message.log("output file created: " + outFile);
     try {
       return new PrintWriter(outFile);
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       Message.fatal("problem creating " + outFile + "(" + e.toString() +
         ")");
       // fatal terminates program so this cannot be reached
@@ -90,8 +85,7 @@ public class Main
   }
 
   /** Execution starts here. */
-  public static void main(String[] args) throws IOException
-  {
+  public static void main(String[] args) throws IOException {
     String sourceFile = null;
     boolean doDumpAST = false;
     boolean doDumpJava = false;
@@ -106,40 +100,28 @@ public class Main
     //     -noexec to disable execution of the program
     //   after the options the source file name must be given
     //     source file name must end in ".ts"
-    for (String arg: args)
-    {
+    for (String arg: args) {
       // source file name must be given last
-      if (sourceFile != null)
-      {
+      if (sourceFile != null) {
         Message.usage();
       }
 
       // handle options, which can be given redundantly
-      if (arg.equals("-AST"))
-      {
+      if (arg.equals("-AST")) {
         doDumpAST = true;
-      }
-      else if (arg.equals("-java"))
-      {
+      } else if (arg.equals("-java")) {
         doDumpJava = true;
-      }
-      else if (arg.equals("-log"))
-      {
+      } else if (arg.equals("-log")) {
         Message.enableLogging();
-      }
-      else if (arg.equals("-noexec"))
-      {
+      } else if (arg.equals("-noexec")) {
         doExec = false;
-      }
-      // if not a valid option then it is assumed to be the source file name
-      else
-      {
-        sourceFile = arg;
+      } else {
+        // if not a valid option then it is assumed to be the source file name
+         sourceFile = arg;
       }
     }
     // source file name must be given and it must end with ".ts"
-    if (sourceFile == null || !sourceFile.endsWith(".ts"))
-    {
+    if (sourceFile == null || !sourceFile.endsWith(".ts")) {
       Message.usage();
     }
     Message.log(sourceFile + ": doDumpAST is " + doDumpAST);
@@ -150,9 +132,7 @@ public class Main
     // open the source file
     try {
       reader = new ANTLRFileStream(sourceFile);
-    }
-    catch (Exception e)
-    {
+    } catch (Exception e) {
       Message.fatal("problem opening " + sourceFile + "(" + e.toString() + ")");
     }
 
@@ -173,9 +153,7 @@ public class Main
     //   note: the method name is the name of the start symbol in the grammar
     try {
       parser.program();
-    }
-    catch (ParseCancellationException pce)
-    {
+    } catch (ParseCancellationException pce) {
       // underlying recognition exception is wrapped in the
       // parse cancellation exception that is thrown by the
       // bail error strategy. Use getCause inherited from
@@ -196,8 +174,7 @@ public class Main
 
     // count the number of statements
     int count = 0;
-    for (Object item : root)
-    {
+    for (Object item : root) {
       assert (item instanceof Statement) :
         "non-statement in statement list at root of AST";
       count += 1;
@@ -205,8 +182,7 @@ public class Main
     Message.log(String.format("%d statements at parse tree root", count));
 
     // if requested, dump the AST
-    if (doDumpAST)
-    {
+    if (doDumpAST) {
       // determine dump file name (file.ts --> file.html)
       //   note that the dump file will be written in the current directory
       PrintWriter dumper = openOutputFile(baseFileName, ".html");
@@ -218,8 +194,7 @@ public class Main
       dumper.println("<pre>");
       dumper.println("Program");
       TreeDump treeDump = new TreeDump(dumper, 2, 2);
-      for (Object item : root)
-      {
+      for (Object item : root) {
         Tree t = (Tree) item;
         t.apply(treeDump);
       }
@@ -228,14 +203,12 @@ public class Main
     }
 
     // if semantic errors detected, cannot continue to code generation
-    if (Message.getErrorCount() != 0)
-    {
+    if (Message.getErrorCount() != 0) {
       Message.fatal("code generation skipped due to semantic errors");
     }
 
     // if no need to generate code then quit
-    if (!doDumpJava && !doExec)
-    {
+    if (!doDumpJava && !doExec) {
       return;
     }
 
@@ -243,8 +216,7 @@ public class Main
     Encode genCode = new Encode();
     String mainCodeString = "";
     mainCodeString += genCode.mainPrologue(sourceFile);
-    for (Object item : root)
-    {
+    for (Object item : root) {
       Tree t = (Tree) item;
       Encode.ReturnValue returnValue = t.apply(genCode);
       mainCodeString += returnValue.code;
@@ -252,8 +224,7 @@ public class Main
     mainCodeString += genCode.mainEpilogue();
 
     // if requested, output the generated code
-    if (doDumpJava)
-    {
+    if (doDumpJava) {
       // determine Java file name (file.ts --> file.java)
       //   note that the Java file will be written in the current directory
       PrintWriter outputJava = openOutputFile(baseFileName, ".java");
@@ -267,8 +238,7 @@ public class Main
     }
 
     // if requested, create a class file for the generated code and execute it
-    if (doExec)
-    {
+    if (doExec) {
       // create an empty class in the default class pool
       ClassPool pool = ClassPool.getDefault();
       pool.importPackage("ts.Message");

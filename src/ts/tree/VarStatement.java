@@ -8,8 +8,7 @@ import java.util.List;
 public class VarStatement extends Statement {
     List<Statement> varDeclList;
 
-    public VarStatement(final Location loc, final List<Statement> varDeclList)
-    {
+    public VarStatement(final Location loc, final List<Statement> varDeclList) {
         super(loc);
         this.varDeclList = varDeclList;
     }
@@ -18,9 +17,7 @@ public class VarStatement extends Statement {
         return varDeclList;
     }
 
-    public <T> T apply(TreeVisitor<T> visitor)
-    {
+    public <T> T apply(TreeVisitor<T> visitor) {
         return visitor.visit(this);
     }
-
 }

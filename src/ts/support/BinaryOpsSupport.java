@@ -8,7 +8,7 @@ import ts.tree.BinaryOpcode;
  * http://www.ecma-international.org/ecma-262/5.1/#sec-11.5
  */
 public final class BinaryOpsSupport {
-    private static final String eqLogFmt =
+    private static final String EQ_LOG_FMT =
             "Equality comparision:\n\tlhs: %s rhs: %s\n\tlhsType: %s rhsType: %s";
 
     public static TSValue add(TSValue lhs, TSValue rhs) {
@@ -79,7 +79,7 @@ public final class BinaryOpsSupport {
         lhsType = lhs.getClass();
         rhsType = rhs.getClass();
 
-        Message.log(String.format(eqLogFmt, lhs, rhs, lhsType, rhsType));
+        Message.log(String.format(EQ_LOG_FMT, lhs, rhs, lhsType, rhsType));
 
         // clause 1
         if(lhsType == rhsType) {

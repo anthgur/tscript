@@ -12,29 +12,24 @@ import java.util.ArrayList;
  * <p>
  * The "visit" method is overloaded for every tree node type.
  */
-public class TreeVisitorBase<T> implements TreeVisitor<T>
-{
+public class TreeVisitorBase<T> implements TreeVisitor<T> {
   // override to add pre- and/or post-processing
-  protected T visitNode(final Tree node)
-  {
+  protected T visitNode(final Tree node) {
     return node.apply(this);
   }
 
   // visit a list of ASTs and return list of results
   // use wildcard to allow general use, with list of Statements, list
   //   of Expressions, etc
-  protected List<T> visitEach(final Iterable<?> nodes)
-  {
+  protected List<T> visitEach(final Iterable<?> nodes) {
     final List<T> visited = new ArrayList<T>();
-    for (final Object node : nodes)
-    {
+    for (final Object node : nodes) {
       visited.add(visitNode((Tree) node));
     }
     return visited;
   }
   
-  public T visit(final BinaryOperator binaryOperator)
-  {
+  public T visit(final BinaryOperator binaryOperator) {
     visitNode(binaryOperator.getLeft());
     visitNode(binaryOperator.getRight());
     return null;
@@ -45,24 +40,20 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
-  public T visit(final ExpressionStatement expressionStatement)
-  {
+  public T visit(final ExpressionStatement expressionStatement) {
     visitNode(expressionStatement.getExp());
     return null;
   }
 
-  public T visit(final Identifier identifier)
-  {
+  public T visit(final Identifier identifier) {
     return null;
   }
 
-  public T visit(final NumericLiteral numericLiteral)
-  {
+  public T visit(final NumericLiteral numericLiteral) {
     return null;
   }
 
-  public T visit(final StringLiteral stringLiteral)
-  {
+  public T visit(final StringLiteral stringLiteral) {
     return null;
   }
 
@@ -81,8 +72,7 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 
-  public T visit(final VarDeclaration varDeclaration)
-  {
+  public T visit(final VarDeclaration varDeclaration) {
     return null;
   }
 
@@ -90,4 +80,3 @@ public class TreeVisitorBase<T> implements TreeVisitor<T>
     return null;
   }
 }
-

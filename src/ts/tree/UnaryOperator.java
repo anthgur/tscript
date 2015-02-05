@@ -8,7 +8,8 @@ public class UnaryOperator extends Expression {
     private Expression expr;
 
     public UnaryOperator(final Location loc,
-                         final UnaryOpcode op, final Expression expr) {
+                         final UnaryOpcode op,
+                         final Expression expr) {
         super(loc);
         this.op = op;
         this.expr = expr;

@@ -8,13 +8,11 @@ import ts.Message;
  * 8.7</a>).
  *
  */
-final class TSEnvironmentReference extends TSReference
-{
+final class TSEnvironmentReference extends TSReference {
   private TSEnvironmentRecord base;
 
   /** Create a Reference for a name in an environment. */
-  TSEnvironmentReference(final TSString name, final TSEnvironmentRecord base)
-  {
+  TSEnvironmentReference(final TSString name, final TSEnvironmentRecord base) {
     super(name);
     this.base = base;
   }
@@ -22,8 +20,7 @@ final class TSEnvironmentReference extends TSReference
   /** Is the reference not resolvable? That is, is the name not defined
    *  in the environment?
    */
-  boolean isUnresolvableReference()
-  {
+  boolean isUnresolvableReference() {
     // base is always defined for environment reference
     // TODO: well it should be. but we don't support property references yet.
     //       so right now the base is null if the identifier is not defined.
@@ -36,8 +33,7 @@ final class TSEnvironmentReference extends TSReference
   /** Environment references cannot be property references so this always
    *  returns false.
    */
-  boolean isPropertyReference()
-  {
+  boolean isPropertyReference() {
     return false;
   }
 
@@ -50,10 +46,8 @@ final class TSEnvironmentReference extends TSReference
   /** Get the value from the Reference. Issues an error and
    *  returns null if the name is not defined.
    */
-  public TSValue getValue()
-  {
-    if (base == null)
-    {
+  public TSValue getValue() {
+    if (base == null) {
       Message.executionError("undefined identifier: " +
         this.getReferencedName().unbox());
     }
@@ -61,16 +55,11 @@ final class TSEnvironmentReference extends TSReference
   }
 
   /** Assign a value to the name specified by the Reference. */
-  public void putValue(final TSValue value)
-  {
-    if (base == null)
-    {
+  public void putValue(final TSValue value) {
+    if (base == null) {
       Message.executionError("undefined identifier: " +
         this.getReferencedName().unbox());
     }
     base.setMutableBinding(this.getReferencedName(), value);
-    return;
   }
-
 }
-

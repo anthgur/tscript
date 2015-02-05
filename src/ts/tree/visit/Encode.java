@@ -24,8 +24,7 @@ import java.util.List;
  * <p>
  * The "visit" method is overloaded for each tree node type.
  */
-public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
-{
+public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   /**
    * Static nested class to represent the return value of the Encode methods.
    * <p>
@@ -38,29 +37,25 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
    * Only expressions generate results, so the result operand name
    * will be null in other cases, such as statements.
    */
-  static public class ReturnValue
-  {
+  static public class ReturnValue {
     public String result;
 
     public String code;
 
     // initialize both fields
-    private ReturnValue()
-    {
+    private ReturnValue() {
       result = null;
       code = null;
     }
 
     // for non-expressions
-    public ReturnValue(final String code)
-    {
+    public ReturnValue(final String code) {
       this();
       this.code = code;
     }
 
     // for most expressions
-    public ReturnValue(final String result, final String code)
-    {
+    public ReturnValue(final String result, final String code) {
       this();
       this.result = result;
       this.code = code;
@@ -72,8 +67,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
 
   // by default start output indented 2 spaces and increment
   // indentation by 2 spaces
-  public Encode()
-  {
+  public Encode() {
     this(2, 2);
   }
 
@@ -88,19 +82,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   private final int increment;
 
   // increase indentation by one level
-  private void increaseIndentation()
-  {
+  private void increaseIndentation() {
     indentation += increment;
   }
 
   // decrease indentation by one level
-  private void decreaseIndentation()
-  {
+  private void decreaseIndentation() {
     indentation -= increment;
   }
 
-  public Encode(final int initialIndentation, final int increment)
-  {
+  public Encode(final int initialIndentation, final int increment) {
     // setup indentation
     this.initialIndentation = initialIndentation;
     this.indentation = initialIndentation;
@@ -108,25 +99,21 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   }
 
   // generate a string of spaces for current indentation level
-  private String indent()
-  {
+  private String indent() {
     String ret = "";
-    for (int i = 0; i < indentation; i++)
-    {
+    for (int i = 0; i < indentation; i++) {
       ret += " ";
     }
     return ret;
   }
 
   // generate main method signature
-  public String mainMethodSignature()
-  {
+  public String mainMethodSignature() {
     return "public static void main(String args[])";
   }
 
   // generate and return prologue code for the main method body
-  public String mainPrologue(String filename)
-  {
+  public String mainPrologue(String filename) {
     String ret = "";
     ret += indent() + "{\n";
     increaseIndentation();
@@ -137,8 +124,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   }
 
   // generate and return epilogue code for main method body
-  public String mainEpilogue()
-  {
+  public String mainEpilogue() {
     decreaseIndentation();
     String ret = "";
     ret += indent() + "}";
@@ -146,8 +132,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   }
 
   // return string for name of next expression temp
-  private String getTemp()
-  {
+  private String getTemp() {
     String ret = "temp" + nextTemp;
     nextTemp += 1;
     return ret;
@@ -155,20 +140,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
 
   // visit a list of ASTs and generate code for each of them in order
   // use wildcard for generality: list of Statements, list of Expressions, etc
-  public List<Encode.ReturnValue> visitEach(final Iterable<?> nodes)
-  {
+  public List<Encode.ReturnValue> visitEach(final Iterable<?> nodes) {
     List<Encode.ReturnValue> ret = new ArrayList<Encode.ReturnValue>();
 
-    for (final Object node : nodes)
-    {
+    for (final Object node : nodes) {
       ret.add(visitNode((Tree) node));
     }
     return ret;
   }
   
   // gen and return code for a binary operator
-  public Encode.ReturnValue visit(final BinaryOperator opNode)
-  {
+  public Encode.ReturnValue visit(final BinaryOperator opNode) {
     String result = getTemp();
 
     Encode.ReturnValue leftReturnValue = visitNode(opNode.getLeft());
@@ -195,9 +177,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
   }
 
   // process an expression statement
-  public Encode.ReturnValue visit(final ExpressionStatement
-    expressionStatement)
-  {
+  public Encode.ReturnValue visit(final ExpressionStatement expressionStatement) {
     Encode.ReturnValue exp = visitNode(expressionStatement.getExp());
     String code = indent() + "Message.setLineNumber(" +
       expressionStatement.getLineNumber() + ");\n";
@@ -205,8 +185,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(code);
   }
 
-  public Encode.ReturnValue visit(final Identifier identifier)
-  {
+  public Encode.ReturnValue visit(final Identifier identifier) {
     String result = getTemp();
     String code = indent() + "TSValue " + result +
       " = " + "lexEnviron" +
@@ -223,8 +202,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(result, code);
   }
 
-  public Encode.ReturnValue visit(final NumericLiteral numericLiteral)
-  {
+  public Encode.ReturnValue visit(final NumericLiteral numericLiteral) {
     String result = getTemp();
     String code = indent() + "TSValue " + result + " = " + "TSNumber.create" +
       "(" + numericLiteral.getValue() + ");\n";
@@ -232,8 +210,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(result, code);
   }
 
-  public Encode.ReturnValue visit(final BooleanLiteral booleanLiteral)
-  {
+  public Encode.ReturnValue visit(final BooleanLiteral booleanLiteral) {
     String result = getTemp();
     String code = indent() + "TSValue " + result + " = " + "TSBoolean.create" +
             "(" + booleanLiteral.getValue() + ");\n";
@@ -246,8 +223,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(result, code);
   }
 
-  public Encode.ReturnValue visit(final PrintStatement printStatement)
-  {
+  public Encode.ReturnValue visit(final PrintStatement printStatement) {
     Encode.ReturnValue exp = visitNode(printStatement.getExp());
     String code = indent() + "Message.setLineNumber(" +
       printStatement.getLineNumber() + ");\n";
@@ -257,8 +233,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(code);
   }
 
-  public Encode.ReturnValue visit(final VarDeclaration varDeclaration)
-  {
+  public Encode.ReturnValue visit(final VarDeclaration varDeclaration) {
     String varName = "TSString.create(\"" + varDeclaration.getName() + "\")";
 
     String code = indent() + "Message.setLineNumber(" +
@@ -289,4 +264,3 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue>
     return new Encode.ReturnValue(codeAcc.toString());
   }
 }
-

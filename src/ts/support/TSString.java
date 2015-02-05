@@ -1,4 +1,3 @@
-
 package ts.support;
 
 /**
@@ -9,49 +8,40 @@ package ts.support;
  * This class only currently allows String values to be created and does
  * not yet support operations on them.
  */
-public final class TSString extends TSPrimitive
-{
-
+public final class TSString extends TSPrimitive {
   private final String value;
 
   // use the "create" method instead
-  private TSString(final String value)
-  {
+  private TSString(final String value) {
     this.value = value;
   }
 
   /** Get the value of the String. */
-  public String unbox()
-  {
+  public String unbox() {
     return value;
   }
 
   /** Overrides Object.abstractEquals because TSString used as key for Map */
-  public boolean equals(Object anObject)
-  {
-    if (anObject instanceof TSString)
-    {
+  public boolean equals(Object anObject) {
+    if (anObject instanceof TSString) {
       return value.equals(((TSString) anObject).unbox());
     }
     return false;
   }
 
   /** Need to override Object.hashcode() when overriding Object.abstractEquals() */
-  public int hashCode()
-  {
+  public int hashCode() {
     return value.hashCode();
   }
 
   /** Create a Tscript String from a Java String. */
-  public static TSString create(final String value)
-  {
+  public static TSString create(final String value) {
     // could use hashmap to screen for common strings?
     return new TSString(value);
   }
 
   /** Convert String to Number. Not yet Implemented. */
-  public TSNumber toNumber()
-  {
+  public TSNumber toNumber() {
     assert false : "not implemented";
     return null;
   }
@@ -65,9 +55,7 @@ public final class TSString extends TSPrimitive
   }
 
   /** Override in TSValue */
-  public TSString toStr()
-  {
+  public TSString toStr() {
     return this;
   }
 }
-

@@ -10,8 +10,7 @@ public class BooleanLiteral extends Expression {
         return value;
     }
 
-    public BooleanLiteral(final Location loc, final boolean value)
-    {
+    public BooleanLiteral(final Location loc, final boolean value) {
         super(loc);
         this.value = value;
     }

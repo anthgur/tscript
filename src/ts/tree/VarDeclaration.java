@@ -8,20 +8,19 @@ import ts.tree.visit.TreeVisitor;
  * AST var statement node
  *
  */
-public final class VarDeclaration extends Statement
-{
+public final class VarDeclaration extends Statement {
   private String name;
   private Expression expression;
 
-  public VarDeclaration(final Location loc, final String name, final Expression expr)
-  {
+  public VarDeclaration(final Location loc,
+                        final String name,
+                        final Expression expr) {
     super(loc);
     this.name = name;
     this.expression = expr;
   }
 
-  public String getName()
-  {
+  public String getName() {
     return name;
   }
 
@@ -29,8 +28,7 @@ public final class VarDeclaration extends Statement
     return expression;
   }
 
-  public <T> T apply(TreeVisitor<T> visitor)
-  {
+  public <T> T apply(TreeVisitor<T> visitor) {
     return visitor.visit(this);
   }
 }

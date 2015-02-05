@@ -8,45 +8,37 @@ import ts.tree.visit.TreeVisitor;
  * AST binary operator node
  *
  */
-public class BinaryOperator extends Expression
-{
+public class BinaryOperator extends Expression {
   private BinaryOpcode op;
   private Expression left;
   private Expression right;
 
   public BinaryOperator(final Location loc, final BinaryOpcode op,
-     final Expression left, final Expression right)
-  {
+                        final Expression left, final Expression right) {
     super(loc);
     this.op = op;
     this.left = left;
     this.right = right;
   }
 
-  public BinaryOpcode getOp()
-  {
+  public BinaryOpcode getOp() {
     return op;
   }
 
   /** Convert operator kind to (Java) String for displaying. */
-  public String getOpString()
-  {
+  public String getOpString() {
     return op.toString();
   }
 
-  public Expression getLeft()
-  {
+  public Expression getLeft() {
     return left;
   }
 
-  public Expression getRight()
-  {
+  public Expression getRight() {
     return right;
   }
 
-  public <T> T apply(TreeVisitor<T> visitor)
-  {
+  public <T> T apply(TreeVisitor<T> visitor) {
     return visitor.visit(this);
   }
 }
-

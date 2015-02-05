@@ -11,10 +11,12 @@ import java.util.List;
  */
 public class TreeBuilder {
 
-  /** Build a "var" statement.
-   *
-   *  @param  loc  location in source code (file, line, column)
-   *  @param  name name of variable being declared.
+  /**
+   * Builds a var declaration node
+   * @param loc Location in the source code
+   * @param name Name of the var
+   * @param expression The expression to be assigned to the new var
+   * @return AST node capturing the semantics of var declaration
    */
   public static Statement buildVarDeclaration(final Location loc,
                                               final String name,
@@ -23,22 +25,33 @@ public class TreeBuilder {
     return new VarDeclaration(loc, name, expression);
   }
 
+  /**
+   * Overloaded to auto-null the expression
+   * @param loc Location in the source code
+   * @param name Name of the var
+   * @return AST node capturing the semantics of var declaration
+   */
   public static Statement buildVarDeclaration(final Location loc,
                                               final String name) {
-    Message.log("TreeBuilder: VarDeclaration (" + name + ")");
-    return new VarDeclaration(loc, name, null);
+    return buildVarDeclaration(loc, name, null);
   }
 
+  /**
+   * Builds a var statement out of a declaration list
+   * @param loc Location in the source code
+   * @param varDeclList {@code List} representing var declarations
+   * @return AST node capturing the semantics of var statements
+   */
   public static Statement buildVarStatement(final Location loc,
                                             final List<Statement> varDeclList) {
     Message.log("TreeBuilder: VarStatement");
     return new VarStatement(loc, varDeclList);
   }
 
-  /** Build a expression statement.
-   *
-   *  @param  loc  location in source code (file, line, column)
-   *  @param  exp  expression subtree
+  /**
+   * Build a expression statement.
+   * @param  loc  location in source code (file, line, column)
+   * @param  exp  expression subtree
    */
   public static Statement buildExpressionStatement(final Location loc,
                                                    final Expression exp) {
@@ -46,13 +59,13 @@ public class TreeBuilder {
     return new ExpressionStatement(loc, exp);
   }
 
-  /** Build a binary operator.
-   *
-   *  @param  loc   location in source code (file, line, column)
-   *  @param  op    the binary operator
-   *  @param  left  the left subtree
-   *  @param  right the right subtree
-      @see ts.tree.BinaryOpcode
+  /**
+   * Build a binary operator
+   * @param  loc   location in source code (file, line, column)
+   * @param  op    the binary operator
+   * @param  left  the left subtree
+   * @param  right the right subtree
+   * @see ts.tree.BinaryOpcode
    */
   public static Expression buildBinaryOperator(final Location loc,
                                                final BinaryOpcode op,
@@ -63,6 +76,13 @@ public class TreeBuilder {
     return new BinaryOperator(loc, op, left, right);
   }
 
+  /**
+   * Builds a unary operator
+   * @param loc Location in the source code
+   * @param op The unary operator
+   * @param expr The subtree for the operator
+   * @return
+   */
   public static Expression buildUnaryOperator(final Location loc,
                                               final UnaryOpcode op,
                                               final Expression expr) {

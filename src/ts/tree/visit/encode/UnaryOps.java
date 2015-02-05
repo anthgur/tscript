@@ -4,7 +4,16 @@ import ts.tree.UnaryOpcode;
 import ts.tree.UnaryOperator;
 import ts.tree.visit.Encode;
 
+/**
+ * Support for encoding unary operators
+ */
 public class UnaryOps {
+    /**
+     * Encodes a unary operator to Java
+     * @param opNode The AST node to encode
+     * @param rhs The result of the right hand side of the operator
+     * @return A {@code String} of Java code that captures the semantics of the operator
+     */
     public static String encode(UnaryOperator opNode, Encode.ReturnValue rhs) {
         final UnaryOpcode opcode = opNode.getOp();
         String operator = null;
@@ -21,6 +30,8 @@ public class UnaryOps {
             default:
                 assert false: "unexpected unary operator: " + opNode.getOpString();
         }
+
+        // All unary operators call GetValue() before evaluation
         return "UnaryOpsSupport." + operator + "(" + rhs.result + ".getValue());\n";
     }
 }

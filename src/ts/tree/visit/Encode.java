@@ -161,6 +161,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     code += indent() + "TSValue " + result + " = " +
             BinaryOps.encode(opNode, leftReturnValue, rightReturnValue);
+
     return new Encode.ReturnValue(result, code);
   }
 
@@ -173,6 +174,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     code += indent() + "TSValue " + result + " = "
             + UnaryOps.encode(opNode, exprReturn);
+
     return new Encode.ReturnValue(result, code);
   }
 
@@ -182,6 +184,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "Message.setLineNumber(" +
       expressionStatement.getLineNumber() + ");\n";
     code += exp.code;
+
     return new Encode.ReturnValue(code);
   }
 
@@ -199,6 +202,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String result = getTemp();
     String code = indent() + "TSValue " + result + " = " + "TSString.create" +
             "(\"" + stringLiteral.getValue() + "\");\n";
+
     return new Encode.ReturnValue(result, code);
   }
 

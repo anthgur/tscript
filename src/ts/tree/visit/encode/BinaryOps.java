@@ -3,7 +3,17 @@ package ts.tree.visit.encode;
 import ts.tree.*;
 import ts.tree.visit.Encode;
 
+/**
+ * Support for encoding binary operators
+ */
 public class BinaryOps {
+    /**
+     * Encodes a binary operator to Java
+     * @param opNode The AST node to encode
+     * @param lhs The result of the left hand side of the operator
+     * @param rhs The result of the right hand side of the operator
+     * @return A {@code String} of Java code that captures the semantics of the operator
+     */
     public static String encode(final BinaryOperator opNode,
                                 final Encode.ReturnValue lhs,
                                 final Encode.ReturnValue rhs) {
@@ -37,6 +47,8 @@ public class BinaryOps {
             default:
                 assert false: "unexpected binary operator: " + opNode.getOpString();
         }
+
+        // Multiplicative and additive operators both specify GetValue() before evaluation
         return "BinaryOpsSupport." + operator + "("
                 + lhs.result + ".getValue(),"
                 + rhs.result + ".getValue());\n";

@@ -81,7 +81,6 @@ public class TreeBuilder {
    * @param loc Location in the source code
    * @param op The unary operator
    * @param expr The subtree for the operator
-   * @return
    */
   public static Expression buildUnaryOperator(final Location loc,
                                               final UnaryOpcode op,

@@ -50,17 +50,7 @@ public final class BinaryOpsSupport {
         lhsDbl = lhs.toNumber().unbox();
         rhsDbl = rhs.toNumber().unbox();
 
-        /*
-        if(Double.isNaN(lhsDbl) || Double.isNaN(rhsDbl)) {
-            return TSNumber.create(Double.NaN);
-        }
-        */
         return TSNumber.create(lhsDbl / rhsDbl);
-    }
-
-    public static TSNumber modulo(final TSValue lhs, final TSValue rhs) {
-        assert false : "modulo not implemented";
-        return null;
     }
 
     public static TSBoolean lessThan(final TSValue lhs, final TSValue rhs) {
@@ -94,9 +84,7 @@ public final class BinaryOpsSupport {
 
                 if (Double.isNaN(lhsDbl) || Double.isNaN(rhsDbl)){
                     return TSBoolean.falseValue;
-                } else if ((lhsDbl == rhsDbl) ||
-                        (lhsDbl == -0.0 && rhsDbl == +0.0) ||
-                        (lhsDbl == +0.0 && rhsDbl == -0.0)) {
+                } else if (lhsDbl == rhsDbl) {
                     return TSBoolean.trueValue;
                 } else {
                     return TSBoolean.falseValue;
@@ -162,10 +150,9 @@ public final class BinaryOpsSupport {
                 return null;
         }
 
-        // assume TSBoolean in false branch else I suck as a programmer
         return result.getClass() == TSUndefined.class
                 ? TSBoolean.falseValue
-                : (TSBoolean) result;
+                : result.toBoolean();
     }
 
     // abstract relational comparison algorithm

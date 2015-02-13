@@ -78,10 +78,10 @@ variableDeclaration
   returns [ Statement lval ]
   : IDENTIFIER
     { $lval = buildVarDeclaration(loc($start),
-                      $IDENTIFIER.text); }
+                $IDENTIFIER.text); }
   | IDENTIFIER i=initializer
     { $lval = buildVarDeclaration(loc($start),
-                     $IDENTIFIER.text, $i.lval); }
+                $IDENTIFIER.text, $i.lval); }
   ;
 
 initializer

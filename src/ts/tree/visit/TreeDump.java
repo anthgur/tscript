@@ -103,6 +103,12 @@ public final class TreeDump extends TreeVisitorBase<Object> {
     return null;
   }
 
+  public Object visit(StringLiteral stringLiteral) {
+    indent();
+    writer.println("StringLiteral " + stringLiteral.getValue());
+    return null;
+  }
+
   @Override
   public Object visit(NullLiteral nullLiteral) {
     indent();
@@ -121,7 +127,23 @@ public final class TreeDump extends TreeVisitorBase<Object> {
 
   public Object visit(final VarDeclaration varDeclaration) {
     indent();
-    writer.println("Var " + varDeclaration.getName());
+    writer.println("VarDeclaration " + varDeclaration.getName());
+    final Expression e = varDeclaration.getExpression();
+    if (e != null) {
+      indent();
+      indent();
+      visitNode(e);
+    }
+    return null;
+  }
+
+  public Object visit(final VarStatement varStatement) {
+    indent();
+    writer.println("VarStatement");
+    for (Statement v : varStatement.getVarDeclList()) {
+      indent();
+      visitNode(v);
+    }
     return null;
   }
 }

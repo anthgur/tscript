@@ -49,6 +49,10 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
     return null;
   }
 
+  public T visit(final BlockStatement blockStatement) {
+    return null;
+  }
+
   public T visit(final NumericLiteral numericLiteral) {
     return null;
   }

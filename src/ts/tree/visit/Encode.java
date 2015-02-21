@@ -260,11 +260,21 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final VarStatement varStatement) {
-    StringBuilder codeAcc = new StringBuilder();
+    StringBuilder codeBuilder = new StringBuilder();
     for (Encode.ReturnValue r :
             visitEach(varStatement.getVarDeclList())) {
-      codeAcc.append(r.code);
+      codeBuilder.append(r.code);
     }
-    return new Encode.ReturnValue(codeAcc.toString());
+    return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final BlockStatement blockStatement) {
+    StringBuilder codeBuilder = new StringBuilder("{");
+    for(Encode.ReturnValue rv :
+            visitEach(blockStatement.getStatementList())) {
+      codeBuilder.append(rv.code);
+    }
+    codeBuilder.append("}");
+    return new Encode.ReturnValue(codeBuilder.toString());
   }
 }

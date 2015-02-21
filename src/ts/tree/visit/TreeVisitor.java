@@ -12,6 +12,8 @@ public interface TreeVisitor<T>
 {
   T visit(BinaryOperator binaryOperator);
 
+  T visit(BlockStatement blockStatement);
+
   T visit(UnaryOperator unaryOperator);
 
   T visit(ExpressionStatement expressionStatement);

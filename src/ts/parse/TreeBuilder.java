@@ -4,6 +4,7 @@ import ts.Location;
 import ts.Message;
 import ts.tree.*;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.List;
 
 /**
@@ -87,6 +88,12 @@ public class TreeBuilder {
                                               final Expression expr) {
     Message.log("TreeBuilder: Unop " + op.toString());
     return new UnaryOperator(loc, op, expr);
+  }
+
+  public static Statement buildBlockStatement(final Location loc,
+                                              final List<Statement> statementList) {
+    Message.log("Treebuilder: BlockStatement");
+    return new BlockStatement(loc, statementList);
   }
 
   /** Build a identifier expression.

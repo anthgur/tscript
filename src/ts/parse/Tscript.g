@@ -56,6 +56,14 @@ statement
     { $lval = $e.lval; }
   | p=printStatement
     { $lval = $p.lval; }
+  | b=blockStatement
+    { $lval = $b.lval; }
+  ;
+
+blockStatement
+  returns [ Statement lval ]
+  : LCURLY sl=statementList RCURLY
+    { $lval = buildBlockStatement(loc($start), $sl.lval); }
   ;
 
 varStatement
@@ -314,6 +322,8 @@ STRING_LITERAL
   | '\'' SINGLE_STRING_CHARS '\''
   ;
 
+LCURLY : [{];
+RCURLY : [}];
 LPAREN : [(];
 RPAREN : [)];
 SEMICOLON : [;];

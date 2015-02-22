@@ -96,6 +96,13 @@ public class TreeBuilder {
     return new BlockStatement(loc, statementList);
   }
 
+  public static Statement buildWhileStatement(final Location loc,
+                                              final Expression expr,
+                                              final Statement stat) {
+    Message.log("TreeBuilder: WhileStatement");
+    return new WhileStatement(loc, expr, stat);
+  }
+
   /** Build a identifier expression.
    *
    *  @param  loc  location in source code (file, line, column)

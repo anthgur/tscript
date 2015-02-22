@@ -56,10 +56,18 @@ statement
     { $lval = $e.lval; }
   | p=printStatement
     { $lval = $p.lval; }
+  | i=iterationStatement
+    { $lval = $i.lval; }
   | b=blockStatement
     { $lval = $b.lval; }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
+  ;
+
+iterationStatement
+  returns [ Statement lval ]
+  : WHILE LPAREN e=expression RPAREN s=statement
+    { $lval = buildWhileStatement(loc($start), $e.lval, $s.lval); }
   ;
 
 blockStatement
@@ -343,6 +351,7 @@ FSLASH : [//];
 // keywords start here
 PRINT : 'print';
 VAR : 'var';
+WHILE : 'while';
 
 IDENTIFIER : IdentifierCharacters;
 

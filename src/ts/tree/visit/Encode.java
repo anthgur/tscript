@@ -283,4 +283,19 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final EmptyStatement emptyStatement) {
     return new Encode.ReturnValue(indent() + ";// EmptyStatement\n");
   }
+
+  public Encode.ReturnValue visit(final WhileStatement whileStatement) {
+    Encode.ReturnValue expression = visitNode(whileStatement.getExpression());
+    Encode.ReturnValue statement = visitNode(whileStatement.getStatement());
+    StringBuilder codeBuilder = new StringBuilder(expression.code);
+    codeBuilder.append("while(true) {\n");
+    codeBuilder.append(expression.code);
+    codeBuilder.append(indent());
+    codeBuilder.append("if(!");
+    codeBuilder.append(expression.result);
+    codeBuilder.append(".getValue().toBoolean().unbox()) break;\n");
+    codeBuilder.append(statement.code);
+    codeBuilder.append("}\n");
+    return new Encode.ReturnValue(codeBuilder.toString());
+  }
 }

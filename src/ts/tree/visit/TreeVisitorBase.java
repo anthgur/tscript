@@ -53,6 +53,10 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
     return null;
   }
 
+  public T visit(final WhileStatement whileStatement) {
+    return null;
+  }
+
   public T visit(final NumericLiteral numericLiteral) {
     return null;
   }

@@ -76,6 +76,10 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
     return null;
   }
 
+  public T visit(final EmptyStatement emptyStatement) {
+    return null;
+  }
+
   public T visit(final VarDeclaration varDeclaration) {
     return null;
   }

@@ -33,5 +33,7 @@ public interface TreeVisitor<T>
   T visit(VarDeclaration varDeclaration);
 
   T visit(VarStatement varStatement);
+
+  T visit(EmptyStatement emptyStatement);
 }
 

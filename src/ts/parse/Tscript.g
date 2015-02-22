@@ -58,6 +58,8 @@ statement
     { $lval = $p.lval; }
   | b=blockStatement
     { $lval = $b.lval; }
+  | SEMICOLON
+    { $lval = new EmptyStatement(loc($start)); }
   ;
 
 blockStatement

@@ -269,12 +269,18 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final BlockStatement blockStatement) {
-    StringBuilder codeBuilder = new StringBuilder("{");
+    StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("{\n");
     for(Encode.ReturnValue rv :
             visitEach(blockStatement.getStatementList())) {
+      codeBuilder.append(indent());
       codeBuilder.append(rv.code);
     }
-    codeBuilder.append("}");
+    codeBuilder.append("}\n");
     return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final EmptyStatement emptyStatement) {
+    return new Encode.ReturnValue(indent() + ";// EmptyStatement\n");
   }
 }

@@ -58,10 +58,20 @@ statement
     { $lval = $p.lval; }
   | i=iterationStatement
     { $lval = $i.lval; }
+  | l=ifStatement
+    { $lval = $l.lval; }
   | b=blockStatement
     { $lval = $b.lval; }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
+  ;
+
+ifStatement
+  returns [ Statement lval ]
+  : IF LPAREN e=expression RPAREN s1=statement ELSE s2=statement
+    { $lval = buildIfStatement(loc($start), $e.lval, $s1.lval, $s2.lval); }
+  | IF LPAREN e=expression RPAREN s=statement
+    { $lval = buildIfStatement(loc($start), $e.lval, $s.lval); }
   ;
 
 iterationStatement
@@ -352,6 +362,8 @@ FSLASH : [//];
 PRINT : 'print';
 VAR : 'var';
 WHILE : 'while';
+IF : 'if';
+ELSE : 'else';
 
 IDENTIFIER : IdentifierCharacters;
 

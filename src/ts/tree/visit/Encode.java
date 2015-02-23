@@ -285,9 +285,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final WhileStatement whileStatement) {
+    StringBuilder codeBuilder = new StringBuilder(indent());
     Encode.ReturnValue expression = visitNode(whileStatement.getExpression());
     Encode.ReturnValue statement = visitNode(whileStatement.getStatement());
-    StringBuilder codeBuilder = new StringBuilder(expression.code);
     codeBuilder.append("while(true) {\n");
     codeBuilder.append(expression.code);
     codeBuilder.append(indent());
@@ -296,6 +296,29 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append(".getValue().toBoolean().unbox()) break;\n");
     codeBuilder.append(statement.code);
     codeBuilder.append("}\n");
+    return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final IfStatement theIf) {
+    StringBuilder codeBuilder = new StringBuilder(indent());
+
+    final Statement lse = theIf.getElseStat();
+    final Encode.ReturnValue expression, ifStatement, elseStatement;
+    expression = visitNode(theIf.getExpr());
+    ifStatement = visitNode(theIf.getIfStat());
+    codeBuilder.append(expression.code);
+    codeBuilder.append("if (");
+    codeBuilder.append(expression.result);
+    codeBuilder.append(".getValue().toBoolean().unbox()) {\n");
+    codeBuilder.append(ifStatement.code);
+    codeBuilder.append("}\n");
+    if (lse != null) {
+      elseStatement = visitNode(lse);
+      codeBuilder.append("else {\n");
+      codeBuilder.append(elseStatement.code);
+      codeBuilder.append("}\n");
+    }
+
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 }

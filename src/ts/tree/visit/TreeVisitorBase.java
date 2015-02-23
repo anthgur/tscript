@@ -91,4 +91,8 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
   public T visit(final VarStatement varStatement) {
     return null;
   }
+
+  public T visit(final IfStatement ifStatement) {
+    return null;
+  }
 }

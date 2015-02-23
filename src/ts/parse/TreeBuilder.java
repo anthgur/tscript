@@ -148,6 +148,21 @@ public class TreeBuilder {
     return new NumericLiteral(loc, d);
   }
 
+  public static Statement buildIfStatement(final Location loc,
+                                           final Expression e,
+                                           final Statement s1,
+                                           final Statement s2) {
+    Message.log("TreeBuilder: IfStatement");
+    return new IfStatement(loc, e, s1, s2);
+  }
+
+  public static Statement buildIfStatement(final Location loc,
+                                           final Expression e,
+                                           final Statement s1) {
+    Message.log("TreeBuilder: IfStatement");
+    return new IfStatement(loc, e, s1, null);
+  }
+
   public static Expression buildBooleanLiteral(final Location loc,
                                                final String value) {
     boolean b;

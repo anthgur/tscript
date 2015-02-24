@@ -5,6 +5,7 @@
 
 package ts.tree.visit;
 
+import ts.Message;
 import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
@@ -64,6 +65,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   // simple counter for expression temps
   private int nextTemp = 0;
+  private int iterationStatementLevel = 0;
 
   // by default start output indented 2 spaces and increment
   // indentation by 2 spaces
@@ -284,7 +286,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(indent() + ";// EmptyStatement\n");
   }
 
+  public Encode.ReturnValue visit(final BreakStatement breakStatement) {
+    if (iterationStatementLevel > 0) {
+      return new Encode.ReturnValue("break; // BreakStatement\n");
+    }
+    // TODO what should happen when not in an iterationStatement?
+    Message.error(breakStatement.getLoc(), "Invalid BreakStatement");
+    return null;
+  }
+
   public Encode.ReturnValue visit(final WhileStatement whileStatement) {
+    iterationStatementLevel++;
     StringBuilder codeBuilder = new StringBuilder(indent());
     Encode.ReturnValue expression = visitNode(whileStatement.getExpression());
     Encode.ReturnValue statement = visitNode(whileStatement.getStatement());
@@ -296,6 +308,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append(".getValue().toBoolean().unbox()) break;\n");
     codeBuilder.append(statement.code);
     codeBuilder.append("}\n");
+    iterationStatementLevel--;
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 

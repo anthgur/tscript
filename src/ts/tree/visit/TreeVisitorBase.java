@@ -92,6 +92,10 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
     return null;
   }
 
+  public T visit(final BreakStatement breakStatement) {
+    return null;
+  }
+
   public T visit(final IfStatement ifStatement) {
     return null;
   }

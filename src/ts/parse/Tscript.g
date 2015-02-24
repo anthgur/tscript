@@ -62,6 +62,8 @@ statement
     { $lval = $l.lval; }
   | b=blockStatement
     { $lval = $b.lval; }
+  | BREAK SEMICOLON
+    { $lval = new BreakStatement(loc($start)); }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
   ;
@@ -364,6 +366,7 @@ VAR : 'var';
 WHILE : 'while';
 IF : 'if';
 ELSE : 'else';
+BREAK : 'break';
 
 IDENTIFIER : IdentifierCharacters;
 

@@ -39,5 +39,7 @@ public interface TreeVisitor<T>
   T visit(WhileStatement whileStatement);
 
   T visit(IfStatement ifStatement);
+
+  T visit(BreakStatement breakStatement);
 }
 

@@ -64,6 +64,8 @@ statement
     { $lval = $b.lval; }
   | BREAK SEMICOLON
     { $lval = new BreakStatement(loc($start)); }
+  | CONTINUE SEMICOLON
+    { $lval = new ContinueStatement(loc($start)); }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
   ;
@@ -367,6 +369,7 @@ WHILE : 'while';
 IF : 'if';
 ELSE : 'else';
 BREAK : 'break';
+CONTINUE : 'continue';
 
 IDENTIFIER : IdentifierCharacters;
 

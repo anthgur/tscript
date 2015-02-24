@@ -297,6 +297,15 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return null;
   }
 
+  public Encode.ReturnValue visit(final ContinueStatement continueStatement) {
+    if (iterationStatementLevel > 0) {
+      return new Encode.ReturnValue(indent() + "continue; // ContinueStatement\n");
+    }
+    // TODO what should happen when not in an iterationStatement?
+    Message.error(continueStatement.getLoc(), "Invalid BreakStatement");
+    return null;
+  }
+
   public Encode.ReturnValue visit(final WhileStatement whileStatement) {
     iterationStatementLevel++;
     StringBuilder codeBuilder = new StringBuilder(indent());

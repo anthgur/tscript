@@ -273,11 +273,13 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final BlockStatement blockStatement) {
     StringBuilder codeBuilder = new StringBuilder(indent());
     codeBuilder.append("{\n");
+    increaseIndentation();
     for(Encode.ReturnValue rv :
             visitEach(blockStatement.getStatementList())) {
-      codeBuilder.append(indent());
       codeBuilder.append(rv.code);
     }
+    decreaseIndentation();
+    codeBuilder.append(indent());
     codeBuilder.append("}\n");
     return new Encode.ReturnValue(codeBuilder.toString());
   }
@@ -288,7 +290,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   public Encode.ReturnValue visit(final BreakStatement breakStatement) {
     if (iterationStatementLevel > 0) {
-      return new Encode.ReturnValue("break; // BreakStatement\n");
+      return new Encode.ReturnValue(indent() + "break; // BreakStatement\n");
     }
     // TODO what should happen when not in an iterationStatement?
     Message.error(breakStatement.getLoc(), "Invalid BreakStatement");
@@ -298,15 +300,18 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final WhileStatement whileStatement) {
     iterationStatementLevel++;
     StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("while(true) {\n");
+    increaseIndentation();
     Encode.ReturnValue expression = visitNode(whileStatement.getExpression());
     Encode.ReturnValue statement = visitNode(whileStatement.getStatement());
-    codeBuilder.append("while(true) {\n");
     codeBuilder.append(expression.code);
     codeBuilder.append(indent());
     codeBuilder.append("if(!");
     codeBuilder.append(expression.result);
     codeBuilder.append(".getValue().toBoolean().unbox()) break;\n");
     codeBuilder.append(statement.code);
+    decreaseIndentation();
+    codeBuilder.append(indent());
     codeBuilder.append("}\n");
     iterationStatementLevel--;
     return new Encode.ReturnValue(codeBuilder.toString());
@@ -320,15 +325,19 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     expression = visitNode(theIf.getExpr());
     ifStatement = visitNode(theIf.getIfStat());
     codeBuilder.append(expression.code);
+    codeBuilder.append(indent());
     codeBuilder.append("if (");
     codeBuilder.append(expression.result);
     codeBuilder.append(".getValue().toBoolean().unbox()) {\n");
     codeBuilder.append(ifStatement.code);
+    codeBuilder.append(indent());
     codeBuilder.append("}\n");
     if (lse != null) {
       elseStatement = visitNode(lse);
+      codeBuilder.append(indent());
       codeBuilder.append("else {\n");
       codeBuilder.append(elseStatement.code);
+      codeBuilder.append(indent());
       codeBuilder.append("}\n");
     }
 

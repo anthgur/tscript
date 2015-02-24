@@ -318,13 +318,11 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final IfStatement theIf) {
-    StringBuilder codeBuilder = new StringBuilder(indent());
-
     final Statement lse = theIf.getElseStat();
     final Encode.ReturnValue expression, ifStatement, elseStatement;
     expression = visitNode(theIf.getExpr());
     ifStatement = visitNode(theIf.getIfStat());
-    codeBuilder.append(expression.code);
+    StringBuilder codeBuilder = new StringBuilder(expression.code);
     codeBuilder.append(indent());
     codeBuilder.append("if (");
     codeBuilder.append(expression.result);

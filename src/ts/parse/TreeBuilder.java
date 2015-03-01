@@ -90,7 +90,7 @@ public class TreeBuilder {
     return new UnaryOperator(loc, op, expr);
   }
 
-  public static Statement buildBlockStatement(final Location loc,
+  public static BlockStatement buildBlockStatement(final Location loc,
                                               final List<Statement> statementList) {
     Message.log("Treebuilder: BlockStatement");
     return new BlockStatement(loc, statementList);

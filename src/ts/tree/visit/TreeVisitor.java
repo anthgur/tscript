@@ -43,5 +43,9 @@ public interface TreeVisitor<T>
   T visit(BreakStatement breakStatement);
 
   T visit(ContinueStatement continueStatement);
+
+  T visit(TryStatement tryStatement);
+
+  T visit(CatchStatement catchStatement);
 }
 

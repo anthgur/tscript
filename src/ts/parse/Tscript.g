@@ -70,6 +70,28 @@ statement
     { $lval = new EmptyStatement(loc($start)); }
   ;
 
+tryStatement
+  returns [ Statement lval ]
+  : TRY b=blockStatement c=catchStatement
+    { $lval = new TryStatement(loc($start), $b.lval, $c.lval, null); }
+  | TRY b=blockStatement f=finallyStatement
+    { $lval = new TryStatement(loc($start), $b.lval, null, $f.lval); }
+  | TRY b=blockStatement c=catchStatement f=finallyStatement
+    { $lval = new TryStatement(loc($start), $b.lval, $c.lval, $f.lval); }
+  ;
+
+catchStatement
+  returns [ CatchStatement lval ]
+  : CATCH LPAREN i=IDENTIFIER RPAREN b=blockStatement
+    { $lval = new CatchStatement(loc($start), $i.text, $b.lval); }
+  ;
+
+finallyStatement
+  returns [ BlockStatement lval ]
+  : FINALLY b=blockStatement
+    { $lval = $b.lval; }
+  ;
+
 ifStatement
   returns [ Statement lval ]
   : IF LPAREN e=expression RPAREN s1=statement ELSE s2=statement
@@ -85,7 +107,7 @@ iterationStatement
   ;
 
 blockStatement
-  returns [ Statement lval ]
+  returns [ BlockStatement lval ]
   : LCURLY sl=statementList RCURLY
     { $lval = buildBlockStatement(loc($start), $sl.lval); }
   ;
@@ -370,6 +392,10 @@ IF : 'if';
 ELSE : 'else';
 BREAK : 'break';
 CONTINUE : 'continue';
+THROW : 'throw';
+TRY : 'try';
+CATCH : 'catch';
+FINALLY : 'finally';
 
 IDENTIFIER : IdentifierCharacters;
 

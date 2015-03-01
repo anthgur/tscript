@@ -103,4 +103,12 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
   public T visit(final ContinueStatement continueStatement) {
     return null;
   }
+
+  public T visit(final TryStatement tryStatement) {
+    return null;
+  }
+
+  public T visit(final CatchStatement catchStatement) {
+    return null;
+  }
 }

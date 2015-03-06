@@ -3,12 +3,12 @@ package ts.support;
 import java.util.List;
 
 public abstract class TSFunctionObject extends TSObject implements TSCode {
-    final private TSLexicalEnvironment outer;
+    final private TSLexicalEnvironment scope;
     final private List<String> formalParams;
 
-    public TSFunctionObject(TSLexicalEnvironment outer,
+    public TSFunctionObject(TSLexicalEnvironment scope,
                             List<String> formalParams) {
-        this.outer = outer;
+        this.scope = scope;
         this.formalParams = formalParams;
     }
 }

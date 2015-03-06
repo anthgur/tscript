@@ -35,8 +35,8 @@ grammar Tscript;
 // grammar proper
 
 program
-  : sl=statementList EOF
-    { semanticValue = $sl.lval; }
+  : se=sourceElements EOF
+    { semanticValue = $se.lval; }
   ;
 
 sourceElements
@@ -45,7 +45,8 @@ sourceElements
     { $lval = new ArrayList<Statement>();
       $lval.add($s.lval); }
   | se=sourceElements s=sourceElement
-    { $se.lval.add($s.lval); }
+    { $lval = $se.lval;
+      $lval.add($s.lval); }
   ;
 
 sourceElement
@@ -60,7 +61,7 @@ sourceElement
 functionDeclaration
   returns [ Statement lval ]
   : FUNCTION i=IDENTIFIER LPAREN RPAREN LCURLY f=functionBody RCURLY
-      { $lval = new FunctionDeclaration(loc($start), $i.text, $f.lval); }
+    { $lval = new FunctionDeclaration(loc($start), $i.text, $f.lval); }
   ;
 
 functionBody
@@ -69,15 +70,6 @@ functionBody
     { $lval = new ArrayList<Statement>(); }
   | se=sourceElements
     { $lval = $se.lval; }
-  ;
-
-statementList
-  returns [ List<Statement> lval ]
-  : // empty rule
-    { $lval = new ArrayList<Statement>(); }
-  | sl=statementList s=statement
-    { $sl.lval.add($s.lval);
-      $lval = $sl.lval; }
   ;
 
 statement
@@ -152,6 +144,15 @@ blockStatement
   returns [ BlockStatement lval ]
   : LCURLY sl=statementList RCURLY
     { $lval = buildBlockStatement(loc($start), $sl.lval); }
+  ;
+
+statementList
+  returns [ List<Statement> lval ]
+  : // empty rule
+    { $lval = new ArrayList<Statement>(); }
+  | sl=statementList s=statement
+    { $sl.lval.add($s.lval);
+      $lval = $sl.lval; }
   ;
 
 varStatement

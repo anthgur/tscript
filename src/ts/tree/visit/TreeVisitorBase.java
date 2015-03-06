@@ -111,4 +111,12 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
   public T visit(final CatchStatement catchStatement) {
     return null;
   }
+
+  public T visit(final ThrowStatement throwStatement) {
+    return null;
+  }
+
+  public T visit(final Expression expression) {
+    return null;
+  }
 }

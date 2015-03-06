@@ -64,6 +64,8 @@ statement
     { $lval = $b.lval; }
   | t=tryStatement
     { $lval = $t.lval; }
+  | th=throwStatement
+    { $lval = $th.lval; }
   | BREAK SEMICOLON
     { $lval = new BreakStatement(loc($start)); }
   | CONTINUE SEMICOLON
@@ -80,6 +82,12 @@ tryStatement
     { $lval = new TryStatement(loc($start), $b.lval, null, $f.lval); }
   | TRY b=blockStatement c=catchStatement f=finallyStatement
     { $lval = new TryStatement(loc($start), $b.lval, $c.lval, $f.lval); }
+  ;
+
+throwStatement
+  returns [ Statement lval ]
+  : THROW e=expression SEMICOLON
+    { $lval = new ThrowStatement(loc($start), $e.lval); }
   ;
 
 catchStatement

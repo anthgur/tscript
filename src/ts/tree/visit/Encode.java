@@ -193,6 +193,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(result, code);
   }
 
+  public Encode.ReturnValue visit(final Expression expr) {
+    return visitNode(expr);
+  }
+
   // process an expression statement
   public Encode.ReturnValue visit(final ExpressionStatement expressionStatement) {
     Encode.ReturnValue exp = visitNode(expressionStatement.getExp());
@@ -395,6 +399,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     decreaseIndentation();
     codeBuilder.append(indent());
     codeBuilder.append("}\n");
+    return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final ThrowStatement throwStatement) {
+    Encode.ReturnValue expr = visit(throwStatement.getExpr());
+    StringBuilder codeBuilder =
+            new StringBuilder(expr.code);
+    codeBuilder.append(indent());
+    codeBuilder.append("throw new TSException(");
+    codeBuilder.append(expr.result);
+    codeBuilder.append(".getValue());\n");
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 }

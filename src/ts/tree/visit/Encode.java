@@ -435,53 +435,37 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final FunctionExpression func) {
-    final Encode.ReturnValue er = genFunction(func.getBody());
-    final String result = getTemp()
-            , newEnv = getTemp()
+    final Encode.ReturnValue er = genFunctionBody(func.getBody());
+    final String ident
+            , result = getTemp()
             , params = getTemp();
 
     functions.add(er);
 
-
-    // extend the current environment
-    String code = indent() + "TSLexicalEnvironment " + newEnv + " = "
-            + "TSLexicalEnvironment.newDeclarativeEnvironment(lexEnviron0);\n";
-
     // repack the formal params
-    code += indent() + "List " + params + " = new ArrayList();\n";
+    String code = indent() + "List " + params + " = new ArrayList();\n";
     for (String p : func.getFormalParameters()) {
       code += params + ".add(\"" + p + "\");\n";
     }
 
     // instantiate the object
-    code += indent() + "TSValue " + result + " = new " + er.result +
-            "(" + newEnv + ", " + params + ");\n";
+    code += indent() + "TSValue " + result + " = new " + er.result + "(";
+    if((ident = func.getIdent()) != null) {
+      code += "\"" + ident + "\", ";
+    }
+    code += "lexEnviron0, " + params + ");\n";
     return new Encode.ReturnValue(result, code);
   }
 
-  private Encode.ReturnValue genFunction(List<Statement> body) {
+  private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     String name = "Func" + nextFunc++;
     String code = "{\n";
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }
     code += indent();
+    // TODO return undefined here?
     code += "return TSString.create(\"lol\");\n}\n";
     return new Encode.ReturnValue(name, code);
   }
-
-  /*
-  private Encode.ReturnValue genFunction(List<Statement> body) {
-    String name = "Func" + nextFunc++;
-    String code = "class " + name + " extends TSFunctionObject {\n";
-    code += "  public TSValue execute(TSLexicalEnvironment lexEnviron0, TSValue ths,\n" +
-            "                         TSValue[] args, Boolean isConstructor) {\n";
-    for (Encode.ReturnValue er : visitEach(body)) {
-      code += er.code;
-    }
-    code += "  }\n";
-    code += "}\n";
-    return new Encode.ReturnValue(name, code);
-  }
-  */
 }

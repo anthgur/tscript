@@ -247,8 +247,9 @@ public class Main {
       pool.importPackage("java.util.List");
       pool.importPackage("java.util.ArrayList");
 
-      final CtClass lexEnv, funcObj, list;
+      final CtClass string, lexEnv, funcObj, list;
       try {
+        string = pool.get("java.lang.String");
         lexEnv = pool.get("ts.support.TSLexicalEnvironment");
         funcObj = pool.get("ts.support.TSFunctionObject");
         list = pool.get("java.util.List");
@@ -258,21 +259,27 @@ public class Main {
         throw new RuntimeException("unreachable");
       }
 
-      final CtClass[] funcCtorParams = { lexEnv, list };
+      final CtClass[] noIdentCtorParams = { lexEnv, list };
+      final CtClass[] identCtorParams = { string, lexEnv, list };
 
       for(Encode.ReturnValue er : genCode.getFunctions()) {
         final CtClass funcClass;
         final CtMethod execute;
-        final CtConstructor ctor;
+        final CtConstructor noIdentCtor, identCtor;
         try {
           funcClass = pool.makeClass(er.result, funcObj);
           execute = CtMethod.make(genCode.executeSignature() + "{ return null; }", funcClass);
           execute.setBody(er.code);
           funcClass.addMethod(execute);
-          ctor = new CtConstructor(funcCtorParams, funcClass);
-          // super($1) is a call to TSFunctionObject(TSLexicalEnvironment) constructor
-          ctor.setBody("{super($1, $2);}");
-          funcClass.addConstructor(ctor);
+
+          // super(...) are calls to TSFunctionObject(...) constructors
+          noIdentCtor = new CtConstructor(noIdentCtorParams, funcClass);
+          noIdentCtor.setBody("{super($1, $2);}");
+          funcClass.addConstructor(noIdentCtor);
+
+          identCtor = new CtConstructor(identCtorParams, funcClass);
+          identCtor.setBody("{super($1, $2, $3);}");
+          funcClass.addConstructor(identCtor);
         } catch (CannotCompileException e) {
           e.printStackTrace();
         }

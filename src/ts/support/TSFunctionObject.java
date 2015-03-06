@@ -11,4 +11,13 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
         this.scope = scope;
         this.formalParams = formalParams;
     }
+
+    public TSFunctionObject(String ident,
+                            TSLexicalEnvironment scope,
+                            List<String> formalParams) {
+        TSLexicalEnvironment env = TSLexicalEnvironment.newDeclarativeEnvironment(scope);
+        env.declareFunctionName(ident, this);
+        this.scope = env;
+        this.formalParams = formalParams;
+    }
 }

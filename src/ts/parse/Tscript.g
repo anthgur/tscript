@@ -222,6 +222,8 @@ functionExpression
   returns [ Expression lval ]
   : FUNCTION LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
     { $lval = new FunctionExpression(loc($start), null, $fpl.lval, $f.lval); }
+  | FUNCTION IDENTIFIER LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionExpression(loc($start), $IDENTIFIER.text, $fpl.lval, $f.lval); }
   ;
 
 formalParameterList

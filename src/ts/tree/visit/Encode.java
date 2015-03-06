@@ -119,6 +119,8 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String ret = "";
     ret += indent() + "{\n";
     increaseIndentation();
+    ret += indent() + "try {\n";
+    increaseIndentation();
     ret += indent() + "TSLexicalEnvironment " + "lexEnviron" + " = " +
       "TSLexicalEnvironment.newDeclarativeEnvironment(null);\n";
     ret += indent() + "lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n";
@@ -127,8 +129,11 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   // generate and return epilogue code for main method body
   public String mainEpilogue() {
-    decreaseIndentation();
     String ret = "";
+    ret += indent() + "} catch (TSException e) {\n";
+    ret += indent() + indent() + "e.printStackTrace();\n";
+    ret += indent() + "}\n";
+    decreaseIndentation();
     ret += indent() + "}";
     return ret;
   }
@@ -349,5 +354,11 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     }
 
     return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final TryStatement tryStatement) {
+
+
+    return new Encode.ReturnValue();
   }
 }

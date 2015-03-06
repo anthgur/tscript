@@ -116,26 +116,33 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   // generate and return prologue code for the main method body
   public String mainPrologue(String filename) {
-    String ret = "";
-    ret += indent() + "{\n";
+    StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("{\n");
     increaseIndentation();
-    ret += indent() + "try {\n";
+    codeBuilder.append(indent());
+    codeBuilder.append("try {\n");
     increaseIndentation();
-    ret += indent() + "TSLexicalEnvironment " + "lexEnviron" + " = " +
-      "TSLexicalEnvironment.newDeclarativeEnvironment(null);\n";
-    ret += indent() + "lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n";
-    return ret;
+    codeBuilder.append(indent());
+    codeBuilder.append("TSLexicalEnvironment lexEnviron = ");
+    codeBuilder.append("TSLexicalEnvironment.newDeclarativeEnvironment(null);\n");
+    codeBuilder.append(indent());
+    codeBuilder.append("lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n");
+    return codeBuilder.toString();
   }
 
   // generate and return epilogue code for main method body
   public String mainEpilogue() {
-    String ret = "";
-    ret += indent() + "} catch (TSException e) {\n";
-    ret += indent() + indent() + "e.printStackTrace();\n";
-    ret += indent() + "}\n";
+    StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("} catch (TSException e) {\n");
+    codeBuilder.append(indent());
+    codeBuilder.append(indent());
+    codeBuilder.append("e.printStackTrace();\n");
+    codeBuilder.append(indent());
+    codeBuilder.append("}\n");
     decreaseIndentation();
-    ret += indent() + "}";
-    return ret;
+    codeBuilder.append(indent());
+    codeBuilder.append("}");
+    return codeBuilder.toString();
   }
 
   // return string for name of next expression temp

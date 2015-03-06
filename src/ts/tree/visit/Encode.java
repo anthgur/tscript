@@ -6,7 +6,6 @@
 package ts.tree.visit;
 
 import ts.Message;
-import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
 import ts.tree.visit.encode.UnaryOps;
@@ -369,15 +368,19 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final TryStatement tryStatement) {
-    final Encode.ReturnValue tryBlock, catchBlock;
-    tryBlock = visit(tryStatement.getBlock());
-    catchBlock = visit(tryStatement.getCatch());
+    final CatchStatement catchStatement;
+    final BlockStatement finallyBlock;
     StringBuilder codeBuilder = new StringBuilder(indent());
     codeBuilder.append("try\n");
-    increaseIndentation();
-    codeBuilder.append(tryBlock.code);
-    decreaseIndentation();
-    codeBuilder.append(catchBlock.code);
+    codeBuilder.append(visitNode(tryStatement.getBlock()).code);
+    if((catchStatement = tryStatement.getCatch()) != null) {
+      codeBuilder.append(visitNode(catchStatement).code);
+    }
+    if((finallyBlock = tryStatement.getFinally()) != null) {
+      codeBuilder.append(indent());
+      codeBuilder.append("finally\n");
+      codeBuilder.append(visitNode(finallyBlock).code);
+    }
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
@@ -404,8 +407,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   public Encode.ReturnValue visit(final ThrowStatement throwStatement) {
     Encode.ReturnValue expr = visit(throwStatement.getExpr());
-    StringBuilder codeBuilder =
-            new StringBuilder(expr.code);
+    StringBuilder codeBuilder = new StringBuilder(expr.code);
     codeBuilder.append(indent());
     codeBuilder.append("throw new TSException(");
     codeBuilder.append(expr.result);

@@ -152,6 +152,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return codeBuilder.toString();
   }
 
+  public String functionComments() {
+    StringBuilder codeBuilder = new StringBuilder("/*\n");
+    for (Encode.ReturnValue er : functions) {
+      codeBuilder.append(er.result);
+      codeBuilder.append("\n");
+      codeBuilder.append(er.code);
+    }
+    codeBuilder.append("*/");
+    return codeBuilder.toString();
+  }
+
   // return string for name of next expression temp
   private String getTemp() {
     String ret = "temp" + nextTemp;
@@ -424,10 +435,27 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final FunctionExpression func) {
-    Encode.ReturnValue er = genFunction(func.getBody());
+    final Encode.ReturnValue er = genFunction(func.getBody());
+    final String result = getTemp()
+            , newEnv = getTemp()
+            , params = getTemp();
+
     functions.add(er);
-    String result = getTemp();
-    String code = indent() + "TSValue " + result + " = new " + er.result + "(lexEnviron0);\n";
+
+
+    // extend the current environment
+    String code = indent() + "TSLexicalEnvironment " + newEnv + " = "
+            + "TSLexicalEnvironment.newDeclarativeEnvironment(lexEnviron0);\n";
+
+    // repack the formal params
+    code += indent() + "List " + params + " = new ArrayList();\n";
+    for (String p : func.getFormalParameters()) {
+      code += params + ".add(\"" + p + "\");\n";
+    }
+
+    // instantiate the object
+    code += indent() + "TSValue " + result + " = new " + er.result +
+            "(" + newEnv + ", " + params + ");\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -437,6 +465,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }
+    code += indent();
     code += "return TSString.create(\"lol\");\n}\n";
     return new Encode.ReturnValue(name, code);
   }

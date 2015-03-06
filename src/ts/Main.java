@@ -8,7 +8,6 @@ package ts;
 import ts.parse.*;
 import ts.tree.*;
 import ts.tree.visit.*;
-import ts.support.*;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -28,7 +27,6 @@ import javassist.Loader;
 import javassist.NotFoundException;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -231,10 +229,12 @@ public class Main {
       PrintWriter outputJava = openOutputFile(baseFileName, ".java");
       outputJava.println("import ts.Message;");
       outputJava.println("import ts.support.*;");
+      outputJava.println("import java.util.*;");
       outputJava.println("class " + baseFileName + " {");
       outputJava.println("  " + genCode.mainMethodSignature());
       outputJava.println(mainCodeString);
-      outputJava.println("}");
+      outputJava.println("}\n");
+      outputJava.println(genCode.functionComments());
       outputJava.close();
     }
 
@@ -244,20 +244,22 @@ public class Main {
       ClassPool pool = ClassPool.getDefault();
       pool.importPackage("ts.Message");
       pool.importPackage("ts.support");
-      //pool.importPackage("java.util.List");
-      //pool.importPackage("java.util.ArrayList");
+      pool.importPackage("java.util.List");
+      pool.importPackage("java.util.ArrayList");
 
-      final CtClass lexEnv, funcObj;
+      final CtClass lexEnv, funcObj, list;
       try {
-         lexEnv = pool.get("ts.support.TSLexicalEnvironment");
-         funcObj = pool.get("ts.support.TSFunctionObject");
+        lexEnv = pool.get("ts.support.TSLexicalEnvironment");
+        funcObj = pool.get("ts.support.TSFunctionObject");
+        list = pool.get("java.util.List");
       } catch (NotFoundException e) {
         e.printStackTrace();
         Message.fatal("woops");
         throw new RuntimeException("unreachable");
       }
 
-      final CtClass[] funcCtorParams = { lexEnv };
+      final CtClass[] funcCtorParams = { lexEnv, list };
+
       for(Encode.ReturnValue er : genCode.getFunctions()) {
         final CtClass funcClass;
         final CtMethod execute;
@@ -269,7 +271,7 @@ public class Main {
           funcClass.addMethod(execute);
           ctor = new CtConstructor(funcCtorParams, funcClass);
           // super($1) is a call to TSFunctionObject(TSLexicalEnvironment) constructor
-          ctor.setBody("{super($1);}");
+          ctor.setBody("{super($1, $2);}");
           funcClass.addConstructor(ctor);
         } catch (CannotCompileException e) {
           e.printStackTrace();

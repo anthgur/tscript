@@ -123,15 +123,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("try {\n");
     increaseIndentation();
     codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron = ");
+    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = ");
     codeBuilder.append("TSLexicalEnvironment.newDeclarativeEnvironment(null);\n");
     codeBuilder.append(indent());
-    codeBuilder.append("lexEnviron.declareVariable(TSString.create(\"undefined\"), false);\n");
+    codeBuilder.append("lexEnviron0.declareVariable(TSString.create(\"undefined\"), false);\n");
     return codeBuilder.toString();
   }
 
   // generate and return epilogue code for main method body
   public String mainEpilogue() {
+    decreaseIndentation();
     StringBuilder codeBuilder = new StringBuilder(indent());
     codeBuilder.append("} catch (TSException e) {\n");
     codeBuilder.append(indent());
@@ -139,8 +140,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("e.printStackTrace();\n");
     codeBuilder.append(indent());
     codeBuilder.append("}\n");
-    decreaseIndentation();
-    codeBuilder.append(indent());
     codeBuilder.append("}");
     return codeBuilder.toString();
   }
@@ -205,7 +204,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final Identifier identifier) {
     String result = getTemp();
     String code = indent() + "TSValue " + result +
-      " = " + "lexEnviron" +
+      " = " + "lexEnviron0" +
       ".getIdentifierReference(TSString.create(\"" +
       identifier.getName() + "\"));\n";
 
@@ -257,7 +256,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "Message.setLineNumber(" +
       varDeclaration.getLineNumber() + ");\n";
 
-    code += indent() + "lexEnviron.declareVariable(" +
+    code += indent() + "lexEnviron0.declareVariable(" +
             varName + ", false);\n";
 
     final Expression assignExpr = varDeclaration.getExpression();
@@ -265,7 +264,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     if(assignExpr != null) {
       Encode.ReturnValue rhs = visitNode(assignExpr);
       code += rhs.code + indent() +
-              "lexEnviron.getIdentifierReference(" +
+              "lexEnviron0.getIdentifierReference(" +
               varName + ").simpleAssignment(" +
               rhs.result + ");\n";
     }
@@ -297,7 +296,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final EmptyStatement emptyStatement) {
-    return new Encode.ReturnValue(indent() + ";// EmptyStatement\n");
+    return new Encode.ReturnValue(indent() + "if (true) {} // EmptyStatement\n");
   }
 
   public Encode.ReturnValue visit(final BreakStatement breakStatement) {
@@ -364,8 +363,22 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final TryStatement tryStatement) {
+    final Encode.ReturnValue tryBlock, catchBlock;
+    tryBlock = visit(tryStatement.getBlock());
+    catchBlock = visit(tryStatement.getCatch());
+    StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("try\n");
+    increaseIndentation();
+    codeBuilder.append(tryBlock.code);
+    decreaseIndentation();
+    codeBuilder.append(indent());
+    codeBuilder.append(catchBlock.code);
+    return new Encode.ReturnValue(codeBuilder.toString());
+  }
 
-
-    return new Encode.ReturnValue();
+  public Encode.ReturnValue visit(final CatchStatement catchStatement) {
+    StringBuilder codeBuilder = new StringBuilder("catch (TSException e)\n");
+    codeBuilder.append(visit(catchStatement.getBlock()).code);
+    return new Encode.ReturnValue(codeBuilder.toString());
   }
 }

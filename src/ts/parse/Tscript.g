@@ -62,6 +62,8 @@ statement
     { $lval = $l.lval; }
   | b=blockStatement
     { $lval = $b.lval; }
+  | t=tryStatement
+    { $lval = $t.lval; }
   | BREAK SEMICOLON
     { $lval = new BreakStatement(loc($start)); }
   | CONTINUE SEMICOLON

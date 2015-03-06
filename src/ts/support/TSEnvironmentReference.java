@@ -48,8 +48,8 @@ final class TSEnvironmentReference extends TSReference {
    */
   public TSValue getValue() {
     if (base == null) {
-      Message.executionError("undefined identifier: " +
-        this.getReferencedName().unbox());
+      throw new TSException(TSString.create("undefined identifier: " +
+              this.getReferencedName().unbox()));
     }
     return base.getBindingValue(this.getReferencedName());
   }
@@ -57,8 +57,8 @@ final class TSEnvironmentReference extends TSReference {
   /** Assign a value to the name specified by the Reference. */
   public void putValue(final TSValue value) {
     if (base == null) {
-      Message.executionError("undefined identifier: " +
-        this.getReferencedName().unbox());
+      throw new TSException(TSString.create("undefined identifier: " +
+              this.getReferencedName().unbox()));
     }
     base.setMutableBinding(this.getReferencedName(), value);
   }

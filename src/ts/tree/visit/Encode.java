@@ -136,7 +136,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("} catch (TSException e) {\n");
     codeBuilder.append(indent());
     codeBuilder.append(indent());
-    codeBuilder.append("e.printStackTrace();\n");
+    codeBuilder.append("Message.executionError(e.getValue().toString());\n");
     codeBuilder.append(indent());
     codeBuilder.append("}\n");
     decreaseIndentation();

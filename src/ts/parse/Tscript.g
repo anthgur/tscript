@@ -182,7 +182,26 @@ memberExpression
   returns [ Expression lval ]
   : a=primaryExpression
     { $lval = $a.lval; }
+  | f=functionExpression
+    { $lval = $f.lval; }
   ;
+
+functionExpression
+  returns [ Expression lval ]
+  : FUNCTION LPAREN RPAREN LCURLY s=statementList RCURLY
+    { $lval = new FunctionExpression(loc($start), $s.lval); }
+  ;
+
+/*
+formalParameterList
+  returns [ List<String> lval ]
+  : i=IDENTIFIER
+    { $lval = new ArrayList();
+      $lval.push($i.text); }
+  | fpl=formalParameterList COMMA i=IDENTIFIER
+    { $lval.push($i.text); }
+  ;
+*/
 
 assignmentExpression
   returns [ Expression lval ]
@@ -406,6 +425,7 @@ THROW : 'throw';
 TRY : 'try';
 CATCH : 'catch';
 FINALLY : 'finally';
+FUNCTION: 'function';
 
 IDENTIFIER : IdentifierCharacters;
 

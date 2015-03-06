@@ -6,14 +6,15 @@ import ts.tree.visit.TreeVisitor;
 import java.util.List;
 
 public class FunctionExpression extends Expression {
-    private List<Statement> statementList;
+    private List<Statement> body;
 
-    public FunctionExpression(Location loc, List<Statement> statementList) {
+    public FunctionExpression(Location loc, List<Statement> body) {
         super(loc);
+        this.body = body;
     }
 
-    public List<Statement> getStatementList() {
-        return statementList;
+    public List<Statement> getBody() {
+        return body;
     }
 
     @Override

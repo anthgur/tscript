@@ -39,6 +39,38 @@ program
     { semanticValue = $sl.lval; }
   ;
 
+sourceElements
+  returns [ List<Statement> lval ]
+  : s=sourceElement
+    { $lval = new ArrayList<Statement>();
+      $lval.add($s.lval); }
+  | se=sourceElements s=sourceElement
+    { $se.lval.add($s.lval); }
+  ;
+
+sourceElement
+  returns [ Statement lval ]
+  : s=statement
+    { $lval = $s.lval; }
+  | f=functionDeclaration
+    { $lval = $f.lval; }
+  ;
+
+// TODO parameters
+functionDeclaration
+  returns [ Statement lval ]
+  : FUNCTION i=IDENTIFIER LPAREN RPAREN LCURLY f=functionBody RCURLY
+      { $lval = new FunctionDeclaration(loc($start), $i.text, $f.lval); }
+  ;
+
+functionBody
+  returns [ List<Statement> lval ]
+  : // empty rule
+    { $lval = new ArrayList<Statement>(); }
+  | se=sourceElements
+    { $lval = $se.lval; }
+  ;
+
 statementList
   returns [ List<Statement> lval ]
   : // empty rule
@@ -186,10 +218,11 @@ memberExpression
     { $lval = $f.lval; }
   ;
 
+// TODO parameters
 functionExpression
   returns [ Expression lval ]
-  : FUNCTION LPAREN RPAREN LCURLY s=statementList RCURLY
-    { $lval = new FunctionExpression(loc($start), $s.lval); }
+  : FUNCTION LPAREN RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionExpression(loc($start), $f.lval); }
   ;
 
 /*

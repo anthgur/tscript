@@ -308,7 +308,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     if (iterationStatementLevel > 0) {
       return new Encode.ReturnValue(indent() + "break; // BreakStatement\n");
     }
-    // TODO what should happen when not in an iterationStatement?
     Message.error(breakStatement.getLoc(), "Invalid BreakStatement");
     return null;
   }
@@ -317,7 +316,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     if (iterationStatementLevel > 0) {
       return new Encode.ReturnValue(indent() + "continue; // ContinueStatement\n");
     }
-    // TODO what should happen when not in an iterationStatement?
     Message.error(continueStatement.getLoc(), "Invalid BreakStatement");
     return null;
   }

@@ -57,13 +57,6 @@ sourceElement
     { $lval = $f.lval; }
   ;
 
-// TODO parameters
-functionDeclaration
-  returns [ Statement lval ]
-  : FUNCTION i=IDENTIFIER LPAREN RPAREN LCURLY f=functionBody RCURLY
-    { $lval = new FunctionDeclaration(loc($start), $i.text, $f.lval); }
-  ;
-
 functionBody
   returns [ List<Statement> lval ]
   : // empty rule
@@ -219,23 +212,25 @@ memberExpression
     { $lval = $f.lval; }
   ;
 
-// TODO parameters
-functionExpression
-  returns [ Expression lval ]
-  : FUNCTION LPAREN RPAREN LCURLY f=functionBody RCURLY
-    { $lval = new FunctionExpression(loc($start), $f.lval); }
+functionDeclaration
+  returns [ Statement lval ]
+  : FUNCTION i=IDENTIFIER LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionDeclaration(loc($start), $i.text, $fpl.lval, $f.lval); }
   ;
 
-/*
+functionExpression
+  returns [ Expression lval ]
+  : FUNCTION LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionExpression(loc($start), null, $fpl.lval, $f.lval); }
+  ;
+
 formalParameterList
   returns [ List<String> lval ]
-  : i=IDENTIFIER
-    { $lval = new ArrayList();
-      $lval.push($i.text); }
+  : // empty rule
+    { $lval = new ArrayList<>(); }
   | fpl=formalParameterList COMMA i=IDENTIFIER
-    { $lval.push($i.text); }
+    { $lval.add($i.text); }
   ;
-*/
 
 assignmentExpression
   returns [ Expression lval ]

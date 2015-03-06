@@ -247,16 +247,30 @@ public class Main {
       //pool.importPackage("java.util.List");
       //pool.importPackage("java.util.ArrayList");
 
+      final CtClass lexEnv, funcObj;
+      try {
+         lexEnv = pool.get("ts.support.TSLexicalEnvironment");
+         funcObj = pool.get("ts.support.TSFunctionObject");
+      } catch (NotFoundException e) {
+        e.printStackTrace();
+        Message.fatal("woops");
+        throw new RuntimeException("unreachable");
+      }
+
+      final CtClass[] funcCtorParams = { lexEnv };
       for(Encode.ReturnValue er : genCode.getFunctions()) {
         final CtClass funcClass;
+        final CtMethod execute;
+        final CtConstructor ctor;
         try {
-          funcClass = pool.makeClass(er.result, pool.get("ts.support.TSFunctionObject"));
-          CtMethod execute = CtMethod.make(genCode.executeSignature() + "{ return null; }", funcClass);
+          funcClass = pool.makeClass(er.result, funcObj);
+          execute = CtMethod.make(genCode.executeSignature() + "{ return null; }", funcClass);
           execute.setBody(er.code);
           funcClass.addMethod(execute);
-          funcClass.addConstructor(CtNewConstructor.defaultConstructor(funcClass));
-        } catch (NotFoundException e) {
-          e.printStackTrace();
+          ctor = new CtConstructor(funcCtorParams, funcClass);
+          // super($1) is a call to TSFunctionObject(TSLexicalEnvironment) constructor
+          ctor.setBody("{super($1);}");
+          funcClass.addConstructor(ctor);
         } catch (CannotCompileException e) {
           e.printStackTrace();
         }

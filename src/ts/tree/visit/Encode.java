@@ -427,7 +427,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     Encode.ReturnValue er = genFunction(func.getBody());
     functions.add(er);
     String result = getTemp();
-    String code = indent() + "TSValue " + result + " = new " + er.result + "();\n";
+    String code = indent() + "TSValue " + result + " = new " + er.result + "(lexEnviron0);\n";
     return new Encode.ReturnValue(result, code);
   }
 

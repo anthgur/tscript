@@ -140,6 +140,8 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("e.printStackTrace();\n");
     codeBuilder.append(indent());
     codeBuilder.append("}\n");
+    decreaseIndentation();
+    codeBuilder.append(indent());
     codeBuilder.append("}");
     return codeBuilder.toString();
   }
@@ -371,14 +373,28 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     increaseIndentation();
     codeBuilder.append(tryBlock.code);
     decreaseIndentation();
-    codeBuilder.append(indent());
     codeBuilder.append(catchBlock.code);
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
   public Encode.ReturnValue visit(final CatchStatement catchStatement) {
-    StringBuilder codeBuilder = new StringBuilder("catch (TSException e)\n");
+    StringBuilder codeBuilder = new StringBuilder(indent());
+    codeBuilder.append("catch (TSException e)\n");
+    codeBuilder.append(indent());
+    codeBuilder.append("{\n");
+    increaseIndentation();
+    codeBuilder.append(indent());
+    codeBuilder.append("TSLexicalEnvironment lexEnviron0 =\n");
+    codeBuilder.append(indent());
+    codeBuilder.append("    TSLexicalEnvironment.newDeclarativeEnvironment(lexEnviron0);\n");
+    codeBuilder.append(indent());
+    codeBuilder.append("lexEnviron0.declareParameter(\"");
+    codeBuilder.append(catchStatement.getIdent().getName());
+    codeBuilder.append("\", e.getValue());\n");
     codeBuilder.append(visit(catchStatement.getBlock()).code);
+    decreaseIndentation();
+    codeBuilder.append(indent());
+    codeBuilder.append("}\n");
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 }

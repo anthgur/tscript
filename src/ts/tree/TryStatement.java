@@ -7,6 +7,13 @@ public class TryStatement extends Statement {
     final BlockStatement block;
     final CatchStatement _catch;
     final BlockStatement _finally;
+    final Kind kind;
+
+    public enum Kind {
+        CATCH,
+        FINALLY,
+        CATCH_FINALLY
+    }
 
     public TryStatement(Location loc,
                         BlockStatement block,
@@ -16,6 +23,14 @@ public class TryStatement extends Statement {
         this.block = block;
         this._catch = _catch;
         this._finally = _finally;
+
+        if(_catch != null && _finally == null) {
+            kind = Kind.CATCH;
+        } else if(_catch == null && _finally != null) {
+            kind = Kind.FINALLY;
+        } else {
+            kind = Kind.CATCH_FINALLY;
+        }
     }
 
     public BlockStatement getBlock() {
@@ -28,6 +43,10 @@ public class TryStatement extends Statement {
 
     public CatchStatement getCatch() {
         return _catch;
+    }
+
+    public Kind getKind() {
+        return kind;
     }
 
     @Override

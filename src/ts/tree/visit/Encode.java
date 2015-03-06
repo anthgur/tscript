@@ -62,8 +62,11 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     }
   }
 
+  private List<Encode.ReturnValue> functions = new ArrayList<ReturnValue>();
+
   // simple counter for expression temps
   private int nextTemp = 0;
+  private int nextFunc = 0;
   private int iterationStatementLevel = 0;
 
   // by default start output indented 2 spaces and increment
@@ -113,6 +116,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return "public static void main(String args[])";
   }
 
+  public String executeSignature() {
+    return "public TSValue execute(TSLexicalEnvironment lexEnviron0, TSValue ths, TSValue[] args, Boolean isConstructor)";
+  }
+
   // generate and return prologue code for the main method body
   public String mainPrologue(String filename) {
     StringBuilder codeBuilder = new StringBuilder(indent());
@@ -152,6 +159,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return ret;
   }
 
+  public List<Encode.ReturnValue> getFunctions() {
+    return functions;
+  }
+
   // visit a list of ASTs and generate code for each of them in order
   // use wildcard for generality: list of Statements, list of Expressions, etc
   public List<Encode.ReturnValue> visitEach(final Iterable<?> nodes) {
@@ -179,7 +190,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(result, code);
   }
 
-  @Override
   public ReturnValue visit(UnaryOperator opNode) {
     String result = getTemp();
 
@@ -412,4 +422,37 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append(".getValue());\n");
     return new Encode.ReturnValue(codeBuilder.toString());
   }
+
+  public Encode.ReturnValue visit(final FunctionExpression func) {
+    Encode.ReturnValue er = genFunction(func.getBody());
+    functions.add(er);
+    String result = getTemp();
+    String code = indent() + "TSValue " + result + " = new " + er.result + "();\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
+  private Encode.ReturnValue genFunction(List<Statement> body) {
+    String name = "Func" + nextFunc++;
+    String code = "{\n";
+    for (Encode.ReturnValue er : visitEach(body)) {
+      code += er.code;
+    }
+    code += "return TSString.create(\"lol\");\n}\n";
+    return new Encode.ReturnValue(name, code);
+  }
+
+  /*
+  private Encode.ReturnValue genFunction(List<Statement> body) {
+    String name = "Func" + nextFunc++;
+    String code = "class " + name + " extends TSFunctionObject {\n";
+    code += "  public TSValue execute(TSLexicalEnvironment lexEnviron0, TSValue ths,\n" +
+            "                         TSValue[] args, Boolean isConstructor) {\n";
+    for (Encode.ReturnValue er : visitEach(body)) {
+      code += er.code;
+    }
+    code += "  }\n";
+    code += "}\n";
+    return new Encode.ReturnValue(name, code);
+  }
+  */
 }

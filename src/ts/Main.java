@@ -28,6 +28,7 @@ import javassist.Loader;
 import javassist.NotFoundException;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -245,6 +246,22 @@ public class Main {
       pool.importPackage("ts.support");
       //pool.importPackage("java.util.List");
       //pool.importPackage("java.util.ArrayList");
+
+      for(Encode.ReturnValue er : genCode.getFunctions()) {
+        final CtClass funcClass;
+        try {
+          funcClass = pool.makeClass(er.result, pool.get("ts.support.TSFunctionObject"));
+          CtMethod execute = CtMethod.make(genCode.executeSignature() + "{ return null; }", funcClass);
+          execute.setBody(er.code);
+          funcClass.addMethod(execute);
+          funcClass.addConstructor(CtNewConstructor.defaultConstructor(funcClass));
+        } catch (NotFoundException e) {
+          e.printStackTrace();
+        } catch (CannotCompileException e) {
+          e.printStackTrace();
+        }
+      }
+
       CtClass theClass = pool.makeClass(baseFileName);
 
       // now make a main method with an empty body
@@ -288,8 +305,8 @@ public class Main {
       try {
         classLoader.run(baseFileName, new String[0]);
       } catch (Throwable ex) {
-        Message.fatal("uncaught Java exception in execution of generated code");
         ex.printStackTrace();
+        Message.fatal("uncaught Java exception in execution of generated code");
       }
     }
   }

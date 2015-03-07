@@ -130,7 +130,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("try {\n");
     increaseIndentation();
     codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = TSLexicalEnvironment.getGlobalEnv();\n");
+    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = TSLexicalEnvironment.globalEnv;\n");
     return codeBuilder.toString();
   }
 

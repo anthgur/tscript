@@ -8,17 +8,13 @@ package ts.support;
  *
  */
 public final class TSLexicalEnvironment {
-  private static final TSLexicalEnvironment globalEnv;
+  public static final TSLexicalEnvironment globalEnv;
 
   // set up the global environment
   // http://www.ecma-international.org/ecma-262/5.1/#sec-10.2.3
   static {
     globalEnv = newDeclarativeEnvironment(null);
     globalEnv.declareVariable(TSString.create("undefined"), false);
-  }
-
-  public static TSLexicalEnvironment getGlobalEnv() {
-    return globalEnv;
   }
 
   private final TSEnvironmentRecord environmentRecord;

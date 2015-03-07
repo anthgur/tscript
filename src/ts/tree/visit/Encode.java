@@ -6,7 +6,6 @@
 package ts.tree.visit;
 
 import ts.Message;
-import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
 import ts.tree.visit.encode.UnaryOps;
@@ -67,6 +66,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   // simple counter for expression temps
   private int nextTemp = 0;
+  private int envCounter = 0;
   private int nextFunc = 0;
   private int iterationStatementLevel = 0;
 
@@ -94,6 +94,18 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   // decrease indentation by one level
   private void decreaseIndentation() {
     indentation -= increment;
+  }
+
+  private void increaseEnv() {
+    envCounter++;
+  }
+
+  private void decreaseEnv() {
+    envCounter--;
+  }
+
+  private String currentEnv() {
+    return "lexEnv" + envCounter;
   }
 
   public Encode(final int initialIndentation, final int increment) {
@@ -130,7 +142,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("try {\n");
     increaseIndentation();
     codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron = TSLexicalEnvironment.globalEnv;\n");
+    codeBuilder.append("TSLexicalEnvironment ");
+    codeBuilder.append(currentEnv());
+    codeBuilder.append(" = TSLexicalEnvironment.globalEnv;\n");
     return codeBuilder.toString();
   }
 
@@ -228,7 +242,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final Identifier identifier) {
     String result = getTemp();
     String code = indent() + "TSValue " + result +
-      " = " + "lexEnviron" +
+      " = " + currentEnv() +
       ".getIdentifierReference(TSString.create(\"" +
       identifier.getName() + "\"));\n";
 
@@ -280,15 +294,15 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "Message.setLineNumber(" +
       varDeclaration.getLineNumber() + ");\n";
 
-    code += indent() + "lexEnviron.declareVariable(" +
+    code += indent() + currentEnv() + ".declareVariable(" +
             varName + ", false);\n";
 
     final Expression assignExpr = varDeclaration.getExpression();
 
     if(assignExpr != null) {
       Encode.ReturnValue rhs = visitNode(assignExpr);
-      code += rhs.code + indent() +
-              "lexEnviron.getIdentifierReference(" +
+      code += rhs.code + indent() + currentEnv() +
+              ".getIdentifierReference(" +
               varName + ").simpleAssignment(" +
               rhs.result + ");\n";
     }
@@ -402,24 +416,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final CatchStatement catchStatement) {
-    StringBuilder codeBuilder = new StringBuilder(indent());
-    codeBuilder.append("catch (TSException e)\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("{\n");
-    increaseIndentation();
-    codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron =\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("    TSLexicalEnvironment.newDeclarativeEnvironment(lexEnviron);\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("lexEnviron.declareParameter(\"");
-    codeBuilder.append(catchStatement.getIdent().getName());
-    codeBuilder.append("\", e.getValue());\n");
-    codeBuilder.append(visit(catchStatement.getBlock()).code);
-    decreaseIndentation();
-    codeBuilder.append(indent());
-    codeBuilder.append("}\n");
-    return new Encode.ReturnValue(codeBuilder.toString());
+    String current = currentEnv();
+    increaseEnv();
+    String code = "catch (TSException e) {\n"
+            + "TSLexicalEnvironment " + currentEnv()
+            + " = TSLexicalEnvironment.newDeclarativeEnvironment(" + current + ");\n"
+            + currentEnv() + ".declareParameter(\""
+            + catchStatement.getIdent().getName() + "\", e.getValue());\n"
+            + visitNode(catchStatement.getBlock()).code
+            + "}\n";
+    decreaseEnv();
+    return new Encode.ReturnValue(code);
   }
 
   public Encode.ReturnValue visit(final ThrowStatement throwStatement) {
@@ -465,7 +472,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             // TODO pack the args
             + indent() + "List " + args + " = new ArrayList();\n"
             + indent() + "TSValue " + result + " = "
-            + "((TSCode) " + func + ").execute(lexEnviron, "
+            + "((TSCode) " + func + ").execute(" + currentEnv() + ", "
             + thisVal + ", " + args + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
@@ -489,7 +496,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     if((ident = func.getIdent()) != null) {
       code += "\"" + ident + "\", ";
     }
-    code += "lexEnviron, " + params + ");\n";
+    code += currentEnv() + ", " + params + ");\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -499,8 +506,8 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    code += indent() + "TSLexicalEnvironment lexEnviron;\n";
-    code += indent() + "lexEnviron = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n";
+    code += indent() + "TSLexicalEnvironment " + currentEnv() + "\n";
+    code += indent() + "    = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n";
 
     // set up "ThisBinding"
     // http://www.ecma-international.org/ecma-262/5.1/#sec-10.3

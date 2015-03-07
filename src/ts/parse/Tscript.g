@@ -284,6 +284,32 @@ leftHandSideExpression
   returns [ Expression lval ]
   : p=newExpression
     { $lval = $p.lval; }
+  | c=callExpression
+    { $lval = $c.lval; }
+  ;
+
+callExpression
+  returns [ Expression lval ]
+  : m=memberExpression a=arguments
+    { $lval = new CallExpression(loc($start), $m.lval, $a.lval); }
+  ;
+
+arguments
+  returns [ List<Expression> lval ]
+  : LPAREN RPAREN
+    { $lval = new ArrayList<Expression>(); }
+  | LPAREN al=argumentList RPAREN
+    { $lval = $al.lval; }
+  ;
+
+argumentList
+  returns [ List<Expression> lval ]
+  : a=assignmentExpression
+    { $lval = new ArrayList<Expression>();
+      $lval.add($a.lval); }
+  | al=argumentList COMMA a=assignmentExpression
+    { $lval = $al.lval;
+      $lval.add($a.lval); }
   ;
 
 postfixExpression

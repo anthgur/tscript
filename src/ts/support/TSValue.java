@@ -70,5 +70,13 @@ public abstract class TSValue {
   public boolean isUndefined() {
     return false;
   }
+
+  public boolean isObject() {
+    return false;
+  }
+
+  public boolean isCallable() {
+    return false;
+  }
 }
 

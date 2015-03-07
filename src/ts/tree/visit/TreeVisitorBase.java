@@ -123,4 +123,8 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
   public T visit(final FunctionExpression func) {
     return null;
   }
+
+  public T visit(final CallExpression call) {
+    return null;
+  }
 }

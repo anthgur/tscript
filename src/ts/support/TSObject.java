@@ -10,4 +10,9 @@ public class TSObject extends TSValue {
     public TSBoolean toBoolean() {
         return TSBoolean.trueValue;
     }
+
+    @Override
+    public boolean isObject() {
+        return true;
+    }
 }

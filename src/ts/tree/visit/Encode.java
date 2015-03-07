@@ -6,6 +6,7 @@
 package ts.tree.visit;
 
 import ts.Message;
+import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
 import ts.tree.visit.encode.UnaryOps;
@@ -117,7 +118,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public String executeSignature() {
-    return "public TSValue execute(TSLexicalEnvironment lexEnviron0, TSValue ths, TSValue[] args, Boolean isConstructor)";
+    return "public TSValue execute(TSLexicalEnvironment lexEnviron0, TSValue ths, List args, boolean isConstructor)";
   }
 
   // generate and return prologue code for the main method body
@@ -434,6 +435,20 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
+  public Encode.ReturnValue visit(final CallExpression call) {
+    final Encode.ReturnValue ref = visitNode(call.getExpr());
+    final String func = getTemp();
+
+    String code = ref.code + indent() +  "TSValue "
+            + func + " = " + ref.result + ".getValue();\n"
+            + "if (!" + func + ".isObject()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
+            + "if (!" + func + ".isCallable()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
+            + "TSValue ths = TSUndefined.value;\n"
+            + "List arr = new ArrayList();\n((TSCode) "
+            + func + ").execute(lexEnviron0, ths, arr, false);\n";
+    return new Encode.ReturnValue(code);
+  }
+
   public Encode.ReturnValue visit(final FunctionExpression func) {
     final Encode.ReturnValue er = genFunctionBody(func.getBody());
     final String ident
@@ -459,7 +474,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     String name = "Func" + nextFunc++;
-    String code = "{\n";
+    String code = "{System.out.println(\"in func\");\n";
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }

@@ -1,6 +1,8 @@
 package ts.support;
 
+import java.util.List;
+
 public interface TSCode {
     TSValue execute(TSLexicalEnvironment env, TSValue ths,
-                    TSValue[] args, Boolean isConstructor);
+                    List<TSValue> args, boolean isConstructor);
 }

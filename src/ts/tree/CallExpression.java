@@ -17,6 +17,14 @@ public class CallExpression extends Expression {
         this.args = args;
     }
 
+    public Expression getExpr() {
+        return expr;
+    }
+
+    public List<Expression> getArgs() {
+        return args;
+    }
+
     @Override
     public <T> T apply(TreeVisitor<T> visitor) {
         return visitor.visit(this);

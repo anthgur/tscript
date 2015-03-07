@@ -20,4 +20,9 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
         this.scope = env;
         this.formalParams = formalParams;
     }
+
+    @Override
+    public boolean isCallable() {
+        return true;
+    }
 }

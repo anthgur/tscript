@@ -439,11 +439,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     String code = ref.code + indent() +  "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
-            + "if (!" + func + ".isObject()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
-            + "if (!" + func + ".isCallable()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
-            + "TSValue ths = TSUndefined.value;\n"
-            + "List arr = new ArrayList();\n"
-            + "TSValue " + result + " = "
+            + indent() + "// function call type checking\n"
+            + indent() + "if (!" + func + ".isObject()) {\n"
+            + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
+            + indent() + "}\n"
+            + indent() + "if (!" + func + ".isCallable()) {\n"
+            + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
+            + indent() + "}\n"
+            + indent() + "TSValue ths = TSUndefined.value;\n"
+            + indent() + "List arr = new ArrayList();\n"
+            + indent() + "TSValue " + result + " = "
             + "((TSCode) " + func + ").execute(lexEnviron, ths, arr, false);\n";
     return new Encode.ReturnValue(result, code);
   }

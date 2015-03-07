@@ -437,16 +437,18 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   public Encode.ReturnValue visit(final CallExpression call) {
     final Encode.ReturnValue ref = visitNode(call.getExpr());
-    final String func = getTemp();
+    final String func = getTemp()
+            , result = getTemp();
 
     String code = ref.code + indent() +  "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
             + "if (!" + func + ".isObject()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
             + "if (!" + func + ".isCallable()) { throw new TSTypeError(TSString.create(\"Type error\")); }\n"
             + "TSValue ths = TSUndefined.value;\n"
-            + "List arr = new ArrayList();\n((TSCode) "
-            + func + ").execute(lexEnviron0, ths, arr, false);\n";
-    return new Encode.ReturnValue(code);
+            + "List arr = new ArrayList();\n"
+            + "TSValue " + result + " = "
+            + "((TSCode) " + func + ").execute(lexEnviron0, ths, arr, false);\n";
+    return new Encode.ReturnValue(result, code);
   }
 
   public Encode.ReturnValue visit(final FunctionExpression func) {
@@ -481,7 +483,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     }
     code += indent();
     // TODO return undefined here?
-    code += "return TSString.create(\"lol\");\n}\n";
+    code += "return TSUndefined.value;\n}\n";
     return new Encode.ReturnValue(name, code);
   }
 }

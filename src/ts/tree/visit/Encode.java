@@ -474,7 +474,8 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     String name = "Func" + nextFunc++;
-    String code = "{System.out.println(\"in func\");\n";
+    String code = "{\n";
+    code += indent() + "TSLexicalEnvironment lexEnviron0 = $1;\n";
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }

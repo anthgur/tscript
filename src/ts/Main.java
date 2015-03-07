@@ -268,9 +268,6 @@ public class Main {
         final CtConstructor noIdentCtor, identCtor;
         try {
           funcClass = pool.makeClass(er.result, funcObj);
-          execute = CtMethod.make(genCode.executeSignature() + "{ return null; }", funcClass);
-          execute.setBody(er.code);
-          funcClass.addMethod(execute);
 
           // super(...) are calls to TSFunctionObject(...) constructors
           noIdentCtor = new CtConstructor(noIdentCtorParams, funcClass);
@@ -280,6 +277,10 @@ public class Main {
           identCtor = new CtConstructor(identCtorParams, funcClass);
           identCtor.setBody("{super($1, $2, $3);}");
           funcClass.addConstructor(identCtor);
+
+          execute = CtMethod.make(genCode.executeSignature() + "{ return TSUndefined.value; }", funcClass);
+          execute.setBody(er.code);
+          funcClass.addMethod(execute);
         } catch (CannotCompileException e) {
           e.printStackTrace();
         }

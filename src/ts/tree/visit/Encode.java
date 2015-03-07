@@ -130,10 +130,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("try {\n");
     increaseIndentation();
     codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = ");
-    codeBuilder.append("TSLexicalEnvironment.newDeclarativeEnvironment(null);\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("lexEnviron0.declareVariable(TSString.create(\"undefined\"), false);\n");
+    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = TSLexicalEnvironment.getGlobalEnv();\n");
     return codeBuilder.toString();
   }
 
@@ -478,6 +475,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String name = "Func" + nextFunc++;
     String code = "{\n";
     code += indent() + "TSLexicalEnvironment lexEnviron0 = $1;\n";
+    code += indent() + "lexEnviron0 = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);";
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }

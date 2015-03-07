@@ -62,6 +62,11 @@ abstract class TSReference extends TSValue {
   public final boolean isUndefined() {
     return this.getValue().isUndefined();
   }
+
+  @Override
+  public final boolean isReference() {
+    return true;
+  }
 }
 
 

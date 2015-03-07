@@ -78,5 +78,9 @@ public abstract class TSValue {
   public boolean isCallable() {
     return false;
   }
+
+  public boolean isReference() {
+    return false;
+  }
 }
 

@@ -17,6 +17,10 @@ final class TSEnvironmentReference extends TSReference {
     this.base = base;
   }
 
+  public TSEnvironmentRecord getBase() {
+    return this.base;
+  }
+
   /** Is the reference not resolvable? That is, is the name not defined
    *  in the environment?
    */

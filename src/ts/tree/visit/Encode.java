@@ -435,7 +435,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final CallExpression call) {
     final Encode.ReturnValue ref = visitNode(call.getExpr());
     final String func = getTemp()
-            , result = getTemp();
+            , result = getTemp()
+            , args = getTemp()
+            , thisVal = getTemp();
 
     String code = ref.code + indent() +  "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
@@ -446,10 +448,25 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             + indent() + "if (!" + func + ".isCallable()) {\n"
             + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
             + indent() + "}\n"
-            + indent() + "TSValue ths = TSUndefined.value;\n"
-            + indent() + "List arr = new ArrayList();\n"
+
+            // TODO isPropertyReference check
+            // TODO object environment records
+            /*
+            + indent() + "if (!" + ref.result + ".isReference()) {\n"
+            + indent() + indent() + thisVal + " = " + ref.result
+            + indent() + "}\n"
+            */
+
+            // only declarative environment records so far, so just pass undefined for this
+            + indent() + "// this value\n"
+            + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
+            + indent() + "// args list\n"
+
+            // TODO pack the args
+            + indent() + "List " + args + " = new ArrayList();\n"
             + indent() + "TSValue " + result + " = "
-            + "((TSCode) " + func + ").execute(lexEnviron, ths, arr, false);\n";
+            + "((TSCode) " + func + ").execute(lexEnviron, "
+            + thisVal + ", " + args + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -482,7 +499,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    code += indent() + "TSLexicalEnvironment lexEnviron = $1;\n";
+    code += indent() + "TSLexicalEnvironment lexEnviron;\n";
     code += indent() + "lexEnviron = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n";
 
     // set up "ThisBinding"

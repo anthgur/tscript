@@ -241,8 +241,12 @@ formalParameterList
   returns [ List<String> lval ]
   : // empty rule
     { $lval = new ArrayList<>(); }
+  | i=IDENTIFIER
+    { $lval = new ArrayList<>();
+      $lval.add($i.text); }
   | fpl=formalParameterList COMMA i=IDENTIFIER
-    { $lval.add($i.text); }
+    { $lval = $fpl.lval;
+      $lval.add($i.text); }
   ;
 
 assignmentExpression

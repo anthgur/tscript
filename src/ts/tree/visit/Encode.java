@@ -461,7 +461,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             , result = getTemp()
             , thisVal = getTemp();
 
-    String code = ref.code + indent() + args.code +  "TSValue "
+    String code = ref.code + args.code + indent() + "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
             + indent() + "// function call type checking\n"
             + indent() + "if (!" + func + ".isObject()) {\n"
@@ -500,7 +500,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "String[] " + params + " = new String[" + formalParams.size() + "];\n";
     int index = 0;
     for (String p : func.getFormalParameters()) {
-      code += params + "[" + index++ + "] = \"" + p + "\";\n";
+      code += indent() + params + "[" + index++ + "] = \"" + p + "\";\n";
     }
 
     // instantiate the object
@@ -537,12 +537,12 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     + indent() + "for (int " + index + " = 0; " + index
             + " < this.formalParams.length; " + index + "++ ) {\n";
     increaseIndentation();
-    code += indent() + "if (" + index + " > this.formalParams.length) {\n"
+    code += indent() + "if (" + index + " < this.formalParams.length) {\n"
     + indent() + indent() + arg + " = " + "$2[" + index + "];\n"
     + indent() + "} else {\n"
     + indent() + indent() + arg + " = TSUndefined.value;\n"
-    + indent() + "}\n"
-    + indent() + indent() + currentEnv() + ".declareParameter(this.formalParams[" + index + "], " + arg + ");\n";
+    + indent() + "};\n"
+    + indent() + currentEnv() + ".declareParameter(this.formalParams[" + index + "], " + arg + ");\n";
     decreaseIndentation();
     code += indent() + "}\n";
 

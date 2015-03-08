@@ -6,8 +6,6 @@
 package ts.tree.visit;
 
 import ts.Message;
-import ts.support.TSUndefined;
-import ts.support.TSValue;
 import ts.tree.*;
 import ts.tree.visit.encode.BinaryOps;
 import ts.tree.visit.encode.UnaryOps;
@@ -68,10 +66,34 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   // simple counter for expression temps
   private int nextTemp = 0;
-  private int envCounter = 0;
   private int nextFunc = 0;
   private int iterationStatementLevel = 0;
-  private boolean inFunction = false;
+  private int functionCounter = 0;
+  private int envCounter = 0;
+
+  private void enterFunction() {
+    functionCounter++;
+  }
+
+  private void leaveFunction() {
+    functionCounter--;
+  }
+
+  private boolean inFunction() {
+    return functionCounter > 0;
+  }
+
+  private void enterEnv() {
+    envCounter++;
+  }
+
+  private void leaveEnv() {
+    envCounter--;
+  }
+
+  private String currentEnv() {
+    return "lexEnv" + envCounter;
+  }
 
   // by default start output indented 2 spaces and increment
   // indentation by 2 spaces
@@ -97,18 +119,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   // decrease indentation by one level
   private void decreaseIndentation() {
     indentation -= increment;
-  }
-
-  private void increaseEnv() {
-    envCounter++;
-  }
-
-  private void decreaseEnv() {
-    envCounter--;
-  }
-
-  private String currentEnv() {
-    return "lexEnv" + envCounter;
   }
 
   public Encode(final int initialIndentation, final int increment) {
@@ -416,7 +426,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   public Encode.ReturnValue visit(final CatchStatement catchStatement) {
     String current = currentEnv();
-    increaseEnv();
+    enterEnv();
     String code = "catch (TSException e) {\n"
             + "TSLexicalEnvironment " + currentEnv()
             + " = TSLexicalEnvironment.newDeclarativeEnvironment(" + current + ");\n"
@@ -424,7 +434,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             + catchStatement.getIdent().getName() + "\", e.getValue());\n"
             + visitNode(catchStatement.getBlock()).code
             + "}\n";
-    decreaseEnv();
+    leaveEnv();
     return new Encode.ReturnValue(code);
   }
 
@@ -513,7 +523,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
-    increaseEnv();
+    enterEnv();
     final String thisBinding = getTemp()
             , index = getTemp()
             , arg = getTemp()
@@ -547,20 +557,20 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     code += indent() + "}\n";
 
     // generate the actual user code
-    inFunction = true;
+    enterFunction();
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }
-    inFunction = false;
+    leaveFunction();
 
     // default return value is undefined
     code += indent() + "return TSUndefined.value;\n}\n";
-    decreaseEnv();
+    leaveEnv();
     return new Encode.ReturnValue(name, code);
   }
 
   public Encode.ReturnValue visit(ReturnStatement ret) {
-    if(!inFunction) {
+    if(!inFunction()) {
       Message.error(ret.getLoc(), "return not in a function");
       return new Encode.ReturnValue();
     } else {

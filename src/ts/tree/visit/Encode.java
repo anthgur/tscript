@@ -440,6 +440,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   public Encode.ReturnValue visit(final CallExpression call) {
     final Encode.ReturnValue ref = visitNode(call.getExpr());
+    final List<Expression> argsList = call.getArgs();
     final String func = getTemp()
             , result = getTemp()
             , args = getTemp()
@@ -466,16 +467,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             // only declarative environment records so far, so just pass undefined for this
             + indent() + "// this value\n"
             + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
-            + indent() + "// args list\n"
 
             // TODO pack the args
-            + indent() + "List " + args + " = new ArrayList();\n"
+            + indent() + "TSValue[] " + args +  " = new TSValue[" + argsList.size() + "];\n"
             + indent() + "TSValue " + result + " = "
             + "((TSCode) " + func + ").execute(" + thisVal + ", " + args + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
 
   public Encode.ReturnValue visit(final FunctionExpression func) {
+    final List<String> formalParams = func.getFormalParameters();
     final Encode.ReturnValue er = genFunctionBody(func.getBody());
     final String ident
             , result = getTemp()
@@ -484,9 +485,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     functions.add(er);
 
     // repack the formal params
-    String code = indent() + "List " + params + " = new ArrayList();\n";
+    String code = indent() + "String[] " + params + " = new String[" + formalParams.size() + "];\n";
+    int index = 0;
     for (String p : func.getFormalParameters()) {
-      code += params + ".add(\"" + p + "\");\n";
+      code += params + "[" + index + "] = \"" + p + "\";\n";
     }
 
     // instantiate the object
@@ -501,7 +503,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     increaseEnv();
     final String thisBinding = getTemp(), name = "Func" + nextFunc++;
-    String code = "public TSValue execute(TSValue ths, List args, boolean isCtor) {\n"
+    String code = "public TSValue execute(TSValue ths, TSValue[] args, boolean isCtor) {\n"
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3

@@ -247,20 +247,21 @@ public class Main {
       pool.importPackage("java.util.List");
       pool.importPackage("java.util.ArrayList");
 
-      final CtClass string, lexEnv, funcObj, list;
+      final CtClass string, lexEnv, funcObj, formalParams;
       try {
         string = pool.get("java.lang.String");
         lexEnv = pool.get("ts.support.TSLexicalEnvironment");
         funcObj = pool.get("ts.support.TSFunctionObject");
-        list = pool.get("java.util.List");
+        formalParams = pool.get("java.lang.String[]");
+
       } catch (NotFoundException e) {
         e.printStackTrace();
         Message.fatal("woops");
         throw new RuntimeException("unreachable");
       }
 
-      final CtClass[] noIdentCtorParams = { lexEnv, list };
-      final CtClass[] identCtorParams = { string, lexEnv, list };
+      final CtClass[] noIdentCtorParams = { lexEnv, formalParams };
+      final CtClass[] identCtorParams = { string, lexEnv, formalParams };
 
       for(Encode.ReturnValue er : genCode.getFunctions()) {
         final CtClass funcClass;

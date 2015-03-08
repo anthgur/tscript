@@ -534,7 +534,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(ReturnStatement ret) {
     if(!inFunction) {
       Message.error(ret.getLoc(), "return not in a function");
-      throw new RuntimeException("unreachable");
+      return new Encode.ReturnValue();
     } else {
       final String code;
       final Expression expr = ret.getExpr();

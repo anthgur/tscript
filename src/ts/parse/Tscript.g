@@ -35,7 +35,8 @@ grammar Tscript;
 // grammar proper
 
 program
-  : se=sourceElements EOF
+  : { semanticValue = new ArrayList<>(); }
+  | se=sourceElements EOF
     { semanticValue = $se.lval; }
   ;
 

@@ -438,15 +438,30 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
+  private Encode.ReturnValue packCallArgs(List<Expression> args) {
+    final String result = getTemp();
+    String code = indent() + "// function call argument packing\n"
+            + indent() + "TSValue[] " + result
+            + " = new TSValue[" + args.size() + "];\n";
+
+    int index = 0;
+    for (Encode.ReturnValue expr : visitEach(args)) {
+      code += expr.code + indent() + result + "[" + index++ + "] = "
+              + expr.result + ";\n";
+    }
+    code += indent() + "// end function call argument packing\n";
+
+    return new Encode.ReturnValue(result, code);
+  }
+
   public Encode.ReturnValue visit(final CallExpression call) {
-    final Encode.ReturnValue ref = visitNode(call.getExpr());
-    final List<Expression> argsList = call.getArgs();
+    final Encode.ReturnValue ref = visitNode(call.getExpr())
+            , args = packCallArgs(call.getArgs());
     final String func = getTemp()
             , result = getTemp()
-            , args = getTemp()
             , thisVal = getTemp();
 
-    String code = ref.code + indent() +  "TSValue "
+    String code = ref.code + indent() + args.code +  "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
             + indent() + "// function call type checking\n"
             + indent() + "if (!" + func + ".isObject()) {\n"
@@ -467,11 +482,8 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             // only declarative environment records so far, so just pass undefined for this
             + indent() + "// this value\n"
             + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
-
-            // TODO pack the args
-            + indent() + "TSValue[] " + args +  " = new TSValue[" + argsList.size() + "];\n"
             + indent() + "TSValue " + result + " = "
-            + "((TSCode) " + func + ").execute(" + thisVal + ", " + args + ", false);\n";
+            + "((TSCode) " + func + ").execute(" + thisVal + ", " + args.result + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -488,7 +500,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "String[] " + params + " = new String[" + formalParams.size() + "];\n";
     int index = 0;
     for (String p : func.getFormalParameters()) {
-      code += params + "[" + index + "] = \"" + p + "\";\n";
+      code += params + "[" + index++ + "] = \"" + p + "\";\n";
     }
 
     // instantiate the object

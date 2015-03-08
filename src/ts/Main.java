@@ -240,6 +240,9 @@ public class Main {
 
     // if requested, create a class file for the generated code and execute it
     if (doExec) {
+      if(Message.getErrorCount() != 0) {
+        Message.fatal("program execution aborted due to syntactic errors");
+      }
       // create an empty class in the default class pool
       ClassPool pool = ClassPool.getDefault();
       pool.importPackage("ts.Message");

@@ -514,7 +514,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     increaseEnv();
-    final String thisBinding = getTemp(), name = "Func" + nextFunc++;
+    final String thisBinding = getTemp()
+            , index = getTemp()
+            , arg = getTemp()
+            , name = "Func" + nextFunc++;
     String code = "public TSValue execute(TSValue ths, TSValue[] args, boolean isCtor) {\n"
 
     // set up the new execution context
@@ -528,7 +531,20 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     + indent() + "final TSValue " + thisBinding + "; // thisBinding\n"
     + indent() + "if ($1.equals(TSNull.nullValue) || $1.equals(TSUndefined.value)) {\n"
     + indent() + indent() + thisBinding + " = TSLexicalEnvironment.globalEnv;\n"
-    + indent() + "} else {\n" + indent() + indent() + thisBinding + " = $1;\n" + indent() + "}\n";
+    + indent() + "} else {\n" + indent() + indent() + thisBinding + " = $1;\n" + indent() + "}\n"
+
+    + indent() + "TSValue " + arg + ";\n"
+    + indent() + "for (int " + index + " = 0; " + index
+            + " < this.formalParams.length; " + index + "++ ) {\n";
+    increaseIndentation();
+    code += indent() + "if (" + index + " > this.formalParams.length) {\n"
+    + indent() + indent() + arg + " = " + "$2[" + index + "];\n"
+    + indent() + "} else {\n"
+    + indent() + indent() + arg + " = TSUndefined.value;\n"
+    + indent() + "}\n"
+    + indent() + indent() + currentEnv() + ".declareParameter(this.formalParams[" + index + "], " + arg + ");\n";
+    decreaseIndentation();
+    code += indent() + "}\n";
 
     // generate the actual user code
     inFunction = true;

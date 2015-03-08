@@ -8,7 +8,6 @@ package ts;
 import ts.parse.*;
 import ts.tree.*;
 import ts.tree.visit.*;
-import ts.support.*;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ANTLRFileStream;
@@ -230,10 +229,12 @@ public class Main {
       PrintWriter outputJava = openOutputFile(baseFileName, ".java");
       outputJava.println("import ts.Message;");
       outputJava.println("import ts.support.*;");
+      outputJava.println("import java.util.*;");
       outputJava.println("class " + baseFileName + " {");
       outputJava.println("  " + genCode.mainMethodSignature());
       outputJava.println(mainCodeString);
-      outputJava.println("}");
+      outputJava.println("}\n");
+      outputJava.println(genCode.functionComments());
       outputJava.close();
     }
 
@@ -243,8 +244,48 @@ public class Main {
       ClassPool pool = ClassPool.getDefault();
       pool.importPackage("ts.Message");
       pool.importPackage("ts.support");
-      //pool.importPackage("java.util.List");
-      //pool.importPackage("java.util.ArrayList");
+      pool.importPackage("java.util.List");
+      pool.importPackage("java.util.ArrayList");
+
+      final CtClass string, lexEnv, funcObj, list;
+      try {
+        string = pool.get("java.lang.String");
+        lexEnv = pool.get("ts.support.TSLexicalEnvironment");
+        funcObj = pool.get("ts.support.TSFunctionObject");
+        list = pool.get("java.util.List");
+      } catch (NotFoundException e) {
+        e.printStackTrace();
+        Message.fatal("woops");
+        throw new RuntimeException("unreachable");
+      }
+
+      final CtClass[] noIdentCtorParams = { lexEnv, list };
+      final CtClass[] identCtorParams = { string, lexEnv, list };
+
+      for(Encode.ReturnValue er : genCode.getFunctions()) {
+        final CtClass funcClass;
+        final CtMethod execute;
+        final CtConstructor noIdentCtor, identCtor;
+        try {
+          funcClass = pool.makeClass(er.result, funcObj);
+
+          // super(...) are calls to TSFunctionObject(...) constructors
+          noIdentCtor = new CtConstructor(noIdentCtorParams, funcClass);
+          noIdentCtor.setBody("{super($1, $2);}");
+          funcClass.addConstructor(noIdentCtor);
+
+          identCtor = new CtConstructor(identCtorParams, funcClass);
+          identCtor.setBody("{super($1, $2, $3);}");
+          funcClass.addConstructor(identCtor);
+
+          execute = CtMethod.make(genCode.executeSignature() + "{ return TSUndefined.value; }", funcClass);
+          execute.setBody(er.code);
+          funcClass.addMethod(execute);
+        } catch (CannotCompileException e) {
+          e.printStackTrace();
+        }
+      }
+
       CtClass theClass = pool.makeClass(baseFileName);
 
       // now make a main method with an empty body
@@ -288,8 +329,8 @@ public class Main {
       try {
         classLoader.run(baseFileName, new String[0]);
       } catch (Throwable ex) {
-        Message.fatal("uncaught Java exception in execution of generated code");
         ex.printStackTrace();
+        Message.fatal("uncaught Java exception in execution of generated code");
       }
     }
   }

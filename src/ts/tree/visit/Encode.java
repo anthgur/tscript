@@ -62,9 +62,14 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     }
   }
 
+  private List<Encode.ReturnValue> functions = new ArrayList<ReturnValue>();
+
   // simple counter for expression temps
   private int nextTemp = 0;
+  private int envCounter = 0;
+  private int nextFunc = 0;
   private int iterationStatementLevel = 0;
+  private boolean inFunction = false;
 
   // by default start output indented 2 spaces and increment
   // indentation by 2 spaces
@@ -92,6 +97,18 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     indentation -= increment;
   }
 
+  private void increaseEnv() {
+    envCounter++;
+  }
+
+  private void decreaseEnv() {
+    envCounter--;
+  }
+
+  private String currentEnv() {
+    return "lexEnv" + envCounter;
+  }
+
   public Encode(final int initialIndentation, final int increment) {
     // setup indentation
     this.initialIndentation = initialIndentation;
@@ -113,6 +130,10 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return "public static void main(String args[])";
   }
 
+  public String executeSignature() {
+    return "public TSValue execute(TSLexicalEnvironment lexEnviron, TSValue ths, List args, boolean isConstructor)";
+  }
+
   // generate and return prologue code for the main method body
   public String mainPrologue(String filename) {
     StringBuilder codeBuilder = new StringBuilder(indent());
@@ -122,10 +143,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("try {\n");
     increaseIndentation();
     codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron0 = ");
-    codeBuilder.append("TSLexicalEnvironment.newDeclarativeEnvironment(null);\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("lexEnviron0.declareVariable(TSString.create(\"undefined\"), false);\n");
+    codeBuilder.append("TSLexicalEnvironment ");
+    codeBuilder.append(currentEnv());
+    codeBuilder.append(" = TSLexicalEnvironment.globalEnv;\n");
     return codeBuilder.toString();
   }
 
@@ -145,11 +165,26 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return codeBuilder.toString();
   }
 
+  public String functionComments() {
+    StringBuilder codeBuilder = new StringBuilder("/*\n");
+    for (Encode.ReturnValue er : functions) {
+      codeBuilder.append(er.result);
+      codeBuilder.append("\n");
+      codeBuilder.append(er.code);
+    }
+    codeBuilder.append("*/");
+    return codeBuilder.toString();
+  }
+
   // return string for name of next expression temp
   private String getTemp() {
     String ret = "temp" + nextTemp;
     nextTemp += 1;
     return ret;
+  }
+
+  public List<Encode.ReturnValue> getFunctions() {
+    return functions;
   }
 
   // visit a list of ASTs and generate code for each of them in order
@@ -179,7 +214,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(result, code);
   }
 
-  @Override
   public ReturnValue visit(UnaryOperator opNode) {
     String result = getTemp();
 
@@ -209,7 +243,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   public Encode.ReturnValue visit(final Identifier identifier) {
     String result = getTemp();
     String code = indent() + "TSValue " + result +
-      " = " + "lexEnviron0" +
+      " = " + currentEnv() +
       ".getIdentifierReference(TSString.create(\"" +
       identifier.getName() + "\"));\n";
 
@@ -261,15 +295,15 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code = indent() + "Message.setLineNumber(" +
       varDeclaration.getLineNumber() + ");\n";
 
-    code += indent() + "lexEnviron0.declareVariable(" +
+    code += indent() + currentEnv() + ".declareVariable(" +
             varName + ", false);\n";
 
     final Expression assignExpr = varDeclaration.getExpression();
 
     if(assignExpr != null) {
       Encode.ReturnValue rhs = visitNode(assignExpr);
-      code += rhs.code + indent() +
-              "lexEnviron0.getIdentifierReference(" +
+      code += rhs.code + indent() + currentEnv() +
+              ".getIdentifierReference(" +
               varName + ").simpleAssignment(" +
               rhs.result + ");\n";
     }
@@ -383,24 +417,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   }
 
   public Encode.ReturnValue visit(final CatchStatement catchStatement) {
-    StringBuilder codeBuilder = new StringBuilder(indent());
-    codeBuilder.append("catch (TSException e)\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("{\n");
-    increaseIndentation();
-    codeBuilder.append(indent());
-    codeBuilder.append("TSLexicalEnvironment lexEnviron0 =\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("    TSLexicalEnvironment.newDeclarativeEnvironment(lexEnviron0);\n");
-    codeBuilder.append(indent());
-    codeBuilder.append("lexEnviron0.declareParameter(\"");
-    codeBuilder.append(catchStatement.getIdent().getName());
-    codeBuilder.append("\", e.getValue());\n");
-    codeBuilder.append(visit(catchStatement.getBlock()).code);
-    decreaseIndentation();
-    codeBuilder.append(indent());
-    codeBuilder.append("}\n");
-    return new Encode.ReturnValue(codeBuilder.toString());
+    String current = currentEnv();
+    increaseEnv();
+    String code = "catch (TSException e) {\n"
+            + "TSLexicalEnvironment " + currentEnv()
+            + " = TSLexicalEnvironment.newDeclarativeEnvironment(" + current + ");\n"
+            + currentEnv() + ".declareParameter(\""
+            + catchStatement.getIdent().getName() + "\", e.getValue());\n"
+            + visitNode(catchStatement.getBlock()).code
+            + "}\n";
+    decreaseEnv();
+    return new Encode.ReturnValue(code);
   }
 
   public Encode.ReturnValue visit(final ThrowStatement throwStatement) {
@@ -411,5 +438,113 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append(expr.result);
     codeBuilder.append(".getValue());\n");
     return new Encode.ReturnValue(codeBuilder.toString());
+  }
+
+  public Encode.ReturnValue visit(final CallExpression call) {
+    final Encode.ReturnValue ref = visitNode(call.getExpr());
+    final String func = getTemp()
+            , result = getTemp()
+            , args = getTemp()
+            , thisVal = getTemp();
+
+    String code = ref.code + indent() +  "TSValue "
+            + func + " = " + ref.result + ".getValue();\n"
+            + indent() + "// function call type checking\n"
+            + indent() + "if (!" + func + ".isObject()) {\n"
+            + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
+            + indent() + "}\n"
+            + indent() + "if (!" + func + ".isCallable()) {\n"
+            + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
+            + indent() + "}\n"
+
+            // TODO isPropertyReference check
+            // TODO object environment records
+            /*
+            + indent() + "if (!" + ref.result + ".isReference()) {\n"
+            + indent() + indent() + thisVal + " = " + ref.result
+            + indent() + "}\n"
+            */
+
+            // only declarative environment records so far, so just pass undefined for this
+            + indent() + "// this value\n"
+            + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
+            + indent() + "// args list\n"
+
+            // TODO pack the args
+            + indent() + "List " + args + " = new ArrayList();\n"
+            + indent() + "TSValue " + result + " = "
+            + "((TSCode) " + func + ").execute(" + currentEnv() + ", "
+            + thisVal + ", " + args + ", false);\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
+  public Encode.ReturnValue visit(final FunctionExpression func) {
+    final Encode.ReturnValue er = genFunctionBody(func.getBody());
+    final String ident
+            , result = getTemp()
+            , params = getTemp();
+
+    functions.add(er);
+
+    // repack the formal params
+    String code = indent() + "List " + params + " = new ArrayList();\n";
+    for (String p : func.getFormalParameters()) {
+      code += params + ".add(\"" + p + "\");\n";
+    }
+
+    // instantiate the object
+    code += indent() + "TSValue " + result + " = new " + er.result + "(";
+    if((ident = func.getIdent()) != null) {
+      code += "\"" + ident + "\", ";
+    }
+    code += currentEnv() + ", " + params + ");\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
+  private Encode.ReturnValue genFunctionBody(List<Statement> body) {
+    String name = "Func" + nextFunc++;
+    String code = "{\n";
+
+    // set up the new execution context
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
+    code += indent() + "TSLexicalEnvironment " + currentEnv() + "\n";
+    code += indent() + "    = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n";
+
+    // set up "ThisBinding"
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-10.3
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
+    code += indent() + "final TSValue thisBinding;\n";
+    code += indent() + "if ($2 == null || $2.equals(TSUndefined.value)) {\n";
+    code += indent() + indent() + "thisBinding = TSLexicalEnvironment.globalEnv;\n";
+    code += indent() + "} else {\n" + indent() + indent() + "thisBinding = $2;\n" + indent() + "}\n";
+
+    // generate the actual user code
+    inFunction = true;
+    for (Encode.ReturnValue er : visitEach(body)) {
+      code += er.code;
+    }
+    inFunction = false;
+
+    // default return value is undefined
+    code += indent();
+    code += "return TSUndefined.value;\n}\n";
+    return new Encode.ReturnValue(name, code);
+  }
+
+  public Encode.ReturnValue visit(ReturnStatement ret) {
+    if(!inFunction) {
+      Message.error(ret.getLoc(), "return not in a function");
+      return new Encode.ReturnValue();
+    } else {
+      final String code;
+      final Expression expr = ret.getExpr();
+      if (expr == null){
+        code = indent() + "return TSUndefined.value;\n";
+      } else {
+        final Encode.ReturnValue er = visitNode(expr);
+        code = er.code + indent() + "return " + er.result + ".getValue();\n";
+      }
+      return new Encode.ReturnValue(code);
+    }
   }
 }

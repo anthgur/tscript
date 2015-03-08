@@ -35,17 +35,35 @@ grammar Tscript;
 // grammar proper
 
 program
-  : sl=statementList EOF
-    { semanticValue = $sl.lval; }
+  : { semanticValue = new ArrayList<>(); }
+  | se=sourceElements EOF
+    { semanticValue = $se.lval; }
   ;
 
-statementList
+sourceElements
+  returns [ List<Statement> lval ]
+  : s=sourceElement
+    { $lval = new ArrayList<Statement>();
+      $lval.add($s.lval); }
+  | se=sourceElements s=sourceElement
+    { $lval = $se.lval;
+      $lval.add($s.lval); }
+  ;
+
+sourceElement
+  returns [ Statement lval ]
+  : s=statement
+    { $lval = $s.lval; }
+  | f=functionDeclaration
+    { $lval = $f.lval; }
+  ;
+
+functionBody
   returns [ List<Statement> lval ]
   : // empty rule
     { $lval = new ArrayList<Statement>(); }
-  | sl=statementList s=statement
-    { $sl.lval.add($s.lval);
-      $lval = $sl.lval; }
+  | se=sourceElements
+    { $lval = $se.lval; }
   ;
 
 statement
@@ -66,12 +84,22 @@ statement
     { $lval = $t.lval; }
   | th=throwStatement
     { $lval = $th.lval; }
+  | r=returnStatement
+    { $lval = $r.lval; }
   | BREAK SEMICOLON
     { $lval = new BreakStatement(loc($start)); }
   | CONTINUE SEMICOLON
     { $lval = new ContinueStatement(loc($start)); }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
+  ;
+
+returnStatement
+  returns [ Statement lval ]
+  : RETURN SEMICOLON
+    { $lval = new ReturnStatement(loc($start), null); }
+  | RETURN e=expression SEMICOLON
+    { $lval = new ReturnStatement(loc($start), $e.lval); }
   ;
 
 tryStatement
@@ -120,6 +148,15 @@ blockStatement
   returns [ BlockStatement lval ]
   : LCURLY sl=statementList RCURLY
     { $lval = buildBlockStatement(loc($start), $sl.lval); }
+  ;
+
+statementList
+  returns [ List<Statement> lval ]
+  : // empty rule
+    { $lval = new ArrayList<Statement>(); }
+  | sl=statementList s=statement
+    { $sl.lval.add($s.lval);
+      $lval = $sl.lval; }
   ;
 
 varStatement
@@ -186,22 +223,27 @@ memberExpression
     { $lval = $f.lval; }
   ;
 
-functionExpression
-  returns [ Expression lval ]
-  : FUNCTION LPAREN RPAREN LCURLY s=statementList RCURLY
-    { $lval = new FunctionExpression(loc($start), $s.lval); }
+functionDeclaration
+  returns [ Statement lval ]
+  : FUNCTION i=IDENTIFIER LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionDeclaration(loc($start), $i.text, $fpl.lval, $f.lval); }
   ;
 
-/*
+functionExpression
+  returns [ Expression lval ]
+  : FUNCTION LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionExpression(loc($start), null, $fpl.lval, $f.lval); }
+  | FUNCTION IDENTIFIER LPAREN fpl=formalParameterList RPAREN LCURLY f=functionBody RCURLY
+    { $lval = new FunctionExpression(loc($start), $IDENTIFIER.text, $fpl.lval, $f.lval); }
+  ;
+
 formalParameterList
   returns [ List<String> lval ]
-  : i=IDENTIFIER
-    { $lval = new ArrayList();
-      $lval.push($i.text); }
+  : // empty rule
+    { $lval = new ArrayList<>(); }
   | fpl=formalParameterList COMMA i=IDENTIFIER
-    { $lval.push($i.text); }
+    { $lval.add($i.text); }
   ;
-*/
 
 assignmentExpression
   returns [ Expression lval ]
@@ -253,6 +295,34 @@ leftHandSideExpression
   returns [ Expression lval ]
   : p=newExpression
     { $lval = $p.lval; }
+  | c=callExpression
+    { $lval = $c.lval; }
+  ;
+
+callExpression
+  returns [ Expression lval ]
+  : m=memberExpression a=arguments
+    { $lval = new CallExpression(loc($start), $m.lval, $a.lval); }
+  | c=callExpression a=arguments
+    { $lval = new CallExpression(loc($start), $c.lval, $a.lval); }
+  ;
+
+arguments
+  returns [ List<Expression> lval ]
+  : LPAREN RPAREN
+    { $lval = new ArrayList<Expression>(); }
+  | LPAREN al=argumentList RPAREN
+    { $lval = $al.lval; }
+  ;
+
+argumentList
+  returns [ List<Expression> lval ]
+  : a=assignmentExpression
+    { $lval = new ArrayList<Expression>();
+      $lval.add($a.lval); }
+  | al=argumentList COMMA a=assignmentExpression
+    { $lval = $al.lval;
+      $lval.add($a.lval); }
   ;
 
 postfixExpression
@@ -425,7 +495,8 @@ THROW : 'throw';
 TRY : 'try';
 CATCH : 'catch';
 FINALLY : 'finally';
-FUNCTION: 'function';
+FUNCTION : 'function';
+RETURN : 'return';
 
 IDENTIFIER : IdentifierCharacters;
 

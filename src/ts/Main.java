@@ -264,7 +264,6 @@ public class Main {
 
       for(Encode.ReturnValue er : genCode.getFunctions()) {
         final CtClass funcClass;
-        final CtMethod execute;
         final CtConstructor noIdentCtor, identCtor;
         try {
           funcClass = pool.makeClass(er.result, funcObj);
@@ -278,11 +277,10 @@ public class Main {
           identCtor.setBody("{super($1, $2, $3);}");
           funcClass.addConstructor(identCtor);
 
-          execute = CtMethod.make(genCode.executeSignature() + "{ return TSUndefined.value; }", funcClass);
-          execute.setBody(er.code);
-          funcClass.addMethod(execute);
+          // add the function body to the class
+          funcClass.addMethod(CtMethod.make(er.code, funcClass));
         } catch (CannotCompileException e) {
-          e.printStackTrace();
+          Message.bug("Couldn't compile a function\n" + e.getMessage());
         }
       }
 

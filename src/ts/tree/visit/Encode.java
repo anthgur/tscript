@@ -130,10 +130,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return "public static void main(String args[])";
   }
 
-  public String executeSignature() {
-    return "public TSValue execute(TSLexicalEnvironment lexEnviron, TSValue ths, List args, boolean isConstructor)";
-  }
-
   // generate and return prologue code for the main method body
   public String mainPrologue(String filename) {
     StringBuilder codeBuilder = new StringBuilder(indent());
@@ -503,20 +499,21 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     String name = "Func" + nextFunc++;
-    String code = "{\n";
+    String code =
+            "public TSValue execute(TSLexicalEnvironment env, TSValue ths, List args, boolean isCtor) {\n"
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    code += indent() + "TSLexicalEnvironment " + currentEnv() + "\n";
-    code += indent() + "    = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n";
+    + indent() + "TSLexicalEnvironment " + currentEnv() + "\n"
+    + indent() + "    = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n"
 
     // set up "ThisBinding"
     // http://www.ecma-international.org/ecma-262/5.1/#sec-10.3
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    code += indent() + "final TSValue thisBinding;\n";
-    code += indent() + "if ($2 == null || $2.equals(TSUndefined.value)) {\n";
-    code += indent() + indent() + "thisBinding = TSLexicalEnvironment.globalEnv;\n";
-    code += indent() + "} else {\n" + indent() + indent() + "thisBinding = $2;\n" + indent() + "}\n";
+    + indent() + "final TSValue thisBinding;\n"
+    + indent() + "if ($2 == null || $2.equals(TSUndefined.value)) {\n"
+    + indent() + indent() + "thisBinding = TSLexicalEnvironment.globalEnv;\n"
+    + indent() + "} else {\n" + indent() + indent() + "thisBinding = $2;\n" + indent() + "}\n";
 
     // generate the actual user code
     inFunction = true;
@@ -526,8 +523,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     inFunction = false;
 
     // default return value is undefined
-    code += indent();
-    code += "return TSUndefined.value;\n}\n";
+    code += indent() + "return TSUndefined.value;\n}\n";
     return new Encode.ReturnValue(name, code);
   }
 

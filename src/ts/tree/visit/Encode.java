@@ -469,8 +469,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             // TODO pack the args
             + indent() + "List " + args + " = new ArrayList();\n"
             + indent() + "TSValue " + result + " = "
-            + "((TSCode) " + func + ").execute(" + currentEnv() + ", "
-            + thisVal + ", " + args + ", false);\n";
+            + "((TSCode) " + func + ").execute(" + thisVal + ", " + args + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -499,8 +498,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
   private Encode.ReturnValue genFunctionBody(List<Statement> body) {
     String name = "Func" + nextFunc++;
-    String code =
-            "public TSValue execute(TSLexicalEnvironment env, TSValue ths, List args, boolean isCtor) {\n"
+    String code = "public TSValue execute(TSValue ths, List args, boolean isCtor) {\n"
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
@@ -511,9 +509,9 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-10.3
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
     + indent() + "final TSValue thisBinding;\n"
-    + indent() + "if ($2 == null || $2.equals(TSUndefined.value)) {\n"
+    + indent() + "if ($1.equals(TSNull.nullValue) || $1.equals(TSUndefined.value)) {\n"
     + indent() + indent() + "thisBinding = TSLexicalEnvironment.globalEnv;\n"
-    + indent() + "} else {\n" + indent() + indent() + "thisBinding = $2;\n" + indent() + "}\n";
+    + indent() + "} else {\n" + indent() + indent() + "thisBinding = $1;\n" + indent() + "}\n";
 
     // generate the actual user code
     inFunction = true;

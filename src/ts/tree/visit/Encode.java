@@ -69,6 +69,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
   private int envCounter = 0;
   private int nextFunc = 0;
   private int iterationStatementLevel = 0;
+  private boolean inFunction = false;
 
   // by default start output indented 2 spaces and increment
   // indentation by 2 spaces
@@ -518,13 +519,32 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     code += indent() + "} else {\n" + indent() + indent() + "thisBinding = $2;\n" + indent() + "}\n";
 
     // generate the actual user code
+    inFunction = true;
     for (Encode.ReturnValue er : visitEach(body)) {
       code += er.code;
     }
+    inFunction = false;
 
     // default return value is undefined
     code += indent();
     code += "return TSUndefined.value;\n}\n";
     return new Encode.ReturnValue(name, code);
+  }
+
+  public Encode.ReturnValue visit(ReturnStatement ret) {
+    if(!inFunction) {
+      Message.error(ret.getLoc(), "return not in a function");
+      throw new RuntimeException("unreachable");
+    } else {
+      final String code;
+      final Expression expr = ret.getExpr();
+      if (expr == null){
+        code = indent() + "return TSUndefined.value;\n";
+      } else {
+        final Encode.ReturnValue er = visitNode(expr);
+        code = er.code + indent() + "return " + er.result + ".getValue();\n";
+      }
+      return new Encode.ReturnValue(code);
+    }
   }
 }

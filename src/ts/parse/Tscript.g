@@ -83,12 +83,22 @@ statement
     { $lval = $t.lval; }
   | th=throwStatement
     { $lval = $th.lval; }
+  | r=returnStatement
+    { $lval = $r.lval; }
   | BREAK SEMICOLON
     { $lval = new BreakStatement(loc($start)); }
   | CONTINUE SEMICOLON
     { $lval = new ContinueStatement(loc($start)); }
   | SEMICOLON
     { $lval = new EmptyStatement(loc($start)); }
+  ;
+
+returnStatement
+  returns [ Statement lval ]
+  : RETURN SEMICOLON
+    { $lval = new ReturnStatement(loc($start), null); }
+  | RETURN e=expression SEMICOLON
+    { $lval = new ReturnStatement(loc($start), $e.lval); }
   ;
 
 tryStatement
@@ -482,7 +492,8 @@ THROW : 'throw';
 TRY : 'try';
 CATCH : 'catch';
 FINALLY : 'finally';
-FUNCTION: 'function';
+FUNCTION : 'function';
+RETURN : 'return';
 
 IDENTIFIER : IdentifierCharacters;
 

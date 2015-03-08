@@ -303,6 +303,8 @@ callExpression
   returns [ Expression lval ]
   : m=memberExpression a=arguments
     { $lval = new CallExpression(loc($start), $m.lval, $a.lval); }
+  | c=callExpression a=arguments
+    { $lval = new CallExpression(loc($start), $c.lval, $a.lval); }
   ;
 
 arguments

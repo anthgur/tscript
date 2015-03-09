@@ -221,6 +221,8 @@ memberExpression
     { $lval = $a.lval; }
   | f=functionExpression
     { $lval = $f.lval; }
+  | m=memberExpression DOT IDENTIFIER
+    { $lval = new PropertyAccessor(loc($start), $m.lval, $IDENTIFIER.text); }
   ;
 
 functionDeclaration
@@ -309,6 +311,8 @@ callExpression
     { $lval = new CallExpression(loc($start), $m.lval, $a.lval); }
   | c=callExpression a=arguments
     { $lval = new CallExpression(loc($start), $c.lval, $a.lval); }
+  | c=callExpression DOT IDENTIFIER
+    { $lval = new PropertyAccessor(loc($start), $c.lval, $IDENTIFIER.text); }
   ;
 
 arguments
@@ -446,6 +450,8 @@ fragment LineTerminator : '\r' '\n' | '\r' | '\n';
 fragment DOUBLE_STRING_CHARS : ( ~[\\\"] | [\\n] )*;
 fragment SINGLE_STRING_CHARS : ( ~[\\\'] | [\\n] )*;
 
+fragment Dot : [.];
+
 // lexer rules
 //   keywords must appear before IDENTIFIER
 
@@ -454,8 +460,8 @@ fragment SINGLE_STRING_CHARS : ( ~[\\\'] | [\\n] )*;
 
 // DecimalLiteral
 DECIMAL_LITERAL
-  : INTEGER_LITERAL [.] DIGIT* EXPONENT_PART?
-  | [.] DIGIT* EXPONENT_PART?
+  : INTEGER_LITERAL Dot DIGIT* EXPONENT_PART?
+  | Dot DIGIT+ EXPONENT_PART?
   | INTEGER_LITERAL EXPONENT_PART?
   ;
 
@@ -471,6 +477,7 @@ STRING_LITERAL
   | '\'' SINGLE_STRING_CHARS '\''
   ;
 
+DOT : Dot;
 LCURLY : [{];
 RCURLY : [}];
 LPAREN : [(];

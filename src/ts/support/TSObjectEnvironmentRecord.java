@@ -19,7 +19,7 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
 
     @Override
     void setMutableBinding(TSString name, TSValue value) {
-
+        binding.put(name, value);
     }
 
     // we are never in strict mode so don't bother with the flag

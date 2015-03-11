@@ -46,8 +46,12 @@ public class TSObject extends TSValue {
         return getProperty(name) == TSUndefined.value;
     }
 
-    // TODO this doesn't seem right
+    // TODO property accessors/descriptors
     public final TSValue get(TSString name) {
         return getProperty(name);
+    }
+
+    public final void put(TSString name, TSValue value) {
+        properties.put(name, value);
     }
 }

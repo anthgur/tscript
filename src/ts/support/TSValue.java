@@ -38,6 +38,10 @@ public abstract class TSValue {
   abstract public TSNumber toNumber();
   abstract public TSBoolean toBoolean();
 
+  public TSObject toObject() {
+    return new TSObject();
+  }
+
   /** Convert to String. Override for all primitive types and TSReference.
    *  It can't be called toString because of Object.toString.
    */
@@ -60,9 +64,11 @@ public abstract class TSValue {
     return rightValue;
   }
 
-  //
-  // test for null and undefined
-  //
+  public void checkObjectCoercible() {
+    if(isUndefined() || this == TSNull.nullValue) {
+      throw new TSTypeError(TSString.create("couldn't coerce object"));
+    }
+  }
 
   /** Is this value Undefined? Override only in TSUndefined and
    *  TSReference.
@@ -81,6 +87,10 @@ public abstract class TSValue {
 
   public boolean isReference() {
     return false;
+  }
+
+  public TSValue getProperty(TSString name) {
+    throw new TSException(TSString.create("illegal property access"));
   }
 }
 

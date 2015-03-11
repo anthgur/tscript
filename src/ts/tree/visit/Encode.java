@@ -448,6 +448,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
+  public Encode.ReturnValue visit(final PropertyAccessor accessor) {
+    Encode.ReturnValue expr = visitNode(accessor.getExpr());
+    String code, result = getTemp(), baseValue = getTemp();
+    code = expr.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
+            + baseValue + ".checkObjectCoercible();\n"
+            + "TSValue " + result + " = new TSObjectReference(TSString.create(\""
+            + accessor.getIdent() + "\"), " + baseValue + ".toObject());\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
   private Encode.ReturnValue packCallArgs(List<Expression> args) {
     final String result = getTemp();
     String code = indent() + "// function call argument packing\n"

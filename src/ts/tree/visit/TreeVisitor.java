@@ -57,4 +57,6 @@ public interface TreeVisitor<T>
   T visit(CallExpression call);
 
   T visit(ReturnStatement ret);
+
+  T visit(PropertyAccessor accessor);
 }

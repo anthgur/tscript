@@ -39,7 +39,8 @@ public abstract class TSValue {
   abstract public TSBoolean toBoolean();
 
   public TSObject toObject() {
-    return new TSObject();
+    // TODO this is not correct
+    return new TSPrimitiveObject(toPrimitive());
   }
 
   /** Convert to String. Override for all primitive types and TSReference.

@@ -15,9 +15,11 @@ package ts.support;
  */
 abstract class TSReference extends TSValue {
   private final TSString name;
+  protected final TSEnvironmentRecord base;
 
-  TSReference(final TSString name) {
+  TSReference(final TSString name, final TSEnvironmentRecord base) {
     this.name = name;
+    this.base = base;
   }
 
   TSString getReferencedName() {
@@ -29,6 +31,39 @@ abstract class TSReference extends TSValue {
 
   /** Is it a unresolvable reference (not defined)? */
   abstract boolean isUnresolvableReference();
+
+  boolean hasPrimitiveBase() {
+    return base.isPrimitive();
+  }
+
+  // http://www.ecma-international.org/ecma-262/5.1/#sec-8.7.2
+  @Override
+  public void putValue(TSValue value) {
+    if (isUnresolvableReference()) {
+      // TODO put into global object
+    } else if (isPropertyReference()) {
+      // TODO puts into primitives/objects
+      if (!hasPrimitiveBase()) {
+
+      }
+    } else {
+      base.setMutableBinding(name, value);
+    }
+  }
+
+  @Override
+  public TSValue getValue() {
+    if (isUnresolvableReference()) {
+      throw new TSException(TSString.create("couldn't resolve reference"));
+    }
+    if (isPropertyReference()) {
+      if (!hasPrimitiveBase()) {
+
+      }
+      return base.getBindingValue(name);
+    }
+    throw new TSException(TSString.create("welp"));
+  }
 
   //
   // the following are methods that are inherited from TSValue

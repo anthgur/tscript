@@ -9,12 +9,9 @@ import ts.Message;
  *
  */
 final class TSEnvironmentReference extends TSReference {
-  private TSEnvironmentRecord base;
-
   /** Create a Reference for a name in an environment. */
   TSEnvironmentReference(final TSString name, final TSEnvironmentRecord base) {
-    super(name);
-    this.base = base;
+    super(name, base);
   }
 
   public TSEnvironmentRecord getBase() {

@@ -19,6 +19,21 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
         this.formalParams = formalParams;
     }
 
+    protected TSLexicalEnvironment setupCallContext(TSValue[] args) {
+        TSLexicalEnvironment env
+                = TSLexicalEnvironment.newDeclarativeEnvironment(scope);
+        TSValue arg;
+        for (int i = 0; i < formalParams.length; i++) {
+            if(i < args.length) {
+                arg = args[i];
+            } else {
+                arg = TSUndefined.value;
+            }
+            env.declareParameter(formalParams[i], arg);
+        }
+        return env;
+    }
+
     @Override
     public boolean isCallable() {
         return true;

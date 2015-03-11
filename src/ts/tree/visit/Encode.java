@@ -532,8 +532,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    + indent() + "TSLexicalEnvironment " + currentEnv() + "\n"
-    + indent() + "    = TSLexicalEnvironment.newDeclarativeEnvironment(this.scope);\n"
+    + indent() + "TSLexicalEnvironment " + currentEnv() + " = super.setupCallContext($2);\n"
 
     // set up "ThisBinding"
     // http://www.ecma-international.org/ecma-262/5.1/#sec-10.3
@@ -541,20 +540,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     + indent() + "final TSValue " + thisBinding + "; // thisBinding\n"
     + indent() + "if ($1.equals(TSNull.nullValue) || $1.equals(TSUndefined.value)) {\n"
     + indent() + indent() + thisBinding + " = TSLexicalEnvironment.globalEnv;\n"
-    + indent() + "} else {\n" + indent() + indent() + thisBinding + " = $1;\n" + indent() + "}\n"
-
-    + indent() + "TSValue " + arg + ";\n"
-    + indent() + "for (int " + index + " = 0; " + index
-            + " < this.formalParams.length; " + index + "++ ) {\n";
-    increaseIndentation();
-    code += indent() + "if (" + index + " < this.formalParams.length) {\n"
-    + indent() + indent() + arg + " = " + "$2[" + index + "];\n"
-    + indent() + "} else {\n"
-    + indent() + indent() + arg + " = TSUndefined.value;\n"
-    + indent() + "};\n"
-    + indent() + currentEnv() + ".declareParameter(this.formalParams[" + index + "], " + arg + ");\n";
-    decreaseIndentation();
-    code += indent() + "}\n";
+    + indent() + "} else {\n" + indent() + indent() + thisBinding + " = $1;\n" + indent() + "}\n";
 
     // generate the actual user code
     enterFunction();

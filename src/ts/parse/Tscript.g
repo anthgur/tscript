@@ -213,6 +213,8 @@ newExpression
   returns [ Expression lval ]
   : a=memberExpression
     { $lval = $a.lval; }
+  | NEW n=newExpression
+    { $lval = new NewExpression(loc($start), $n.lval); }
   ;
 
 memberExpression
@@ -508,6 +510,7 @@ CATCH : 'catch';
 FINALLY : 'finally';
 FUNCTION : 'function';
 RETURN : 'return';
+NEW : 'new';
 
 IDENTIFIER : IdentifierCharacters;
 

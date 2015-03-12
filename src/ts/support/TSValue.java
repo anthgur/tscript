@@ -90,6 +90,8 @@ public abstract class TSValue {
     return false;
   }
 
+  public boolean isPrimitive() { return false; }
+
   public TSValue getProperty(TSString name) {
     throw new TSException(TSString.create("illegal property access"));
   }

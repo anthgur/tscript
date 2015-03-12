@@ -581,4 +581,15 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
       return new Encode.ReturnValue(code);
     }
   }
+
+  // TODO constructors
+  public Encode.ReturnValue visit(NewExpression n) {
+    Encode.ReturnValue expr = visitNode(n.getExpr());
+    String result = getTemp(), code;
+    code = expr.code + indent() + "TSValue " + result + ";\n"
+            //+ indent() + "if(!" + expr.result + ".isObject()) {\n"
+            + indent() + indent() + result + " = new TSPrimitiveObject(" + expr.result + ");\n";
+            //+ indent() + "}\n";
+    return new Encode.ReturnValue(result, code);
+  }
 }

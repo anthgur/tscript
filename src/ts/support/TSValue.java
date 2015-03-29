@@ -95,5 +95,8 @@ public abstract class TSValue {
   public TSValue getProperty(TSString name) {
     throw new TSException(TSString.create("illegal property access"));
   }
-}
 
+  public TSValue construct(TSValue[] args) {
+    return new TSObject();
+  }
+}

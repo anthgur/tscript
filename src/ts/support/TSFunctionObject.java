@@ -38,4 +38,15 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     public boolean isCallable() {
         return true;
     }
+
+    @Override
+    public TSValue construct(TSValue[] args) {
+        TSObject obj = new TSObject();
+        obj.prototype = this;
+        TSValue result = this.execute(obj, args, true);
+        if (result.isObject()) {
+            return result;
+        }
+        return obj;
+    }
 }

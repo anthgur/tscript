@@ -23,6 +23,6 @@ javac -g -cp src:build/lib/antlr.jar:build/lib/javassist.jar -d build/packages -
 javac -g -cp src -d build/packages -Xlint:unchecked src/ts/support/*.java
 
 # now run javadoc
-javadoc -classpath build/packages:build/lib/antlr.jar:build/lib/javassist.jar -d build/html -use -package -quiet -doctitle "ts" src/ts/*.java src/ts/parse/*.java src/ts/support/*.java src/ts/tree/*.java src/ts/tree/visit/*.java
+# javadoc -classpath build/packages:build/lib/antlr.jar:build/lib/javassist.jar -d build/html -use -package -quiet -doctitle "ts" src/ts/*.java src/ts/parse/*.java src/ts/support/*.java src/ts/tree/*.java src/ts/tree/visit/*.java
 
 cd bin

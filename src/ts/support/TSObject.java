@@ -5,7 +5,8 @@ import java.util.Map;
 
 public class TSObject extends TSValue {
     private Map<TSString, TSValue> properties = new HashMap<TSString, TSValue>();
-    private TSValue prototype = TSNull.nullValue;
+    protected TSValue prototype = TSNull.nullValue;
+    protected TSString klass = TSString.create("Object");
 
     @Override
     public TSNumber toNumber() {
@@ -41,7 +42,7 @@ public class TSObject extends TSValue {
         }
         return prototype.getProperty(name);
     }
-
+    
     public final boolean hasProperty(TSString name) {
         return getProperty(name) == TSUndefined.value;
     }
@@ -53,5 +54,12 @@ public class TSObject extends TSValue {
 
     public final void put(TSString name, TSValue value) {
         properties.put(name, value);
+    }
+
+    @Override
+    public TSValue construct(TSValue[] args) {
+        TSObject obj = new TSObject();
+        obj.prototype = this;
+        return obj;
     }
 }

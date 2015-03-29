@@ -10,6 +10,7 @@ package ts.support;
  */
 public final class TSString extends TSPrimitive {
   private final String value;
+  static final TSString PROTOTYPE = new TSString("prototype");
 
   // use the "create" method instead
   private TSString(final String value) {

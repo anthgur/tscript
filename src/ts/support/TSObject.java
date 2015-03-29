@@ -4,9 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TSObject extends TSValue {
-    private Map<TSString, TSValue> properties = new HashMap<TSString, TSValue>();
-    protected TSValue prototype = TSNull.nullValue;
+    private static final TSObject nullPrototype
+            = newDataProperty(TSNull.nullValue);
+
+    private Map<TSString, TSValue> properties
+            = new HashMap<TSString, TSValue>();
     protected TSString klass = TSString.create("Object");
+
+    public TSObject() {
+        properties.put(TSString.PROTOTYPE, nullPrototype);
+    }
+
+    public TSObject(TSObject proto) {
+        properties.put(TSString.PROTOTYPE, proto);
+    }
+
+    static TSObject newDataProperty(TSValue value) {
+        TSObject obj = new TSObject();
+        obj.properties.put(TSString.create("value"), value);
+        obj.properties.put(TSString.create("writable"), TSBoolean.trueValue);
+        obj.properties.put(TSString.create("enumerable"), TSBoolean.trueValue);
+        obj.properties.put(TSString.create("configurable"), TSBoolean.trueValue);
+        return obj;
+    }
 
     @Override
     public TSNumber toNumber() {
@@ -34,13 +54,14 @@ public class TSObject extends TSValue {
     @Override
     public final TSValue getProperty(TSString name) {
         TSValue prop = getOwnProperty(name);
+        TSValue proto;
         if (prop != TSUndefined.value) {
             return prop;
         }
-        if(prototype == TSNull.nullValue) {
+        if((proto = properties.get(TSString.PROTOTYPE)) == TSNull.nullValue) {
             return TSUndefined.value;
         }
-        return prototype.getProperty(name);
+        return proto.getProperty(name);
     }
     
     public final boolean hasProperty(TSString name) {
@@ -58,8 +79,6 @@ public class TSObject extends TSValue {
 
     @Override
     public TSValue construct(TSValue[] args) {
-        TSObject obj = new TSObject();
-        obj.prototype = this;
-        return obj;
+        return new TSObject(this);
     }
 }

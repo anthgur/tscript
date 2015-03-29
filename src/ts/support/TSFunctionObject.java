@@ -4,6 +4,10 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     final protected TSLexicalEnvironment scope;
     final protected String[] formalParams;
 
+    {
+        this.klass = TSString.create("Function");
+    }
+
     public TSFunctionObject(TSLexicalEnvironment scope,
                             String[] formalParams) {
         this.scope = scope;

@@ -4,19 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TSObject extends TSValue {
-    private static final TSObject nullPrototype
-            = newDataProperty(TSNull.nullValue);
-
     private Map<TSString, TSValue> properties
             = new HashMap<TSString, TSValue>();
+
     protected TSString klass = TSString.create("Object");
+    protected TSValue  prototype = TSNull.nullValue;
 
-    public TSObject() {
-        properties.put(TSString.PROTOTYPE, nullPrototype);
-    }
+    public TSObject() {}
 
-    public TSObject(TSObject proto) {
-        properties.put(TSString.PROTOTYPE, proto);
+    public TSObject(TSObject prototype) {
+        this.prototype = prototype;
     }
 
     static TSObject newDataProperty(TSValue value) {

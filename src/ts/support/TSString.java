@@ -10,7 +10,12 @@ package ts.support;
  */
 public final class TSString extends TSPrimitive {
   private final String value;
-  static final TSString PROTOTYPE = new TSString("prototype");
+  static final TSString VALUE = new TSString("value");
+  static final TSString WRITABLE = new TSString("writable");
+  static final TSString GET = new TSString("get");
+  static final TSString SET = new TSString("set");
+  static final TSString ENUMERABLE = new TSString("enumerable");
+  static final TSString CONFIGURABLE = new TSString("configurable");
 
   // use the "create" method instead
   private TSString(final String value) {

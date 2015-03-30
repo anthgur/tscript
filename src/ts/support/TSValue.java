@@ -90,6 +90,10 @@ public abstract class TSValue {
     return false;
   }
 
+  public boolean isNull() {
+    return false;
+  }
+
   public boolean isPrimitive() { return false; }
 
   public TSValue getProperty(TSString name) {

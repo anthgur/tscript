@@ -18,4 +18,9 @@ public class TSNull extends TSPrimitive {
     public TSString toStr() {
         return TSString.create("null");
     }
+
+    @Override
+    public boolean isNull() {
+        return true;
+    }
 }

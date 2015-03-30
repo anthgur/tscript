@@ -80,6 +80,7 @@ public class TSObject extends TSValue {
                 && desc.getProperty(TSString.create("writable")) == null);
     }
 
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.3
     public TSValue get(TSString name) {
         TSValue desc = getProperty(name);
 
@@ -88,10 +89,10 @@ public class TSObject extends TSValue {
         }
 
         if (isDataDescriptor(desc)) {
-            return desc.getProperty(TSString.create("value"));
+            return ((TSObject)desc).properties.get(TSString.VALUE);
         }
 
-        TSValue getter = desc.getProperty(TSString.create("get"));
+        TSValue getter = desc.getProperty(TSString.GET);
 
         if (getter.isUndefined()) {
             return TSUndefined.value;
@@ -118,6 +119,49 @@ public class TSObject extends TSValue {
     
     public final boolean hasProperty(TSString name) {
         return getProperty(name) == TSUndefined.value;
+    }
+
+    public final TSValue defaultValue(char hint) {
+        TSValue toString, valueOf;
+        switch (hint) {
+            // hint of "String"
+            case 's':
+                toString = get(TSString.create("toString"));
+                if (toString.isCallable()) {
+                    TSValue str = ((TSFunctionObject) toString).execute(this, new TSValue[]{}, false);
+                    if (str.isPrimitive()) {
+                        return str;
+                    }
+                }
+                valueOf = get(TSString.create("valueOf"));
+                if (valueOf.isCallable()) {
+                    TSValue val = ((TSFunctionObject) valueOf).execute(this, new TSValue[]{}, false);
+                    if (val.isPrimitive()) {
+                        return val;
+                    }
+                }
+                throw new TSTypeError(TSString.create("couldn't cast to string"));
+
+            // the default is to fall through to number
+            default:
+            // hint of "Number"
+            case 'n':
+                valueOf = get(TSString.create("valueOf"));
+                if (valueOf.isCallable()) {
+                    TSValue val = ((TSFunctionObject) valueOf).execute(this, new TSValue[]{}, false);
+                    if (val.isPrimitive()) {
+                        return val;
+                    }
+                }
+                toString = get(TSString.create("toString"));
+                if (toString.isCallable()) {
+                    TSValue str = ((TSFunctionObject) toString).execute(this, new TSValue[]{}, false);
+                    if (str.isPrimitive()) {
+                        return str;
+                    }
+                }
+                throw new TSTypeError(TSString.create("couldn't cast to string"));
+        }
     }
 
     @Override

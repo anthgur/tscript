@@ -123,7 +123,7 @@ public class TSObject extends TSValue {
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
     public final TSValue defaultValue(char hint) {
-        TSValue toString, valueOf;
+        final TSValue toString, valueOf;
         switch (hint) {
             // hint of "String"
             case 's':

@@ -57,12 +57,15 @@ abstract class TSReference extends TSValue {
       throw new TSException(TSString.create("couldn't resolve reference"));
     }
     if (isPropertyReference()) {
+      // TODO some magic needs to happen here
+      /*
       if (!hasPrimitiveBase()) {
-
+        base.getBindingValue(name);
       }
+      */
       return base.getBindingValue(name);
     }
-    throw new TSException(TSString.create("welp"));
+    throw new AssertionError("fell through getValue on a Reference");
   }
 
   //

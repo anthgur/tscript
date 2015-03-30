@@ -98,7 +98,7 @@ public class TSObject extends TSValue {
             return TSUndefined.value;
         }
 
-        return ((TSFunctionObject) getter).execute(this, new TSValue[]{}, false);
+        return getter.asFunction().execute(this, new TSValue[]{}, false);
     }
 
     public void put(TSString name, TSValue val) {
@@ -121,6 +121,7 @@ public class TSObject extends TSValue {
         return getProperty(name) == TSUndefined.value;
     }
 
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
     public final TSValue defaultValue(char hint) {
         TSValue toString, valueOf;
         switch (hint) {
@@ -128,14 +129,14 @@ public class TSObject extends TSValue {
             case 's':
                 toString = get(TSString.create("toString"));
                 if (toString.isCallable()) {
-                    TSValue str = ((TSFunctionObject) toString).execute(this, new TSValue[]{}, false);
+                    TSValue str = toString.asFunction().execute(this, new TSValue[]{}, false);
                     if (str.isPrimitive()) {
                         return str;
                     }
                 }
                 valueOf = get(TSString.create("valueOf"));
                 if (valueOf.isCallable()) {
-                    TSValue val = ((TSFunctionObject) valueOf).execute(this, new TSValue[]{}, false);
+                    TSValue val = valueOf.asFunction().execute(this, new TSValue[]{}, false);
                     if (val.isPrimitive()) {
                         return val;
                     }
@@ -148,14 +149,14 @@ public class TSObject extends TSValue {
             case 'n':
                 valueOf = get(TSString.create("valueOf"));
                 if (valueOf.isCallable()) {
-                    TSValue val = ((TSFunctionObject) valueOf).execute(this, new TSValue[]{}, false);
+                    TSValue val = valueOf.asFunction().execute(this, new TSValue[]{}, false);
                     if (val.isPrimitive()) {
                         return val;
                     }
                 }
                 toString = get(TSString.create("toString"));
                 if (toString.isCallable()) {
-                    TSValue str = ((TSFunctionObject) toString).execute(this, new TSValue[]{}, false);
+                    TSValue str = toString.asFunction().execute(this, new TSValue[]{}, false);
                     if (str.isPrimitive()) {
                         return str;
                     }

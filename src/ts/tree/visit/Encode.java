@@ -588,7 +588,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String result = getTemp(), code;
     code = expr.code + indent() + "TSValue " + result + ";\n"
             //+ indent() + "if(!" + expr.result + ".isObject()) {\n"
-            + indent() + indent() + result + " = new TSPrimitiveObject(" + expr.result + ");\n";
+            + indent() + indent() + result + " = " + expr.result + ".construct(null);\n";
             //+ indent() + "}\n";
     return new Encode.ReturnValue(result, code);
   }

@@ -1,5 +1,7 @@
 package ts.support;
 
+import java.util.Map;
+
 public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
     private TSObject binding;
 
@@ -26,6 +28,7 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-10.2.1.1.4
     @Override
     TSValue getBindingValue(TSString name) {
+        System.out.println("getBinding: " + name);
         if(!binding.hasProperty(name)) {
             return TSUndefined.value;
         }

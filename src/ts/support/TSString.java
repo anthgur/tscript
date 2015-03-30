@@ -29,10 +29,7 @@ public final class TSString extends TSPrimitive {
 
   /** Overrides Object.abstractEquals because TSString used as key for Map */
   public boolean equals(Object anObject) {
-    if (anObject instanceof TSString) {
-      return value.equals(((TSString) anObject).unbox());
-    }
-    return false;
+    return anObject instanceof TSString && value.equals(((TSString) anObject).toStr().unbox());
   }
 
   /** Need to override Object.hashcode() when overriding Object.abstractEquals() */

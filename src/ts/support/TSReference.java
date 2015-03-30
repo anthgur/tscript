@@ -41,11 +41,6 @@ abstract class TSReference extends TSValue {
   public void putValue(TSValue value) {
     if (isUnresolvableReference()) {
       // TODO put into global object
-    } else if (isPropertyReference()) {
-      // TODO puts into primitives/objects
-      if (!hasPrimitiveBase()) {
-
-      }
     } else {
       base.setMutableBinding(name, value);
     }
@@ -56,16 +51,7 @@ abstract class TSReference extends TSValue {
     if (isUnresolvableReference()) {
       throw new TSException(TSString.create("couldn't resolve reference"));
     }
-    if (isPropertyReference()) {
-      // TODO some magic needs to happen here
-      /*
-      if (!hasPrimitiveBase()) {
-        base.getBindingValue(name);
-      }
-      */
-      return base.getBindingValue(name);
-    }
-    throw new AssertionError("fell through getValue on a Reference");
+    return base.getBindingValue(name);
   }
 
   //
@@ -106,5 +92,3 @@ abstract class TSReference extends TSValue {
     return true;
   }
 }
-
-

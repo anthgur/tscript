@@ -23,4 +23,9 @@ public class TSNull extends TSPrimitive {
     public boolean isNull() {
         return true;
     }
+
+    @Override
+    public TSObject toObject() {
+        throw new TSTypeError(TSString.create("toObject called on null"));
+    }
 }

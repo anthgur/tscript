@@ -60,7 +60,6 @@ public class TSObject extends TSValue {
         }
 
         TSValue prop = properties.get(name);
-        System.out.println(name + ", got: " + prop);
         return prop == null ? TSUndefined.value : prop;
     }
 
@@ -68,11 +67,7 @@ public class TSObject extends TSValue {
         if (name == null || val == null) {
             throw new AssertionError("null value supplied to TSObject.put");
         }
-        System.out.println("putting " + name + ": " + val);
         properties.put(name, val);
-        for (Map.Entry<TSString, TSValue> e : properties.entrySet()) {
-            System.out.println(e);
-        }
     }
 
     @Override
@@ -88,9 +83,6 @@ public class TSObject extends TSValue {
     }
     
     public final boolean hasProperty(TSString name) {
-        for (Map.Entry<TSString, TSValue> e : properties.entrySet()) {
-            System.out.println(e);
-        }
         return properties.containsKey(name);
     }
 

@@ -3,7 +3,6 @@ package ts.support;
 public class TSObjectReference extends TSReference {
     public TSObjectReference(TSString name, TSObject obj) {
         super(name, new TSObjectEnvironmentRecord(obj));
-        System.out.println("created ObjectReference " + name);
     }
 
     @Override

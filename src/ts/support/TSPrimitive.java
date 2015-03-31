@@ -9,4 +9,11 @@ public abstract class TSPrimitive extends TSValue {
     public boolean isPrimitive() {
         return true;
     }
+
+    @Override
+    public TSObject toObject() {
+        TSObject obj = new TSObject();
+        obj.primitive = this;
+        return obj;
+    }
 }

@@ -38,9 +38,8 @@ public abstract class TSValue {
   abstract public TSNumber toNumber();
   abstract public TSBoolean toBoolean();
 
-  // TODO still not correct
   public TSObject toObject() {
-    return new TSObject();
+    throw new TSTypeError(TSString.create("Type error on toObject cast"));
   }
 
   /** Convert to String. Override for all primitive types and TSReference.

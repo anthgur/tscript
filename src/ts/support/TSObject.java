@@ -9,6 +9,7 @@ public class TSObject extends TSValue {
 
     protected TSString klass = TSString.create("Object");
     protected TSValue  prototype = TSNull.nullValue;
+    public TSPrimitive primitive = null;
 
     public TSObject() {}
 
@@ -29,6 +30,11 @@ public class TSObject extends TSValue {
     @Override
     public boolean isObject() {
         return true;
+    }
+
+    @Override
+    public TSObject toObject() {
+        return this;
     }
 
     @Override
@@ -91,6 +97,10 @@ public class TSObject extends TSValue {
     // TODO fix this to work without descriptors
     // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
     public final TSPrimitive defaultValue(TSHint hint) {
+        if (primitive != null) {
+            return primitive;
+        }
+
         TSValue toString, valueOf;
         switch (hint) {
             // hint of "String"

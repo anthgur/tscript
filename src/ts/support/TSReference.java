@@ -41,6 +41,7 @@ abstract class TSReference extends TSValue {
   public void putValue(TSValue value) {
     if (isUnresolvableReference()) {
       // TODO put into global object
+      System.out.println("unresolvable in reference");
     } else {
       base.setMutableBinding(name, value);
     }

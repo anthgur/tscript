@@ -107,4 +107,12 @@ public abstract class TSValue {
   public TSValue construct(TSValue[] args) {
     return new TSObject();
   }
+
+  public TSValue construct() {
+    TSObject obj = new TSObject();
+    if (isPrimitive()) {
+      obj.primitive = this.toPrimitive();
+    }
+    return obj;
+  }
 }

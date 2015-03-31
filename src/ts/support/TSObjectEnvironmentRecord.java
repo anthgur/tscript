@@ -21,6 +21,7 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
 
     @Override
     void setMutableBinding(TSString name, TSValue value) {
+        System.out.println("puttingRecord: " + name + ", " + value);
         binding.put(name, value);
     }
 
@@ -30,8 +31,10 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
     TSValue getBindingValue(TSString name) {
         System.out.println("getBinding: " + name);
         if(!binding.hasProperty(name)) {
+            System.out.println("wtf");
             return TSUndefined.value;
         }
+        System.out.println("ok wtf");
         return binding.get(name);
     }
 

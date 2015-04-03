@@ -219,12 +219,14 @@ newExpression
 
 memberExpression
   returns [ Expression lval ]
-  : a=primaryExpression
-    { $lval = $a.lval; }
+  : p=primaryExpression
+    { $lval = $p.lval; }
   | f=functionExpression
     { $lval = $f.lval; }
   | m=memberExpression DOT IDENTIFIER
     { $lval = new PropertyAccessor(loc($start), $m.lval, $IDENTIFIER.text); }
+  | NEW m=memberExpression a=arguments
+    { $lval = new NewExpression(loc($start), $m.lval, $a.lval); }
   ;
 
 functionDeclaration

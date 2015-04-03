@@ -4,6 +4,10 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     final protected TSLexicalEnvironment scope;
     final protected String[] formalParams;
 
+    {
+        this.klass = TSString.create("Function");
+    }
+
     public TSFunctionObject(TSLexicalEnvironment scope,
                             String[] formalParams) {
         this.scope = scope;
@@ -37,5 +41,20 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     @Override
     public boolean isCallable() {
         return true;
+    }
+
+    @Override
+    public TSCode asFunction() {
+        return this;
+    }
+
+    @Override
+    public TSValue construct(TSValue[] args) {
+        TSObject obj = new TSObject(this);
+        TSValue result = this.execute(obj, args, true);
+        if (result.isObject()) {
+            return result;
+        }
+        return obj;
     }
 }

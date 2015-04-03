@@ -32,4 +32,9 @@ public final class TSUndefined extends TSPrimitive {
   public boolean isUndefined() {
     return true;
   }
+
+  @Override
+  public TSObject toObject() {
+    throw new TSTypeError(TSString.create("toObject called on undefined"));
+  }
 }

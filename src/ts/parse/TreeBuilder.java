@@ -207,7 +207,7 @@ public class TreeBuilder {
 
   // helper function to detect "reference expected" errors
   private static boolean producesReference(Node node) {
-    if (node instanceof Identifier) {
+    if (node instanceof Identifier || node instanceof PropertyAccessor) {
       return true;
     }
     return false;

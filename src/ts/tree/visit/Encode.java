@@ -448,6 +448,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
+  public Encode.ReturnValue visit(final PropertyAccessor accessor) {
+    Encode.ReturnValue expr = visitNode(accessor.getExpr());
+    String code, result = getTemp(), baseValue = getTemp();
+    code = expr.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
+            + baseValue + ".checkObjectCoercible();\n"
+            + "TSValue " + result + " = new TSObjectReference(TSString.create(\""
+            + accessor.getIdent() + "\"), " + baseValue + ".toObject());\n";
+    return new Encode.ReturnValue(result, code);
+  }
+
   private Encode.ReturnValue packCallArgs(List<Expression> args) {
     final String result = getTemp();
     String code = indent() + "// function call argument packing\n"
@@ -570,5 +580,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
       }
       return new Encode.ReturnValue(code);
     }
+  }
+
+  // TODO constructors
+  public Encode.ReturnValue visit(NewExpression n) {
+    Encode.ReturnValue expr = visitNode(n.getExpr());
+    String result = getTemp(), code;
+    code = expr.code + indent() + "TSValue " + result + " = "
+            //+ indent() + "if(!" + expr.result + ".isObject()) {\n"
+            + expr.result + ".construct();\n";
+            //+ indent() + "}\n";
+    return new Encode.ReturnValue(result, code);
   }
 }

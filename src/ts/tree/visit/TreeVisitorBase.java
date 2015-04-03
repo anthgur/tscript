@@ -131,4 +131,12 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
   public T visit(final ReturnStatement ret) {
     return null;
   }
+
+  public T visit(final PropertyAccessor accessor) {
+    return null;
+  }
+
+  public T visit(final NewExpression n) {
+    return null;
+  }
 }

@@ -10,6 +10,12 @@ package ts.support;
  */
 public final class TSString extends TSPrimitive {
   private final String value;
+  static final TSString VALUE = new TSString("value");
+  static final TSString WRITABLE = new TSString("writable");
+  static final TSString GET = new TSString("get");
+  static final TSString SET = new TSString("set");
+  static final TSString ENUMERABLE = new TSString("enumerable");
+  static final TSString CONFIGURABLE = new TSString("configurable");
 
   // use the "create" method instead
   private TSString(final String value) {
@@ -23,10 +29,7 @@ public final class TSString extends TSPrimitive {
 
   /** Overrides Object.abstractEquals because TSString used as key for Map */
   public boolean equals(Object anObject) {
-    if (anObject instanceof TSString) {
-      return value.equals(((TSString) anObject).unbox());
-    }
-    return false;
+    return anObject instanceof TSString && value.equals(((TSString) anObject).toStr().unbox());
   }
 
   /** Need to override Object.hashcode() when overriding Object.abstractEquals() */

@@ -13,10 +13,6 @@ public class TSObject extends TSValue {
 
     public TSObject() {}
 
-    public TSObject(TSObject prototype) {
-        this.prototype = prototype;
-    }
-
     @Override
     public TSNumber toNumber() {
         return toPrimitive().toNumber();
@@ -59,6 +55,9 @@ public class TSObject extends TSValue {
             return TSUndefined.value;
         }
 
+        if (isPrototypeStr(name)) {
+            return prototype;
+        }
         TSValue prop = properties.get(name);
         return prop == null ? TSUndefined.value : prop;
     }
@@ -67,7 +66,12 @@ public class TSObject extends TSValue {
         if (name == null || val == null) {
             throw new AssertionError("null value supplied to TSObject.put");
         }
-        properties.put(name, val);
+        if (isPrototypeStr(name)) {
+            System.out.println("protoput");
+            prototype = val;
+        } else {
+            properties.put(name, val);
+        }
     }
 
     @Override
@@ -83,7 +87,11 @@ public class TSObject extends TSValue {
     }
     
     public final boolean hasProperty(TSString name) {
-        return properties.containsKey(name);
+        return isPrototypeStr(name) || properties.containsKey(name);
+    }
+
+    protected boolean isPrototypeStr(TSString str) {
+        return "prototype".equals(str.unbox());
     }
 
     // TODO fix this to work without descriptors
@@ -136,7 +144,10 @@ public class TSObject extends TSValue {
     }
 
     @Override
-    public TSValue construct(TSValue[] args) {
-        return new TSObject(this);
+    public TSObject construct(TSValue[] args) {
+        TSObject obj = new TSObject();
+        System.out.println("ctor prototype: " + prototype.isObject());
+        obj.prototype = prototype;
+        return obj;
     }
 }

@@ -47,14 +47,4 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     public TSCode asFunction() {
         return this;
     }
-
-    @Override
-    public TSValue construct(TSValue[] args) {
-        TSObject obj = new TSObject(this);
-        TSValue result = this.execute(obj, args, true);
-        if (result.isObject()) {
-            return result;
-        }
-        return obj;
-    }
 }

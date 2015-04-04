@@ -103,15 +103,9 @@ public abstract class TSValue {
     throw new TSException(TSString.create("illegal property access"));
   }
 
-  public TSValue construct(TSValue[] args) {
-    return new TSObject();
-  }
-
-  public TSValue construct() {
+  public TSObject construct(TSValue[] args) {
     TSObject obj = new TSObject();
-    if (isPrimitive()) {
-      obj.primitive = this.toPrimitive();
-    }
+    obj.primitive = this.toPrimitive();
     return obj;
   }
 }

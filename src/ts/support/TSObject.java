@@ -38,40 +38,9 @@ public class TSObject extends TSValue {
         return defaultValue(TSHint.NONE);
     }
 
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.1
-    public final TSValue getOwnProperty(TSString name) {
-        final TSValue prop;
-        if((prop = properties.get(name)) == null) {
-            return TSUndefined.value;
-        }
-        return prop;
-    }
-
     // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.3
     public TSValue get(TSString name) {
-        TSValue desc = getProperty(name);
-
-        if (desc.isUndefined()) {
-            return TSUndefined.value;
-        }
-
-        if (isPrototypeStr(name)) {
-            return prototype;
-        }
-        TSValue prop = properties.get(name);
-        return prop == null ? TSUndefined.value : prop;
-    }
-
-    public void put(TSString name, TSValue val) {
-        if (name == null || val == null) {
-            throw new AssertionError("null value supplied to TSObject.put");
-        }
-        if (isPrototypeStr(name)) {
-            System.out.println("protoput");
-            prototype = val;
-        } else {
-            properties.put(name, val);
-        }
+        return getProperty(name);
     }
 
     @Override
@@ -85,9 +54,31 @@ public class TSObject extends TSValue {
         }
         return prototype.getProperty(name);
     }
-    
+
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.1
+    public final TSValue getOwnProperty(TSString name) {
+        if(isPrototypeStr(name)) {
+            return prototype;
+        }
+        if (properties.containsKey(name)) {
+            return properties.get(name);
+        }
+        return TSUndefined.value;
+    }
+
     public final boolean hasProperty(TSString name) {
-        return isPrototypeStr(name) || properties.containsKey(name);
+        return getProperty(name) != TSUndefined.value;
+    }
+
+    public void put(TSString name, TSValue val) {
+        if (name == null || val == null) {
+            throw new AssertionError("null value supplied to TSObject.put");
+        }
+        if (isPrototypeStr(name)) {
+            prototype = val;
+        } else {
+            properties.put(name, val);
+        }
     }
 
     protected boolean isPrototypeStr(TSString str) {
@@ -146,7 +137,6 @@ public class TSObject extends TSValue {
     @Override
     public TSObject construct(TSValue[] args) {
         TSObject obj = new TSObject();
-        System.out.println("ctor prototype: " + prototype.isObject());
         obj.prototype = prototype;
         return obj;
     }

@@ -73,6 +73,11 @@ public final class TSNumber extends TSPrimitive {
             : TSBoolean.trueValue;
   }
 
+  @Override
+  public boolean isNumber() {
+    return true;
+  }
+
   /** Convert Number to String
    * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-9.8.1">ELS
    * 9.8.1</a>)

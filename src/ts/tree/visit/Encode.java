@@ -453,12 +453,16 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     String code, result = getTemp(), baseValue = getTemp();
     code = expr.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
             + baseValue + ".checkObjectCoercible();\n"
-            + "TSValue " + result + " = new TSObjectReference(TSString.create(\""
+            + "TSValue " + result + " = new TSPropertyReference(TSString.create(\""
             + accessor.getIdent() + "\"), " + baseValue + ".toObject());\n";
     return new Encode.ReturnValue(result, code);
   }
 
   private Encode.ReturnValue packCallArgs(List<Expression> args) {
+    if (args == null) {
+      args = new ArrayList<Expression>();
+    }
+
     final String result = getTemp();
     String code = indent() + "// function call argument packing\n"
             + indent() + "TSValue[] " + result
@@ -503,7 +507,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             + indent() + "// this value\n"
             + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
             + indent() + "TSValue " + result + " = "
-            + "((TSCode) " + func + ").execute(" + thisVal + ", " + args.result + ", false);\n";
+            + func + ".asFunction().execute(" + thisVal + ", " + args.result + ", false);\n";
     return new Encode.ReturnValue(result, code);
   }
 
@@ -542,6 +546,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
+    + indent() + "System.out.println(\"Calling: \" + getClass());\n"
     + indent() + "TSLexicalEnvironment " + currentEnv() + " = super.setupCallContext($2);\n"
 
     // set up "ThisBinding"

@@ -37,6 +37,11 @@ public final class TSBoolean extends TSPrimitive {
     }
 
     @Override
+    public boolean isBoolean() {
+        return true;
+    }
+
+    @Override
     public TSString toStr() {
         return value ? TSString.create("true") : TSString.create("false");
     }

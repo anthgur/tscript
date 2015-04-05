@@ -1,9 +1,21 @@
 package ts.support;
 
+import ts.Message;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class TSObject extends TSValue {
+    public static final TSObject globalObj;
+    public static final TSObject mutableBindingTemp = new TSObject();
+
+    static {
+        globalObj = new TSObject();
+        globalObj.put(TSString.create("undefined"), TSUndefined.value);
+        globalObj.put(TSString.create("NaN"), TSNumber.create(Double.NaN));
+        globalObj.put(TSString.create("Infinity"), TSNumber.create(Double.POSITIVE_INFINITY));
+    }
+
     private Map<TSString, TSValue> properties
             = new HashMap<TSString, TSValue>();
 

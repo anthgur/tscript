@@ -13,8 +13,8 @@ public final class TSLexicalEnvironment {
   // set up the global environment
   // http://www.ecma-international.org/ecma-262/5.1/#sec-10.2.3
   static {
-    globalEnv = newDeclarativeEnvironment(null);
-    globalEnv.declareVariable(TSString.create("undefined"), false);
+    TSEnvironmentRecord globalEnvRec = new TSObjectEnvironmentRecord(TSObject.globalObj);
+    globalEnv = new TSLexicalEnvironment(globalEnvRec, null);
   }
 
   private final TSEnvironmentRecord environmentRecord;
@@ -35,14 +35,11 @@ public final class TSLexicalEnvironment {
     if (environmentRecord.hasBinding(name)) {
       return new TSEnvironmentReference(name, environmentRecord);
     } else {
+      if (this == globalEnv) {
+        return new TSPropertyReference(name, TSObject.globalObj);
+      }
       if (outerEnvironment == null) {
-        // this is not correct
-        // it should create a property reference with an undefined base
-        // but we don't have properties yet
-        // setting the base of an environment reference to null to indicate
-        // that the identified is not declared
-        // TODO: fix this when properties are being supported
-        return new TSEnvironmentReference(name, null);
+        return new TSPropertyReference(name, TSUndefined.value);
       }
       return outerEnvironment.getIdentifierReference(name);
     }

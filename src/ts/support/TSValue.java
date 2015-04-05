@@ -99,6 +99,18 @@ public abstract class TSValue {
 
   public boolean isPrimitive() { return false; }
 
+  public boolean isNumber() {
+    return false;
+  }
+
+  public boolean isBoolean() {
+    return false;
+  }
+
+  public boolean isString() {
+    return false;
+  }
+
   public TSValue getProperty(TSString name) {
     throw new TSException(TSString.create("illegal property access"));
   }

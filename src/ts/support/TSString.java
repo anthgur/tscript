@@ -57,6 +57,11 @@ public final class TSString extends TSPrimitive {
     return value.isEmpty() ? TSBoolean.falseValue : TSBoolean.trueValue;
   }
 
+  @Override
+  public boolean isString() {
+    return true;
+  }
+
   /** Override in TSValue */
   public TSString toStr() {
     return this;

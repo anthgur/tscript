@@ -17,10 +17,6 @@ public abstract class TSEnvironmentRecord {
   /** Does the environment have a binding for this name? */
   abstract boolean hasBinding(TSString name);
 
-  boolean isPrimitive() {
-    return false;
-  }
-
   /** Create a mutable binding for a name. */
   abstract void createMutableBinding(TSString name,
     boolean isDeletable);

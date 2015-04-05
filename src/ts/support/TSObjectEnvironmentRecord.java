@@ -1,5 +1,7 @@
 package ts.support;
 
+import ts.Message;
+
 import java.util.Map;
 
 public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
@@ -16,7 +18,7 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
 
     @Override
     void createMutableBinding(TSString name, boolean isDeletable) {
-
+        binding.put(name, TSObject.mutableBindingTemp);
     }
 
     @Override

@@ -546,7 +546,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
 
     // set up the new execution context
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.3
-    + indent() + "System.out.println(\"Calling: \" + getClass());\n"
     + indent() + "TSLexicalEnvironment " + currentEnv() + " = super.setupCallContext($2);\n"
 
     // set up "ThisBinding"

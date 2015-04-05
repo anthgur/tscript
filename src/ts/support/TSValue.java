@@ -31,7 +31,7 @@ public abstract class TSValue {
   /** Convert to Primitive. Override only in TSObject and TSReference.
    *  Otherwise just return "this". Note: type hint is not implemented.
    */
-  public TSPrimitive toPrimitive() {
+  public TSValue toPrimitive() {
     return (TSPrimitive) this;
   }
 
@@ -46,7 +46,7 @@ public abstract class TSValue {
    *  It can't be called toString because of Object.toString.
    */
   public TSString toStr() {
-    TSPrimitive prim = this.toPrimitive();
+    TSValue prim = this.toPrimitive();
     return prim.toStr();
   }
 

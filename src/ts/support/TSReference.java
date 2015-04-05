@@ -1,8 +1,6 @@
 
 package ts.support;
 
-import ts.Message;
-
 /**
  * The super class for Tscript References
  * (<a href="http://www.ecma-international.org/ecma-262/5.1/#sec-8.7">ELS
@@ -45,7 +43,7 @@ abstract class TSReference extends TSValue {
    * (not public as not used outside of package)<br>
    * (type hint not supported)
    */
-  public final TSPrimitive toPrimitive() {
+  public final TSValue toPrimitive() {
     return this.getValue().toPrimitive();
   }
 

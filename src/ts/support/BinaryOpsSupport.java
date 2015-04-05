@@ -12,11 +12,11 @@ public final class BinaryOpsSupport {
             "Equality comparision:\n\tlhs: %s rhs: %s\n\tlhsType: %s rhsType: %s";
 
     public static TSValue add(TSValue lhs, TSValue rhs) {
-        final TSPrimitive leftValue, rightValue;
+        final TSValue leftValue, rightValue;
         leftValue = lhs.toPrimitive();
         rightValue = rhs.toPrimitive();
 
-        final Class<? extends TSValue> lhsType, rhsType;
+        final Class<?> lhsType, rhsType;
         lhsType = leftValue.getClass();
         rhsType = rightValue.getClass();
 
@@ -160,7 +160,7 @@ public final class BinaryOpsSupport {
     private static TSValue abstractCompare(final TSValue lhs,
                                            final TSValue rhs,
                                            final boolean leftFirst) {
-        final TSPrimitive lhsPrim, rhsPrim;
+        final TSValue lhsPrim, rhsPrim;
 
         // preserve evaluation order according to clauses 1, 2 of
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5

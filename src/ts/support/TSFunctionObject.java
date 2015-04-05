@@ -44,7 +44,7 @@ public abstract class TSFunctionObject extends TSObject implements TSCode {
     }
 
     @Override
-    public TSCode asFunction() {
+    public TSFunctionObject asFunction() {
         return this;
     }
 }

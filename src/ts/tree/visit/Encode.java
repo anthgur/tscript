@@ -454,7 +454,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     code = expr.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
             + baseValue + ".checkObjectCoercible();\n"
             + "TSValue " + result + " = new TSPropertyReference(TSString.create(\""
-            + accessor.getIdent() + "\"), " + baseValue + ".toObject());\n";
+            + accessor.getIdent() + "\"), " + baseValue + ");\n";
     return new Encode.ReturnValue(result, code);
   }
 

@@ -1,7 +1,5 @@
 package ts.support;
 
-import ts.Message;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,6 +77,11 @@ public class TSObject extends TSValue {
     }
 
     public final boolean hasProperty(TSString name) {
+        // handle undefined on the global object specially because
+        // property attributes aren't implemented
+        if (this == globalObj && "undefined".equals(name.unbox())) {
+            return true;
+        }
         return getProperty(name) != TSUndefined.value;
     }
 

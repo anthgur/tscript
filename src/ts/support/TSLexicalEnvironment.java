@@ -35,9 +35,6 @@ public final class TSLexicalEnvironment {
     if (environmentRecord.hasBinding(name)) {
       return new TSEnvironmentReference(name, environmentRecord);
     } else {
-      if (this == globalEnv) {
-        return new TSPropertyReference(name, TSObject.globalObj);
-      }
       if (outerEnvironment == null) {
         return new TSPropertyReference(name, TSUndefined.value);
       }

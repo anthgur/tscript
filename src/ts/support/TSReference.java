@@ -17,11 +17,9 @@ import ts.Message;
  */
 abstract class TSReference extends TSValue {
   private final TSString name;
-  protected final TSEnvironmentRecord base;
 
-  TSReference(final TSString name, final TSEnvironmentRecord base) {
+  TSReference(final TSString name) {
     this.name = name;
-    this.base = base;
   }
 
   TSString getReferencedName() {
@@ -31,53 +29,11 @@ abstract class TSReference extends TSValue {
   /** Is it a property reference? */
   abstract boolean isPropertyReference();
 
-  TSValue getBase() {
-    Message.bug("getBase called on non property-reference");
-    throw new AssertionError("unreachable");
-  }
-
   /** Is it a unresolvable reference (not defined)? */
   abstract boolean isUnresolvableReference();
 
   boolean hasPrimitiveBase() {
     return false;
-  }
-
-  // http://www.ecma-international.org/ecma-262/5.1/#sec-8.7.2
-  @Override
-  public void putValue(TSValue value) {
-    /*
-    if (isUnresolvableReference()) {
-      TSObject.globalObj.put(name, value);
-    } else if (isPropertyReference()) {
-      if (hasPrimitiveBase()) {
-
-      }
-    }
-    if (base == null) {
-      Message.bug("null base on resolvable non-property reference");
-      throw new AssertionError("unreachable");
-    }
-    base.setMutableBinding(name, value);
-    */
-  }
-
-  @Override
-  public TSValue getValue() {
-    if (isUnresolvableReference()) {
-      throw new TSException(TSString.create("couldn't resolve reference"));
-    }
-    if (isPropertyReference()) {
-      if (hasPrimitiveBase()) {
-        return getBase().toObject().getProperty(name);
-      } else {
-        if (!getBase().isObject()) {
-          Message.bug("Non-primitive base, but not TSObject type.");
-        }
-        return getBase().toObject().get(name);
-      }
-    }
-    return base.getBindingValue(name);
   }
 
   //

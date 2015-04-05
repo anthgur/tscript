@@ -85,7 +85,7 @@ public abstract class TSValue {
     return false;
   }
 
-  public TSCode asFunction() {
+  public TSFunctionObject asFunction() {
     throw new AssertionError("asFunction called on non-function type");
   }
 

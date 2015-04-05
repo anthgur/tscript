@@ -1,5 +1,10 @@
 package ts.support;
 
+import ts.Message;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,10 +13,62 @@ public class TSObject extends TSValue {
     public static final TSObject mutableBindingTemp = new TSObject();
 
     static {
+        TSFunctionObject readln = new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
+            private BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+            @Override
+            public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
+                try {
+                    String line = in.readLine();
+
+                    if (line == null) // EOF?
+                    {
+                        line = "";
+                    }
+                    else
+                    {
+                        line += "\n";  // readLine strips off newline
+                    }
+                    return TSString.create(line);
+                } catch (IOException ioe) {
+                    Message.executionError("I/O exception in readln");
+                }
+                return null;
+            }
+        };
+
+        TSFunctionObject isFinite = new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
+            @Override
+            public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
+                if (args[0] == null) {
+                    throw new TSException(TSString.create("no arg passed to isFinite"));
+                }
+                Double num = args[0].toNumber().unbox();
+                return TSBoolean.create(!num.isNaN() && !num.isInfinite());
+            }
+        };
+
+        TSFunctionObject isNan = new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
+            @Override
+            public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
+                if (args[0] == null) {
+                    throw new TSException(TSString.create("no arg passed to isNaN"));
+                }
+                Double num = args[0].toNumber().unbox();
+                return TSBoolean.create(num.isNaN());
+            }
+        };
+
+        // builtin vals
         globalObj = new TSObject();
         globalObj.put(TSString.create("undefined"), TSUndefined.value);
         globalObj.put(TSString.create("NaN"), TSNumber.create(Double.NaN));
         globalObj.put(TSString.create("Infinity"), TSNumber.create(Double.POSITIVE_INFINITY));
+
+        // builtin fns
+        globalObj.put(TSString.create("readln"), readln);
+        globalObj.put(TSString.create("isFinite"), isFinite);
+        globalObj.put(TSString.create("isNaN"), isNan);
     }
 
     private Map<TSString, TSValue> properties

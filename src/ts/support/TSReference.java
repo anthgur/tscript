@@ -13,7 +13,7 @@ package ts.support;
  * </ul>
  *
  */
-abstract class TSReference extends TSValue {
+public abstract class TSReference extends TSValue {
   private final TSString name;
 
   TSReference(final TSString name) {
@@ -25,7 +25,7 @@ abstract class TSReference extends TSValue {
   }
 
   /** Is it a property reference? */
-  abstract boolean isPropertyReference();
+  public abstract boolean isPropertyReference();
 
   /** Is it a unresolvable reference (not defined)? */
   abstract boolean isUnresolvableReference();

@@ -34,5 +34,5 @@ public abstract class TSEnvironmentRecord {
   abstract TSNumber deleteBinding(TSString name);
 
   /** Return the implicit "this" value for this environment. */
-  abstract TSValue implicitThisValue();
+  public abstract TSValue implicitThisValue();
 }

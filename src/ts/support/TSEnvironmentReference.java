@@ -8,8 +8,9 @@ import ts.Message;
  * 8.7</a>).
  *
  */
-final class TSEnvironmentReference extends TSReference {
-  TSEnvironmentRecord base;
+public final class TSEnvironmentReference extends TSReference {
+  public final TSEnvironmentRecord base;
+
   /** Create a Reference for a name in an environment. */
   TSEnvironmentReference(final TSString name, final TSEnvironmentRecord base) {
     super(name);
@@ -26,7 +27,7 @@ final class TSEnvironmentReference extends TSReference {
   /** Environment references cannot be property references so this always
    *  returns false.
    */
-  boolean isPropertyReference() {
+  public boolean isPropertyReference() {
     return false;
   }
 

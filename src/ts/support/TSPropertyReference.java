@@ -3,7 +3,7 @@ package ts.support;
 import ts.Message;
 
 public class TSPropertyReference extends TSReference {
-    final TSValue base;
+    public final TSValue base;
 
     public TSPropertyReference(TSString name, TSValue base) {
         super(name);
@@ -16,7 +16,7 @@ public class TSPropertyReference extends TSReference {
     }
 
     @Override
-    boolean isPropertyReference() {
+    public boolean isPropertyReference() {
         return base.isObject() || hasPrimitiveBase();
     }
 

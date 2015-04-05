@@ -72,7 +72,7 @@ final class TSDeclarativeEnvironmentRecord extends TSEnvironmentRecord {
   /** Always returns "undefined" because there is never a "this" value
    *  for an environment.
    */
-  TSValue implicitThisValue() {
+  public TSValue implicitThisValue() {
     return TSUndefined.value;
   }
 

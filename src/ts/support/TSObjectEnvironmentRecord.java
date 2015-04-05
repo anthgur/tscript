@@ -42,7 +42,9 @@ public class TSObjectEnvironmentRecord extends TSEnvironmentRecord {
     }
 
     @Override
-    TSValue implicitThisValue() {
-        return null;
+    public TSValue implicitThisValue() {
+        // provideThis never true because no with statement
+        // so always return undefined
+        return TSUndefined.value;
     }
 }

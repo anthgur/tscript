@@ -224,7 +224,9 @@ memberExpression
   | f=functionExpression
     { $lval = $f.lval; }
   | m=memberExpression DOT IDENTIFIER
-    { $lval = new PropertyAccessor(loc($start), $m.lval, $IDENTIFIER.text); }
+    { $lval = new IdentPropertyAccessor(loc($start), $m.lval, $IDENTIFIER.text); }
+  | m=memberExpression LBRACE e=expression RBRACE
+    { $lval = new ExprPropertyAccessor(loc($start), $m.lval, $e.lval); }
   | NEW m=memberExpression a=arguments
     { $lval = new NewExpression(loc($start), $m.lval, $a.lval); }
   ;
@@ -316,7 +318,9 @@ callExpression
   | c=callExpression a=arguments
     { $lval = new CallExpression(loc($start), $c.lval, $a.lval); }
   | c=callExpression DOT IDENTIFIER
-    { $lval = new PropertyAccessor(loc($start), $c.lval, $IDENTIFIER.text); }
+    { $lval = new IdentPropertyAccessor(loc($start), $c.lval, $IDENTIFIER.text); }
+  | c=callExpression LBRACE e=expression RBRACE
+    { $lval = new ExprPropertyAccessor(loc($start), $c.lval, $e.lval); }
   ;
 
 arguments
@@ -482,6 +486,8 @@ STRING_LITERAL
   ;
 
 DOT : Dot;
+LBRACE : [\[];
+RBRACE : [\]];
 LCURLY : [{];
 RCURLY : [}];
 LPAREN : [(];

@@ -449,13 +449,27 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     return new Encode.ReturnValue(codeBuilder.toString());
   }
 
-  public Encode.ReturnValue visit(final PropertyAccessor accessor) {
-    Encode.ReturnValue expr = visitNode(accessor.getExpr());
+  public Encode.ReturnValue visit(final IdentPropertyAccessor accessor) {
+    Encode.ReturnValue prop;
+    String propTmp = getTemp(),
+            propCode = "TSString " + propTmp
+                    + " = TSString.create(\"" + accessor.getIdent() + "\");";
+    prop = new Encode.ReturnValue(propTmp, propCode);
+    return genAccessor(visitNode(accessor.getExpr()), prop);
+  }
+
+  public Encode.ReturnValue visit(final ExprPropertyAccessor accessor) {
+    Encode.ReturnValue expr, prop;
+    expr = visitNode(accessor.getExpr());
+    prop = visitNode(accessor.getProp());
+    return genAccessor(expr, prop);
+  }
+
+  private Encode.ReturnValue genAccessor(Encode.ReturnValue expr, Encode.ReturnValue prop) {
     String code, result = getTemp(), baseValue = getTemp();
-    code = expr.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
+    code = expr.code + prop.code + "TSValue " + baseValue + " = " + expr.result + ".getValue();\n"
             + baseValue + ".checkObjectCoercible();\n"
-            + "TSValue " + result + " = new TSPropertyReference(TSString.create(\""
-            + accessor.getIdent() + "\"), " + baseValue + ");\n";
+            + "TSValue " + result + " = new TSPropertyReference(" + prop.result + ".getValue().toStr(), " + baseValue + ");\n";
     return new Encode.ReturnValue(result, code);
   }
 

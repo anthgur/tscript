@@ -132,7 +132,11 @@ public class TreeVisitorBase<T> implements TreeVisitor<T> {
     return null;
   }
 
-  public T visit(final PropertyAccessor accessor) {
+  public T visit(final IdentPropertyAccessor accessor) {
+    return null;
+  }
+
+  public T visit(final ExprPropertyAccessor accessor) {
     return null;
   }
 

@@ -58,7 +58,9 @@ public interface TreeVisitor<T>
 
   T visit(ReturnStatement ret);
 
-  T visit(PropertyAccessor accessor);
+  T visit(IdentPropertyAccessor accessor);
+
+  T visit(ExprPropertyAccessor accessor);
 
   T visit(NewExpression n);
 }

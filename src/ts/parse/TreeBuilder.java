@@ -4,7 +4,6 @@ import ts.Location;
 import ts.Message;
 import ts.tree.*;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.List;
 
 /**
@@ -207,7 +206,7 @@ public class TreeBuilder {
 
   // helper function to detect "reference expected" errors
   private static boolean producesReference(Node node) {
-    if (node instanceof Identifier || node instanceof PropertyAccessor) {
+    if (node instanceof Identifier || node instanceof IdentPropertyAccessor) {
       return true;
     }
     return false;

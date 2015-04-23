@@ -154,7 +154,6 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     codeBuilder.append("TSLexicalEnvironment ");
     codeBuilder.append(currentEnv());
     codeBuilder.append(" = TSLexicalEnvironment.globalEnv;\n");
-    codeBuilder.append("TSValue thisBinding = TSObject.globalObj;\n");
     return codeBuilder.toString();
   }
 
@@ -486,7 +485,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
     int index = 0;
     for (Encode.ReturnValue expr : visitEach(args)) {
       code += expr.code + indent() + result + "[" + index++ + "] = "
-              + expr.result + ";\n";
+              + expr.result + ".getValue();\n";
     }
     code += indent() + "// end function call argument packing\n";
 
@@ -498,8 +497,7 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             , args = packCallArgs(call.getArgs());
     final String func = getTemp()
             , result = getTemp()
-            , thisVal = getTemp()
-            , refTemp = getTemp();
+            , thisVal = getTemp();
 
     String code = ref.code + args.code + indent() + "TSValue "
             + func + " = " + ref.result + ".getValue();\n"
@@ -511,21 +509,17 @@ public final class Encode extends TreeVisitorBase<Encode.ReturnValue> {
             + indent() + indent() + "throw new TSTypeError(TSString.create(\"Type error\"));\n"
             + indent() + "}\n"
 
-            + indent() + "TSValue " + thisVal + ";\n"
-
-            + indent() + "if (" + ref.result + ".isReference()) {\n"
-            + indent() + indent() + "TSReference " + refTemp + " = (TSReference)" + ref.result + ";\n"
-
-            + indent() + indent() + "if(" + refTemp + ".isPropertyReference()) "
-            + thisVal + " = ((TSPropertyReference)" + refTemp + ").base;\n"
-
-            + indent() + indent() + "else "
-            + thisVal + " = ((TSEnvironmentReference)" + refTemp + ").base.implicitThisValue();\n"
-
-            + indent() + "} else {\n" + indent() + indent() + thisVal + " = TSUndefined.value;\n}\n"
+            // TODO isPropertyReference check
+            // TODO object environment records
+            /*
+            + indent() + "if (!" + ref.result + ".isReference()) {\n"
+            + indent() + indent() + thisVal + " = " + ref.result
+            + indent() + "}\n"
+            */
 
             // only declarative environment records so far, so just pass undefined for this
             + indent() + "// this value\n"
+            + indent() + "TSValue " + thisVal + " = TSUndefined.value;\n"
             + indent() + "TSValue " + result + " = "
             + func + ".asFunction().execute(" + thisVal + ", " + args.result + ", false);\n";
     return new Encode.ReturnValue(result, code);

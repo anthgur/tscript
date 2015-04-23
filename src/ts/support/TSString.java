@@ -16,6 +16,7 @@ public final class TSString extends TSPrimitive {
   static final TSString SET = new TSString("set");
   static final TSString ENUMERABLE = new TSString("enumerable");
   static final TSString CONFIGURABLE = new TSString("configurable");
+  static final TSString LENGTH = new TSString("length");
 
   // use the "create" method instead
   private TSString(final String value) {
@@ -43,10 +44,8 @@ public final class TSString extends TSPrimitive {
     return new TSString(value);
   }
 
-  /** Convert String to Number. Not yet Implemented. */
   public TSNumber toNumber() {
-    assert false : "not implemented";
-    return null;
+    return TSNumber.create(Double.parseDouble(value));
   }
 
   @Override
@@ -62,7 +61,6 @@ public final class TSString extends TSPrimitive {
     return true;
   }
 
-  /** Override in TSValue */
   public TSString toStr() {
     return this;
   }

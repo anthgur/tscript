@@ -69,6 +69,7 @@ public class TSObject extends TSValue {
         globalObj.put(TSString.create("readln"), readln);
         globalObj.put(TSString.create("isFinite"), isFinite);
         globalObj.put(TSString.create("isNaN"), isNan);
+        globalObj.put(TSString.create("String"), TSString.STRING);
     }
 
     private Map<TSString, TSValue> properties

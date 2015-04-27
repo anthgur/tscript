@@ -47,6 +47,9 @@ while(true) {
   Array.push(productions, line);
 }
 
+var s = "a, b, c";
+print (String.split(s, ", ")[0]);
+
 // test code here
 var test = function() {
   var a = Array();

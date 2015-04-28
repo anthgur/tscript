@@ -8,11 +8,6 @@ var Array = function() {
 
 Array.push = function(a, x) {
   var n = a.length;
-  if (a == undefined) {
-    a = Array();
-  } else if (n == undefined) {
-    n = 0;
-  }
   a[n] = x;
   a.length = n + 1;
 };
@@ -101,14 +96,59 @@ var Analyzer = function ctor() {
   return a;
 };
 
-Analyzer.analyzeProd = function(alz, line) {
-  var nonTerm, prod = String.split(line, " ");
-  prod = Array.map(prod, function(s) { return String.trim(s); });
+Analyzer.isEmptyProd = function(prod) {
   if (prod.length == 1) {
-    Array.push(alz.nullDeriving, prod[0]);
+    return true;
   }
+};
+
+Analyzer.analyzeProd = function(alz, line) {
+  var nonTerm, prodSlot, prod = String.split(line, " ");
+  prod = Array.map(prod, function(s) { return String.trim(s); });
+
   alz.analyzeSyms(prod, alz.terms, isTerm);
   alz.analyzeSyms(prod, alz.nonTerms, isNonTerm);
+
+  nonTerm = prod[0];
+  prodSlot = alz['productions'][nonTerm];
+  if (prodSlot == undefined) {
+    prodSlot = Array();
+  }
+  prodSlot.lhs = nonTerm;
+  Array.push(prodSlot, Array.rest(prod));
+
+  if (alz.isEmptyProd(prod)) {
+    Array.push(alz.nullDeriving, nonTerm);
+  }
+};
+
+Analyzer.nullDeriving = function(alz) {
+  var isNullDeriving = function(sym) {
+    var nsyms = Array.filter(alz.nullDeriving, function(nsym) {
+      if (nsym == sym) {
+        return true;
+      }
+    });
+    if (nsyms.length > 0) {
+      return true;
+    }
+  };
+
+  while (true) {
+    var infoGained = false;
+    Array.forEach(alz.productions, function(p) {
+      Array.forEach(p, function(rhs) {
+        var nsyms = Array.filter(rhs, isNullDeriving);
+        if (nsyms.length == rhs.length) {
+          Array.push(alz.nullDeriving, p.lhs);
+          infoGained = true;
+        }
+      });
+    });
+    if (!infoGained) {
+      break;
+    }
+  }
 };
 
 Analyzer.analyzeSyms = function(prod, syms, p) {

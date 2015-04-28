@@ -78,8 +78,21 @@ Array.rest = function(o) {
   return a;
 };
 
+var isTerm = function(s) {
+  return s == String.toLowerCase(s);
+};
+
+var isNonTerm = function(s) {
+  return s == String.toUpperCase(s);
+};
+
+var isEmpty = function(s) {
+  return s == "";
+};
+
 var Analyzer = function ctor() {
   var a = new "Analyzer";
+  a.nullDeriving = Array();
   a.productions = Array();
   a.nonTerms = Array();
   a.terms = Array();
@@ -89,10 +102,13 @@ var Analyzer = function ctor() {
 };
 
 Analyzer.analyzeProd = function(alz, line) {
-  var split = String.split(line, " ");
-  split = Array.map(split, function(s) { return String.trim(s); });
-  alz.analyzeSyms(split, alz.terms, isTerm);
-  alz.analyzeSyms(split, alz.nonTerms, isNonTerm);
+  var nonTerm, prod = String.split(line, " ");
+  prod = Array.map(prod, function(s) { return String.trim(s); });
+  if (prod.length == 1) {
+    Array.push(alz.nullDeriving, prod[0]);
+  }
+  alz.analyzeSyms(prod, alz.terms, isTerm);
+  alz.analyzeSyms(prod, alz.nonTerms, isNonTerm);
 };
 
 Analyzer.analyzeSyms = function(prod, syms, p) {
@@ -109,30 +125,23 @@ Analyzer.analyzeSyms = function(prod, syms, p) {
 };
 
 Analyzer.printResults = function(alz) {
+  var printSyms = function(syms) {
+    print Array.reduce(syms, '', function(x, y) {
+      return x + y + ' ';
+    });
+  };
+
   print "Start Symbol";
   print alz.startSymbol;
-  print '';
-  print "Nonterminals";
-  print Array.reduce(alz.nonTerms, '', function(x, y) {
-      return x + y + ' ';
-  });
-  print '';
-  print "Terminals";
-  print Array.reduce(alz.terms, '', function(x, y) {
-    return x + y + ' ';
-  });
-};
 
-var isTerm = function(s) {
-  return s == String.toLowerCase(s);
-};
+  print "\nNonterminals";
+  printSyms(alz.nonTerms);
 
-var isNonTerm = function(s) {
-  return s == String.toUpperCase(s);
-};
+  print "\nTerminals";
+  printSyms(alz.terms);
 
-var isEmpty = function(s) {
-  return s == "";
+  print "\nNull-Deriving Nonterminals";
+  printSyms(alz.nullDeriving);
 };
 
 var runAnalysis = function() {

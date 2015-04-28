@@ -69,7 +69,7 @@ Array.filter = function(a, p) {
   return r;
 };
 
-var rest = function(o) {
+Array.rest = function(o) {
   var a = Array(), l = o.length, x = 1;
   while(x < l) {
     Array.push(a, o[x]);
@@ -78,10 +78,50 @@ var rest = function(o) {
   return a;
 };
 
-var productions, terms, nonTerms;
-productions = Array();
-nonTerms = Array();
-terms = Array();
+var Analyzer = function ctor() {
+  var a = new "Analyzer";
+  a.productions = Array();
+  a.nonTerms = Array();
+  a.terms = Array();
+  a.startSymbol = null;
+  a.prototype = ctor;
+  return a;
+};
+
+Analyzer.analyzeProd = function(alz, line) {
+  var split = String.split(line, " ");
+  split = Array.map(split, function(s) { return String.trim(s); });
+  alz.analyzeSyms(split, alz.terms, isTerm);
+  alz.analyzeSyms(split, alz.nonTerms, isNonTerm);
+};
+
+Analyzer.analyzeSyms = function(prod, syms, p) {
+  Array.forEach(prod, function(s) {
+    if (p(s)) {
+      var ss = Array.filter(syms, function(x) {
+        return s == x;
+      });
+      if (ss.length == 0) {
+        Array.push(syms, s);
+      }
+    }
+  });
+};
+
+Analyzer.printResults = function(alz) {
+  print "Start Symbol";
+  print alz.startSymbol;
+  print '';
+  print "Nonterminals";
+  print Array.reduce(alz.nonTerms, '', function(x, y) {
+      return x + y + ' ';
+  });
+  print '';
+  print "Terminals";
+  print Array.reduce(alz.terms, '', function(x, y) {
+    return x + y + ' ';
+  });
+};
 
 var isTerm = function(s) {
   return s == String.toLowerCase(s);
@@ -95,55 +135,25 @@ var isEmpty = function(s) {
   return s == "";
 };
 
-var analyzeSyms = function(prod, syms, p) {
-  Array.forEach(prod, function(s) {
-    if (p(s)) {
-      var ss = Array.filter(syms, function(x) {
-        return s == x;
-      });
-      if (ss.length == 0) {
-        Array.push(syms, s);
-      }
-    }
-  });
-};
-
-var analyzeProd = function(line) {
-  var split = String.split(line, " ");
-  split = Array.map(split, function(s) { return String.trim(s); });
-  analyzeSyms(split, terms, isTerm);
-  analyzeSyms(split, nonTerms, isNonTerm);
-};
-
-var line = readln();
-analyzeProd(line);
-var startSymbol = nonTerms[0];
-
-while(true) {
+var runAnalysis = function() {
+  var alz = Analyzer();
   var line = readln();
-  if (isEmpty(line)) {
-    break;
+  alz.analyzeProd(alz, line);
+  alz.startSymbol = alz.nonTerms[0];
+
+  while(true) {
+    var line = readln();
+    if (isEmpty(line)) {
+      break;
+    }
+    alz.analyzeProd(alz, line);
   }
-  analyzeProd(line);
-}
 
-(function() {
-  print "Start Symbol";
-  print startSymbol;
-  print '';
-  print "Nonterminals";
-  print Array.reduce(nonTerms, '', function(x, y) {
-      return x + y + ' ';
-  });
-  print '';
-  print "Terminals";
-  print Array.reduce(terms, '', function(x, y) {
-    return x + y + ' ';
-  });
-})
-()
-;
+  return alz;
+};
 
+var alz = runAnalysis();
+alz.printResults(alz);
 
 // test code here
 var test = function() {

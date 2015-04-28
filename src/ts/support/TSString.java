@@ -24,7 +24,7 @@ public final class TSString extends TSPrimitive {
         if (args.length != 2) {
           throw new TSException(TSString.create("invalid args {" + args.length + "}"));
         }
-        if (!args[1].isString() || !args[0].isString()) {
+        if (!args[0].isString() || !args[1].isString()) {
           throw new TSTypeError(TSString.create("non string supplied to split"));
         }
         try {
@@ -38,6 +38,29 @@ public final class TSString extends TSPrimitive {
           return o;
         } catch (Exception e) {
           throw new TSException(TSString.create("couldn't split"));
+        }
+      }
+    });
+
+    STRING.put(TSString.create("charCodeAt"), new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
+      @Override
+      public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
+        TSObject o = new TSObject();
+        if (args.length != 2) {
+          throw new TSException(TSString.create("invalid args {" + args.length + "}"));
+        }
+        if (!args[0].isString()) {
+          throw new TSTypeError(TSString.create("non string as first arg to charCodeAt"));
+        }
+        if (!args[1].isNumber()) {
+          throw new TSTypeError(TSString.create("non number as second arg to charCodeAt"));
+        }
+        try {
+          String s = args[0].toStr().unbox();
+          int i = (int) args[1].toNumber().unbox();
+          return TSNumber.create(Character.codePointAt(s, i));
+        } catch (Exception e) {
+          throw new TSException(TSString.create("couldn't get char code"));
         }
       }
     });

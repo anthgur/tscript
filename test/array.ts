@@ -6,7 +6,9 @@ Array = function() {
 
 Array.push = function(a, x) {
   var n = a.length;
-  if (n == undefined) {
+  if (a == undefined) {
+    a = Array();
+  } else if (n == undefined) {
     n = 0;
   }
   a[n] = x;
@@ -33,22 +35,57 @@ Array.map = function(a, f) {
   return b;
 };
 
-var startProd, startSymbol, productions;
+var startProd, startSymbol, rawProductions, productions, terms, nonTerms;
+rawProductions = Array();
 productions = Array();
+nonTerms = Array();
+terms = Array();
 
 startProd = readln();
 Array.push(productions, startProd);
+
+var rest = function(o) {
+  var a = Array(), l = o.length, x = 1;
+  while(x < l) {
+    Array.push(a, o[x]);
+    x = x + 1;
+  }
+  return a;
+};
+
+var analyzeSyms = function(prod, syms, p) {
+  var l = syms.length, x = 0;
+  while (x < l) {
+    var k = syms.length, y = 0, s = prod[x];
+    if (p(s)) {
+      while (y < k) {
+        if (!(prod[x] == syms[y])) {
+          Array.push(syms, prod[x]);
+          break;
+        }
+        y = y + 1;
+      }
+    }
+    x = x + 1;
+  }
+};
+
+var lol = String.split("", " ");
 
 while(true) {
   var line = readln();
   if (line == "") {
     break;
   }
-  Array.push(productions, line);
+  var split = String.split(line, " ");
+  Array.push(terms, split[0]);
+  //analyzeSyms(split, terms);
+  //analyzeSyms(split, nonTerms);
 }
 
-var s = "a, b, c";
-print (String.split(s, ", ")[0]);
+print String.charCodeAt("a", 0);
+
+//Array.map(terms, function(x) { print x; });
 
 // test code here
 var test = function() {

@@ -78,19 +78,6 @@ var rest = function(o) {
   return a;
 };
 
-(function() {
-var abc = Array();
-Array.push(abc, 1);
-Array.push(abc, 5);
-Array.push(abc, 3);
-Array.push(abc, 4);
-
-var def = Array.map(abc, function(x) { return x + 1; });
-Array.forEach(def, printf);
-})
-//()
-;
-
 var productions, terms, nonTerms;
 productions = Array();
 nonTerms = Array();

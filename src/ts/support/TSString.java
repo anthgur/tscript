@@ -1,7 +1,6 @@
 package ts.support;
 
 import java.lang.reflect.Method;
-import java.util.regex.Pattern;
 
 /**
  * Represents (Tscript) String values
@@ -65,44 +64,10 @@ public final class TSString extends TSPrimitive {
       }
     });
 
-    STRING.put(TSString.create("toUpperCase"), new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
-      @Override
-      public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
-        if (args.length != 1) {
-          throw new TSException(TSString.create("invalid args {" + args.length + "}"));
-        }
-        if (!args[0].isString()) {
-          throw new TSTypeError(TSString.create("non string as first arg to charCodeAt"));
-        }
-        try {
-          String s = args[0].toStr().unbox();
-          return TSString.create(s.toUpperCase());
-        } catch (Exception e) {
-          throw new TSException(TSString.create("couldn't get char code"));
-        }
-      }
-    });
-
-    STRING.put(TSString.create("toLowerCase"), new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
-      @Override
-      public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
-        if (args.length != 1) {
-          throw new TSException(TSString.create("invalid args {" + args.length + "}"));
-        }
-        if (!args[0].isString()) {
-          throw new TSTypeError(TSString.create("non string as first arg to charCodeAt"));
-        }
-        try {
-          String s = args[0].toStr().unbox();
-          return TSString.create(s.toLowerCase());
-        } catch (Exception e) {
-          throw new TSException(TSString.create("couldn't get char code"));
-        }
-      }
-    });
-
     try {
-      STRING.put(TSString.create("trim"), stringStaticWrap("trim"));
+      wrapJavaStringStatic("toUpperCase");
+      wrapJavaStringStatic("toLowerCase");
+      wrapJavaStringStatic("trim");
     } catch (NoSuchMethodException e) {
       e.printStackTrace();
     }
@@ -155,24 +120,24 @@ public final class TSString extends TSPrimitive {
     return this;
   }
 
-  private static TSFunctionObject stringStaticWrap(final String methodName) throws NoSuchMethodException {
+  private static void wrapJavaStringStatic(final String methodName) throws NoSuchMethodException {
     final Method m = String.class.getMethod(methodName);
-    return new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
+    STRING.put(TSString.create(methodName), new TSFunctionObject(TSLexicalEnvironment.globalEnv, new String[]{}) {
       @Override
       public TSValue execute(TSValue ths, TSValue[] args, boolean isConstructor) {
         if (args.length != 1) {
           throw new TSException(TSString.create("invalid args {" + args.length + "}"));
         }
         if (!args[0].isString()) {
-          throw new TSTypeError(TSString.create("non string as first arg to charCodeAt"));
+          throw new TSTypeError(TSString.create("non string as arg to" + methodName));
         }
         try {
           String s = args[0].toStr().unbox();
           return TSString.create((String) m.invoke(s));
         } catch (Exception e) {
-          throw new TSException(TSString.create("couldn't get char code"));
+          throw new TSException(TSString.create("Something went wrong with strings"));
         }
       }
-    };
+    });
   }
 }

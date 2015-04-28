@@ -1,7 +1,7 @@
 var printf = function(x) { print x; };
 
 var Array = function() {
-  var a = new "";
+  var a = new "Array";
   a.length = 0;
   return a;
 };
@@ -64,6 +64,18 @@ Array.filter = function(a, p) {
   return r;
 };
 
+Array.some = function(a, p) {
+  var n = a.length, i = 0, x;
+  while (i < n) {
+    x = a[i];
+    if (p(x)) {
+      return x;
+    }
+    i = i + 1;
+  }
+  return false;
+};
+
 Array.rest = function(o) {
   var a = Array(), l = o.length, x = 1;
   while(x < l) {
@@ -103,46 +115,60 @@ Analyzer.isEmptyProd = function(prod) {
 };
 
 Analyzer.analyzeProd = function(alz, line) {
-  var nonTerm, prodSlot, prod = String.split(line, " ");
+  var nonTerm, prodSlot = Array(), prod = String.split(line, " ");
   prod = Array.map(prod, function(s) { return String.trim(s); });
 
   alz.analyzeSyms(prod, alz.terms, isTerm);
   alz.analyzeSyms(prod, alz.nonTerms, isNonTerm);
 
   nonTerm = prod[0];
-  prodSlot = alz['productions'][nonTerm];
-  if (prodSlot == undefined) {
-    prodSlot = Array();
-  }
   prodSlot.lhs = nonTerm;
+  if (alz['productions'][nonTerm] == undefined) {
+    alz['productions'][nonTerm] = Array();
+  }
   Array.push(prodSlot, Array.rest(prod));
+  Array.push(alz['productions'][nonTerm], prodSlot);
 
   if (alz.isEmptyProd(prod)) {
     Array.push(alz.nullDeriving, nonTerm);
   }
 };
 
-Analyzer.nullDeriving = function(alz) {
-  var isNullDeriving = function(sym) {
-    var nsyms = Array.filter(alz.nullDeriving, function(nsym) {
-      if (nsym == sym) {
-        return true;
-      }
+Analyzer.isNullDeriving = function(alz) {
+  return function(sym) {
+    return Array.some(alz.nullDeriving, function(x) {
+      return sym == x;
     });
-    if (nsyms.length > 0) {
-      return true;
-    }
   };
+};
 
+Analyzer.analyzeNullDeriving = function(alz) {
+  var infoGained = false, nullp = alz.isNullDeriving(alz);
   while (true) {
-    var infoGained = false;
-    Array.forEach(alz.productions, function(p) {
-      Array.forEach(p, function(rhs) {
-        var nsyms = Array.filter(rhs, isNullDeriving);
-        if (nsyms.length == rhs.length) {
-          Array.push(alz.nullDeriving, p.lhs);
-          infoGained = true;
-        }
+    infoGained = false;
+    // non-terminals
+    Array.forEach(alz.nonTerms, function(t) {
+      // non-terminals' production slots
+      // ex:
+      // A B C
+      // A a b
+      Array.forEach(alz['productions'][t], function(prodSlot) {
+        // productions
+        // ex:
+        // A B C
+        Array.forEach(prodSlot, function(prod) {
+          // only check if the nonterminal isn't null deriving
+          if (!nullp(prodSlot.lhs)) {
+            // length of production's rhs equals
+            // number of null deriving syms in rhs
+            // means the lhs (nonterminal) is null deriving
+            // ie, all syms in rhs are null deriving
+            if (prod.length == Array.filter(prod, nullp).length) {
+              Array.push(alz.nullDeriving, prodSlot.lhs);
+              infoGained = true;
+            }
+          }
+        });
       });
     });
     if (!infoGained) {
@@ -164,12 +190,17 @@ Analyzer.analyzeSyms = function(prod, syms, p) {
   });
 };
 
+Analyzer.analyze = function(alz) {
+  alz.analyzeNullDeriving(alz);
+};
+
 Analyzer.printResults = function(alz) {
   var printSyms = function(syms) {
     print Array.reduce(syms, '', function(x, y) {
       return x + y + ' ';
     });
   };
+  alz.analyze(alz);
 
   print "Start Symbol";
   print alz.startSymbol;

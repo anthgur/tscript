@@ -1,4 +1,6 @@
-Array = function() {
+var printf = function(x) { print x; };
+
+var Array = function() {
   var a = new "";
   a.length = 0;
   return a;
@@ -16,33 +18,56 @@ Array.push = function(a, x) {
 };
 
 Array.pop = function(a) {
-  var n = a.length - 1;
+  var n = a.length - 1, x;
   if (n == undefined) {
     return;
   }
+  x = a[n];
   a[n] = undefined;
   a.length = n;
+  return x;
 };
 
 Array.map = function(a, f) {
-  var b = new 2
+  var b = new Array()
     , n = a.length
     , x = 0;
   while (x < n) {
     b[x] = f(a[x]);
     x = x + 1;
   }
+  b.length = x;
   return b;
 };
 
-var startProd, startSymbol, rawProductions, productions, terms, nonTerms;
-rawProductions = Array();
-productions = Array();
-nonTerms = Array();
-terms = Array();
+Array.forEach = function(a, f) {
+  var n = a.length
+    , x = 0;
+  while (x < n) {
+    f(a[x]);
+    x = x + 1;
+  }
+};
 
-startProd = readln();
-Array.push(productions, startProd);
+Array.reduce = function(a, s, f) {
+  var n = a.length
+    , x = 0;
+  while (x < n) {
+    s = f(s, a[x]);
+    x = x + 1;
+  }
+  return s;
+};
+
+Array.filter = function(a, p) {
+  var r = Array();
+  Array.forEach(a, function(x) {
+    if (p(x)) {
+      Array.push(r, x);
+    }
+  });
+  return r;
+};
 
 var rest = function(o) {
   var a = Array(), l = o.length, x = 1;
@@ -53,39 +78,85 @@ var rest = function(o) {
   return a;
 };
 
-var analyzeSyms = function(prod, syms, p) {
-  var l = syms.length, x = 0;
-  while (x < l) {
-    var k = syms.length, y = 0, s = prod[x];
-    if (p(s)) {
-      while (y < k) {
-        if (!(prod[x] == syms[y])) {
-          Array.push(syms, prod[x]);
-          break;
-        }
-        y = y + 1;
-      }
-    }
-    x = x + 1;
-  }
+(function() {
+var abc = Array();
+Array.push(abc, 1);
+Array.push(abc, 5);
+Array.push(abc, 3);
+Array.push(abc, 4);
+
+var def = Array.map(abc, function(x) { return x + 1; });
+Array.forEach(def, printf);
+})
+//()
+;
+
+var productions, terms, nonTerms;
+productions = Array();
+nonTerms = Array();
+terms = Array();
+
+var isTerm = function(s) {
+  return s == String.toLowerCase(s);
 };
 
-var lol = String.split("", " ");
+var isNonTerm = function(s) {
+  return s == String.toUpperCase(s);
+};
+
+var isEmpty = function(s) {
+  return s == "";
+};
+
+var analyzeSyms = function(prod, syms, p) {
+  Array.forEach(prod, function(s) {
+    if (p(s)) {
+      var ss = Array.filter(syms, function(x) {
+        return s == x;
+      });
+      if (ss.length == 0) {
+        Array.push(syms, s);
+      }
+    }
+  });
+};
+
+var analyzeProd = function(line) {
+  var split = String.split(line, " ");
+  split = Array.map(split, function(s) { return String.trim(s); });
+  analyzeSyms(split, terms, isTerm);
+  analyzeSyms(split, nonTerms, isNonTerm);
+};
+
+var line = readln();
+analyzeProd(line);
+var startSymbol = nonTerms[0];
 
 while(true) {
   var line = readln();
-  if (line == "") {
+  if (isEmpty(line)) {
     break;
   }
-  var split = String.split(line, " ");
-  Array.push(terms, split[0]);
-  //analyzeSyms(split, terms);
-  //analyzeSyms(split, nonTerms);
+  analyzeProd(line);
 }
 
-print String.charCodeAt("a", 0);
+(function() {
+  print "Start Symbol";
+  print startSymbol;
+  print '';
+  print "Nonterminals";
+  print Array.reduce(nonTerms, '', function(x, y) {
+      return x + y + ' ';
+  });
+  print '';
+  print "Terminals";
+  print Array.reduce(terms, '', function(x, y) {
+    return x + y + ' ';
+  });
+})
+()
+;
 
-//Array.map(terms, function(x) { print x; });
 
 // test code here
 var test = function() {

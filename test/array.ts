@@ -97,6 +97,10 @@ var isEmpty = function(s) {
   return s == "";
 };
 
+var eq = function(x) {
+  return function(y) { return x == y; };
+};
+
 var Analyzer = function ctor() {
   var a = new "Analyzer";
   a.nullDeriving = Array();
@@ -108,10 +112,30 @@ var Analyzer = function ctor() {
   return a;
 };
 
+Analyzer.some = function(alz, key) {
+  return function(v) {
+    return Array.some(alz[key], eq(v));
+  };
+};
+
 Analyzer.isEmptyProd = function(prod) {
   if (prod.length == 1) {
     return true;
   }
+};
+
+// functional abstraction where
+// f is a callback of type
+// str * str list -> unit
+// ie, a production's lhs * rhs
+Analyzer.forProductions = function(alz, f) {
+  Array.forEach(alz.nonTerms, function(t) {
+    Array.forEach(alz['productions'][t], function(prodSlot) {
+      Array.forEach(prodSlot, function(rhs) {
+        f(prodSlot.lhs, rhs);
+      });
+    });
+  });
 };
 
 Analyzer.analyzeProd = function(alz, line) {
@@ -134,42 +158,19 @@ Analyzer.analyzeProd = function(alz, line) {
   }
 };
 
-Analyzer.isNullDeriving = function(alz) {
-  return function(sym) {
-    return Array.some(alz.nullDeriving, function(x) {
-      return sym == x;
-    });
-  };
-};
-
 Analyzer.analyzeNullDeriving = function(alz) {
-  var infoGained = false, nullp = alz.isNullDeriving(alz);
+  var infoGained, nullp = alz.some(alz, 'nullDeriving');
+
   while (true) {
     infoGained = false;
-    // non-terminals
-    Array.forEach(alz.nonTerms, function(t) {
-      // non-terminals' production slots
-      // ex:
-      // A B C
-      // A a b
-      Array.forEach(alz['productions'][t], function(prodSlot) {
-        // productions
-        // ex:
-        // A B C
-        Array.forEach(prodSlot, function(prod) {
-          // only check if the nonterminal isn't null deriving
-          if (!nullp(prodSlot.lhs)) {
-            // length of production's rhs equals
-            // number of null deriving syms in rhs
-            // means the lhs (nonterminal) is null deriving
-            // ie, all syms in rhs are null deriving
-            if (prod.length == Array.filter(prod, nullp).length) {
-              Array.push(alz.nullDeriving, prodSlot.lhs);
-              infoGained = true;
-            }
-          }
-        });
-      });
+    alz.forProductions(alz, function(lhs, rhs) {
+      if (!nullp(lhs)) {
+        // all syms in rhs are null deriving
+        if (rhs.length == Array.filter(rhs, nullp).length) {
+          Array.push(alz.nullDeriving, lhs);
+          infoGained = true;
+        }
+      }
     });
     if (!infoGained) {
       break;

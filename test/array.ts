@@ -213,10 +213,17 @@ Analyzer.analyzeFirst = function(alz) {
       var ret = null, tFirst = alz['first'][t];
 
       if (tFirst.length > 0) {
-        return tFirst;
+        ret = Array();
+        Array.union(ret, tFirst);
       }
       if (nullp(t)) {
-        return recur(Array.rest(rhs));
+        var r = recur(Array.rest(rhs));
+        if (r) {
+          if (!ret) {
+            ret = Array();
+          }
+          Array.union(ret, r);
+        }
       }
       return ret;
     };

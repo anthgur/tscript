@@ -1,4 +1,18 @@
+// This file implements LL(1) grammar analysis
+// The code is very non-idiomatic for JavaScript,
+// because the translator doesn't have all language
+// features implemented
+
+// Biggest hurdle: `this` isn't implemented
+
 var printf = function(x) { print x; };
+
+// These reflect JavaScript standard lib functions,
+// with slight modifications
+
+// Most significant is the functions are stored as props
+// of a single object, rather than being on the prototype
+// of all Array objects
 
 var Array = function() {
   var a = new "Array";
@@ -96,6 +110,8 @@ Array.rest = function(o) {
   return a;
 };
 
+// Grammar analysis helpers
+
 var isTerm = function(s) {
   return s == String.toLowerCase(s);
 };
@@ -155,6 +171,9 @@ Analyzer.forProductions = function(alz, f) {
   });
 };
 
+// the following methods loosely follow the algorithm
+// for constructing an LL(1) parse table located here:
+// https://en.wikipedia.org/wiki/LL_parser#Constructing_an_LL.281.29_parsing_table
 Analyzer.analyzeProd = function(alz, line) {
   var nonTerm, prodSlot = Array(), prod = String.split(line, " ");
   prod = Array.map(prod, function(s) { return String.trim(s); });
@@ -316,18 +335,3 @@ var runAnalysis = function() {
 
 var alz = runAnalysis();
 alz.printResults(alz);
-
-// test code here
-var test = function() {
-  var a = Array();
-  Array.push(a, 42);
-  Array.pop(a);
-
-  var b = Array();
-  Array.push(b, 1);
-  Array.push(b, 2);
-  Array.push(b, 3);
-  var c = Array.map(b, function(x) { print(x);});
-};
-
-//test();
